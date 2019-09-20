@@ -13,56 +13,43 @@ class unitObject:
         unit.health = 10
         unit.atk = (unit.health/10)*(unit.damage)
         unit.title = title #string, unit name.
+        
 # build attack initiate
 def attack(self, target):
-    print(target.title, "Health: ", target.title, "damage: ", target.atk)
-    print(self.title, "Health: ", self.health, self.title, "damage: ", self.atk)
-    print("Unit1 attack unit2")        
+    # print/return will change later on
+    print(target.title, "Health:", target.health,"|", target.title, "damage:", target.atk)
+    print(self.title, "Health:", self.health, "|", self.title, "damage:", self.atk)
+    print(self.title, "attack", target.title)        
     target.health = (target.health - self.atk)
+    target.atk = (target.health/10)*(target.damage)
     # If the target unit survives, it counterattacks
     if target.health > 0:
         target.atk = (target.health/10)*(target.damage)
-        print("Unit2 Health: ", target.health, "Unit2 damage: ", target.atk)
-        print("Unit2 counterattacks unit1")
+        print(target.title, "Health:", target.health,"|", target.title, "damage:", target.atk)
+        print(target.title, "counterattacks", self.title)
         self.health = (self.health - target.atk)
+        self.atk = (self.health/10)*(self.damage)
         # if the attacking unit doesn't survive the counterattack, it is instead destroyed
         if self.health > 0:
-            self.atk = (self.health/10)*(self.damage)
-            print("Unit1 Health: ", self.health, "Unit1 damage: ", self.atk)
-            print("=========")
+            print(self.title, "Health:", self.health, "|", self.title, "damage:", self.atk)
+            print("ENDSCENARIO=========")
         else:
-            print("Counterattack was lethal, Attacking unit destroyed")
-            print("=========")
-            del self            
+            print("Counterattack was lethal,", self.title, "destroyed")
+            print("ENDSCENARIO=========")
+            del self        
     else:
-        print("Attacked Unit was destroyed")
-        print("=========")
+        print(target.title, "was destroyed")
+        print("ENDSCENARIO=========")
         del target
             
 # tester units, first value = attack value
 unit1 = unitObject(5.0, 0, 0, "blue")
+
 unit2 = unitObject(5.0, 0, 0, "red")
 
-# attack function, can be used universally; IMPORTANT
+
+# attack function, can be used universally
 attack(unit1, unit2)
 attack(unit2, unit1)
 attack(unit1, unit2)
-
-# Formatted attack with status confirmation
-'''print("Unit2 Health: ", unit2.health, "Unit2 damage: ", unit2.atk)
-print("Unit1 Health: ", unit1.health, "Unit1 damage: ", unit1.atk)
-print("Unit1 attack unit2")
-unit2.health = (unit2.health - unit1.atk)
-print("Unit2 Health: ", unit2.health, "Unit2 damage: ", unit2.atk)
-
-if unit2.health > 0:
-    unit2.atk = (unit2.health/10)*(unit2.damage)
-    print("Unit2 Health: ", unit2.health, "Unit2 damage: ", unit2.atk)
-    print("Unit2 counter unit1")
-    unit1.health = (unit1.health - unit2.atk)
-    print("Unit1 Health: ", unit1.health, "Unit1 damage: ", unit1.atk)
-    unit1.atk = (unit1.health/10)*(unit1.damage)
-    print("Unit1 Health: ", unit1.health, "Unit1 damage: ", unit1.atk)
-else:
-    print("Attacked Unit dead")
-    del unit2 '''
+attack(unit2, unit1)
