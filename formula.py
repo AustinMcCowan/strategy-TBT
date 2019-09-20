@@ -52,3 +52,4 @@ attack(unit1, unit2)
 attack(unit2, unit1)
 attack(unit1, unit2)
 attack(unit2, unit1)
+
