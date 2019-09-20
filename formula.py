@@ -44,7 +44,6 @@ def attack(self, target):
             
 # tester units, first value = attack value
 unit1 = unitObject(5.0, 0, 0, "blue")
-
 unit2 = unitObject(5.0, 0, 0, "red")
 
 
