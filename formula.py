@@ -35,7 +35,7 @@ class unitObject:
     def unitCR8(self, title):
          pass
      
-# attack function, can be used universally
+# Main Method
 if __name__ == "__main__":
     unit1 = unitObject(0, 0, 0, "tank", 0, 0, 0, 0)
     unit2 = unitObject(0, 0, 0, "infantry", 0, 0, 0, 0)
