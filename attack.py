@@ -6,21 +6,24 @@
 
 # build attack initiate
 def attack(self, target):
-    # CATEGORIZING DAMAGE EFFICIENCY BETWEEN UNITS      
+    # CATEGORIZING DAMAGE EFFICIENCY BETWEEN UNITS 
+    # selfreader[0] , targetreader[0]
+    selfreader = self.title.split("#")
+    targetreader = target.title.split("#")
     if target.health <= 0:
         pass
     elif self.health <= 0:
         pass
     else:
-        if self.title == "tank":
-            if target.title == "infantry":
+        if selfreader[0] == "tank":
+            if targetreader[0] == "infantry":
                 self.damage = self.infEF
                 target.damage = target.armorEF
                 self.atk = (self.health/10)*(self.damage)
                 self.atk = round(self.atk, 2)
                 target.atk = (target.health/10)*(target.damage)
                 target.atk = round(target.atk, 2)
-            elif target.title == "tank":
+            elif targetreader[0] == "tank":
                 self.damage = self.armorEF
                 target.damage = target.armorEF
                 self.atk = (self.health/10)*(self.damage)
@@ -29,15 +32,15 @@ def attack(self, target):
                 target.atk = round(target.atk, 2)
             else:
                 pass
-        if self.title == "infantry":
-            if target.title == "infantry":
+        if selfreader[0] == "infantry":
+            if targetreader[0] == "infantry":
                 self.damage = self.infEF
                 target.damage = target.infEF               
                 self.atk = (self.health/10)*(self.damage)
                 self.atk = round(self.atk, 2)                
                 target.atk = (target.health/10)*(target.damage)
                 target.atk = round(target.atk, 2)
-            elif target.title == "tank":
+            elif targetreader[0] == "tank":
                 self.damage = self.armorEF
                 target.damage = target.infEF              
                 self.atk = (self.health/10)*(self.damage)
