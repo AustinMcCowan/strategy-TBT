@@ -26,7 +26,7 @@ class unitObject:
         unit.atk = (unit.health/10)*(unit.damage)
         unit.title = title
         
-        # Efficiency will scale from 0 (can't damage) to 10 ( Max damage )        
+        # Efficiency will scale from 0 (can't damage) to 10 ( Max damage )
         reader = unit.title.split("#")
         if reader[0] == "tank":
             unit.airEF = 0
@@ -61,16 +61,19 @@ class unitObject:
      
 # Main Method
 if __name__ == "__main__":
-    unit1 = unitObject("tank#1")
-    unit2 = unitObject("infantry#2")
+    # Initial attack testing
+    '''unit1 = unitObject("tank#1")
+    unit2 = unitObject("infantry#2")'''
     
     ''' Will run multiple times until one unit is dead. After a unit is considered "dead", or if either unit has a health 
         of 0 or below, the attack function will simply just pass and not rerun all code''' 
-    for i in range(20):
+    '''for i in range(20):
         ak.attack(unit1, unit2)
         ak.attack(unit2, unit1)
-    
+    '''
     print("\n LIST TEST")
+    
+    # Although built using old unit naming style, showcases how to delete unit.
     ''' >>>>> DELETING A UNIT: 
     unit_list = []
     for i in range(4):
@@ -103,8 +106,26 @@ if __name__ == "__main__":
     unit_list.append(unitObject(name))
     
     for i in range(len(unit_list)):
-        print(unit_list[i].title)
-        print(unit_list[i].atk)
-    
+        print(unit_list[i].title)  
+        
+    while True:
+        # Check if unit has reached or went under 0 to end loop
+        breakout = False
+        for unit in unit_list:
+            if unit.health <= 0:
+                print("--unit was destroyed--\n--ending test--")
+                breakout = True
+        if breakout != False:
+            break
+        
+        # attacking     
+        call = input("TEST attack: a = tank1 > tank2 | b = tank 2 > tank 1 | anything else to quit: ")
+        if call == "a":
+            ak.attack(unit_list[0], unit_list[1])
+        elif call == "b":
+            ak.attack(unit_list[1], unit_list[0])
+        else:
+            print("\nDONE")
+            break     
 
  
