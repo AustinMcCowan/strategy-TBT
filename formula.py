@@ -86,15 +86,17 @@ if __name__ == "__main__":
             unit_list.pop(i)
     print(unit_list[4].title)'''
     
+    # Builds a unit list
     unit_list = []
     unit_list.append(unitObject("tank#1"))
     unit_list.append(unitObject("tank#2"))
     unit_list.append(unitObject("tank#3"))
     unit_list.append(unitObject("tank#4"))
     unit_list.append(unitObject("tank#5"))
+    # Unit creation, and insertion into the unit list
     name = "tank"
     number = 1
-    for i in range(50):
+    for i in range(50): # Uses 50 -> unit cap
         for i in range(len(unit_list)):
             namer = unit_list[i].title.split("#")
             namer[1] = int(namer[1])
