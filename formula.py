@@ -74,6 +74,7 @@ if __name__ == "__main__":
     print("\n LIST TEST")
     
     # Although built using old unit naming style, showcases how to delete unit.
+    # Plan to create another function that is for deleting units, eventually all of this (unit creating, unit list, etc) will spin together
     ''' >>>>> DELETING A UNIT: 
     unit_list = []
     for i in range(4):
@@ -93,6 +94,7 @@ if __name__ == "__main__":
     unit_list.append(unitObject("tank#3"))
     unit_list.append(unitObject("tank#4"))
     unit_list.append(unitObject("tank#5"))
+    
     # Unit creation, and insertion into the unit list
     name = "tank"
     number = 1
@@ -113,13 +115,21 @@ if __name__ == "__main__":
     while True:
         # Check if unit has reached or went under 0 to end loop
         breakout = False
-        for unit in unit_list:
-            if unit.health <= 0:
+        for i in range(len(unit_list)):
+            if unit_list[i].health <= 0:
                 print("--unit was destroyed--\n--ending test--")
                 breakout = True
+                
+        position = 0
+        for unit in unit_list:
+            if unit.health <= 0:
+                unit_list.pop(position)
+            position += 1
+            continue
+        
         if breakout != False:
             break
-        
+                
         # attacking     
         call = input("TEST attack: a = tank1 > tank2 | b = tank 2 > tank 1 | anything else to quit: ")
         if call == "a":
@@ -128,6 +138,9 @@ if __name__ == "__main__":
             ak.attack(unit_list[1], unit_list[0])
         else:
             print("\nDONE")
-            break     
+            break
+        
+    for unit in unit_list:
+        print(unit.title)
 
  

@@ -16,7 +16,7 @@ def attack(self, target):
         pass
     else:
         '''have to add all unit types to this :/ Based on amount of unit types, will exponentially increase: 2 types = 2x2, 3 types = 3...
-        so 9 types of units will force me to half to create 81 sections...'''
+        so 9 types of units will force me to have to create 81 sections...'''
         if selfreader[0] == "tank":
             if targetreader[0] == "infantry":
                 self.damage = self.infEF
