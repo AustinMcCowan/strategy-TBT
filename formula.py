@@ -22,43 +22,60 @@ class UnitObject(object):
         self.health = 10        
         self.atk = (self.health/10)*(self.damage)
         self.title = title
-        self.airEF = 0
-        self.heliEF = 0 
-        self.infEF = 0 
-        self.armorEF = 0
+        
+        # Initializes efficiencies
+        self.fighterEF = 0
+        self.attackheliEF = 0 
+        self.infantryEF = 0 
+        self.tankEF = 0
+        self.reconEF = 0
+        self.antiairEF = 0
         
         # Efficiency will scale from 0 (can't damage) to 10 ( Max damage ), Balancing unit types.
+        # Sets unit efficiencies automatically based on unit type/name
         reader = self.title.split("#")
         if reader[0] == "tank":
-            self.airEF = 0
-            self.heliEF = 2
-            self.armorEF = 5
-            self.infEF = 4
+            self.fighterEF = 0
+            self.attackheliEF = 2
+            self.tankEF = 4
+            self.infantryEF = 5
+            self.reconEF = 6
+            self.antiairEF = 5
         if reader[0] == "infantry":
-            self.airEF = 0
-            self.heliEF = 1
-            self.armorEF = 1
-            self.infEF = 3
+            self.fighterEF = 0
+            self.attackheliEF = 1
+            self.tankEF = 1
+            self.infantryEF = 3
+            self.reconEF = 2
+            self.antiairEF = 1
         if reader[0] == "recon":
-            self.airEF = 0
-            self.heliEF = 2
-            self.armorEF = 1
-            self.infEF = 4
+            self.fighterEF = 0
+            self.attackheliEF = 2
+            self.tankEF = 1
+            self.infantryEF = 5
+            self.reconEF = 4
+            self.antiairEF = 1
         if reader[0] == "antiair":
-            self.airEF = 7
-            self.heliEF = 9
-            self.armorEF = 2
-            self.infEF = 8
+            self.fighterEF = 7
+            self.attackheliEF = 9
+            self.tankEF = 2
+            self.infantryEF = 10
+            self.reconEF = 7
+            self.antiairEF = 5
         if reader[0] == "fighter":
-            self.airEF = 7
-            self.heliEF = 10
-            self.armorEF = 0
-            self.infEF = 0
+            self.fighterEF = 6
+            self.attackheliEF = 10
+            self.tankEF = 0
+            self.infantryEF = 0
+            self.reconEF = 0
+            self.antiairEF = 0
         if reader[0] == "attackheli":
-            self.airEF = 3
-            self.heliEF = 6
-            self.armorEF = 6
-            self.infEF = 5
+            self.fighterEF = 1
+            self.attackheliEF = 4
+            self.tankEF = 6
+            self.infantryEF = 5
+            self.reconEF = 8
+            self.antiairEF = 3
             
 # Unit creation, and insertion into the unit list
 def unitCR8(title):
@@ -139,13 +156,13 @@ if __name__ == "__main__":
             if unit.health <= 0.5: # If units health drops equals or drops below .5, they are considered destroyed.
                 unit_list.pop(position)
             position += 1
-            continue
+            
         
         if breakout != False:
             break
                 
         # attacking     
-        call = input("TEST attack: a = tank1 > tank2 | b = tank2 > tank1 | anything else to quit: ")
+        call = input("TEST attack: a = tank1 > tank2 | b = tank2 > tank1 | type anything else to quit: ")
         if call == "a":
             ak.attack(unit_list[0], unit_list[1])
         elif call == "b":
