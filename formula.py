@@ -7,63 +7,85 @@ based on the stats of the other. '''
 
 import attack as ak
 
+global unitnames
+global unit_list
+
 '''>>>ATTEMPT TO SEGMENT UNITS TO HAVE EFFICIENCY TO CERTAIN TYPES'''
 # object to represent unit
-class unitObject:
+class UnitObject(object):
     # basic stats
-    damage = 0
-    health = 10
-    atk = 0
-    
     # Efficiency will scale from 0 (can't damage) to 10 ( Max damage )
     # May need to add more efficiencies :/ 
-    
-    airEF = 0
-    heliEF = 0 
-    infEF = 0 
-    armorEF = 0    
-    def __init__(unit, title): 
-        unit.atk = (unit.health/10)*(unit.damage)
-        unit.title = title
+       
+    def __init__(self, title):
+        self.damage = 0
+        self.health = 10        
+        self.atk = (self.health/10)*(self.damage)
+        self.title = title
+        self.airEF = 0
+        self.heliEF = 0 
+        self.infEF = 0 
+        self.armorEF = 0
         
-        # Efficiency will scale from 0 (can't damage) to 10 ( Max damage )
-        reader = unit.title.split("#")
+        # Efficiency will scale from 0 (can't damage) to 10 ( Max damage ), Balancing unit types.
+        reader = self.title.split("#")
         if reader[0] == "tank":
-            unit.airEF = 0
-            unit.heliEF = 3
-            unit.armorEF = 5
-            unit.infEF = 4
+            self.airEF = 0
+            self.heliEF = 2
+            self.armorEF = 5
+            self.infEF = 4
         if reader[0] == "infantry":
-            unit.airEF = 0
-            unit.heliEF = 1
-            unit.armorEF = 1
-            unit.infEF = 3
+            self.airEF = 0
+            self.heliEF = 1
+            self.armorEF = 1
+            self.infEF = 3
         if reader[0] == "recon":
-            unit.airEF = 0
-            unit.heliEF = 3
-            unit.armorEF = 2
-            unit.infEF = 4
+            self.airEF = 0
+            self.heliEF = 2
+            self.armorEF = 1
+            self.infEF = 4
         if reader[0] == "antiair":
-            unit.airEF = 7
-            unit.heliEF = 9
-            unit.armorEF = 3
-            unit.infEF = 8
+            self.airEF = 7
+            self.heliEF = 9
+            self.armorEF = 2
+            self.infEF = 8
         if reader[0] == "fighter":
-            unit.airEF = 7
-            unit.heliEF = 10
-            unit.armorEF = 0
-            unit.infEF = 0
+            self.airEF = 7
+            self.heliEF = 10
+            self.armorEF = 0
+            self.infEF = 0
         if reader[0] == "attackheli":
-            unit.airEF = 3
-            unit.heliEF = 6
-            unit.armorEF = 6
-            unit.infEF = 5
-     
+            self.airEF = 3
+            self.heliEF = 6
+            self.armorEF = 6
+            self.infEF = 5
+            
+# Unit creation, and insertion into the unit list
+def unitCR8(title):
+    if title not in unitnames:
+        print("Error: Invalid unit type")
+        return None
+    name = title
+    number = 1
+    for i in range(50): # Uses 50 -> unit cap
+        for i in range(len(unit_list)):
+            namer = unit_list[i].title.split("#")
+            namer[1] = int(namer[1])
+            if namer[0] == title:
+                if namer[1] == number:
+                    number += 1
+    number = str(number)
+    name = name + "#" + number
+    unit_list.append(UnitObject(name))
+
+unit_list = []    
+unitnames = ["tank", "infantry", "recon", "antiair", "fighter", "attackheli"]
+
 # Main Method
 if __name__ == "__main__":
     # Initial attack testing
-    '''unit1 = unitObject("tank#1")
-    unit2 = unitObject("infantry#2")'''
+    '''unit1 = UnitObject("tank#1")
+    unit2 = UnitObject("infantry#2")'''
     
     ''' Will run multiple times until one unit is dead. After a unit is considered "dead", or if either unit has a health 
         of 0 or below, the attack function will simply just pass and not rerun all code''' 
@@ -78,8 +100,8 @@ if __name__ == "__main__":
     ''' >>>>> DELETING A UNIT: 
     unit_list = []
     for i in range(4):
-        unit_list.append(unitObject(0,0,0,"tank", 0, 0, 0, 0))
-    unit_list.append(unitObject(0,0,0,"infantry", 0, 0, 0, 0,))
+        unit_list.append(UnitObject(0,0,0,"tank", 0, 0, 0, 0))
+    unit_list.append(UnitObject(0,0,0,"infantry", 0, 0, 0, 0,))
     print(unit_list[2].title)
     
     for i in range(len(unit_list)):
@@ -88,26 +110,18 @@ if __name__ == "__main__":
     print(unit_list[4].title)'''
     
     # Builds a unit list
-    unit_list = []
-    unit_list.append(unitObject("tank#1"))
-    unit_list.append(unitObject("tank#2"))
-    unit_list.append(unitObject("tank#3"))
-    unit_list.append(unitObject("tank#4"))
-    unit_list.append(unitObject("tank#5"))
+    '''unit_list.append(UnitObject("tank#1"))
+    unit_list.append(UnitObject("tank#2"))
+    unit_list.append(UnitObject("tank#3"))
+    unit_list.append(UnitObject("tank#4"))
+    unit_list.append(UnitObject("tank#5"))'''
+    unitCR8("tank")
+    unitCR8("tank")
+    unitCR8("tank")
+    unitCR8("tank")
+    unitCR8("tank")
+    unitCR8("tank")
     
-    # Unit creation, and insertion into the unit list
-    name = "tank"
-    number = 1
-    for i in range(50): # Uses 50 -> unit cap
-        for i in range(len(unit_list)):
-            namer = unit_list[i].title.split("#")
-            namer[1] = int(namer[1])
-            if namer[0] == "tank":
-                if namer[1] == number:
-                    number += 1
-    number = str(number)
-    name = name + "#" + number
-    unit_list.append(unitObject(name))
     
     for i in range(len(unit_list)):
         print(unit_list[i].title)  
@@ -122,7 +136,7 @@ if __name__ == "__main__":
                 
         position = 0
         for unit in unit_list:
-            if unit.health <= 0:
+            if unit.health <= 0.5: # If units health drops equals or drops below .5, they are considered destroyed.
                 unit_list.pop(position)
             position += 1
             continue
@@ -131,7 +145,7 @@ if __name__ == "__main__":
             break
                 
         # attacking     
-        call = input("TEST attack: a = tank1 > tank2 | b = tank 2 > tank 1 | anything else to quit: ")
+        call = input("TEST attack: a = tank1 > tank2 | b = tank2 > tank1 | anything else to quit: ")
         if call == "a":
             ak.attack(unit_list[0], unit_list[1])
         elif call == "b":

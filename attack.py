@@ -59,20 +59,18 @@ def attack(self, target):
         # Actual attack and target unit getting stats adjusted
         target.health = (target.health - self.atk)
         target.health = round(target.health, 2)
-        target.atk = (target.health/10)*(target.damage)
+        target.atk = (target.health/10)*(target.damage)*(.67) # balance counter attacks
         target.atk = round(target.atk, 2)
         # If the target unit survives, it counterattacks
-        if target.health > 0:
-            target.atk = (target.health/10)*(target.damage)
-            target.atk = round(target.atk, 2)
-            print(target.title, "Health:", target.health,"|", target.title, "damage:", target.atk)
+        if target.health > 0.5:
+            print(target.title, "Health:", target.health,"|", target.title, "counterdamage:", target.atk)
             print(target.title, "counterattacks", self.title)
             self.health = (self.health - target.atk)
             self.health = round(self.health, 2)
             self.atk = (self.health/10)*(self.damage)
             self.atk = round(self.atk, 2)
             # if the attacking unit doesn't survive the counterattack, it is instead destroyed
-            if self.health > 0:
+            if self.health > 0.5:
                 print(self.title, "Health:", self.health, "|", self.title, "damage:", self.atk)
                 print("ENDSCENARIO=========")
             else:
