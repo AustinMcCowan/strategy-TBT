@@ -8,9 +8,6 @@ unitnames = ["tank", "infantry", "recon", "antiair", "fighter", "attackheli"]
 
 # object to represent unit
 class UnitObject(object):
-    # basic stats
-    # Efficiency will scale from 0 (can't damage) to 10 ( Max damage )
-    # May need to add more efficiencies :/ 
        
     def __init__(self, title):
         # Initializes base information
@@ -31,7 +28,7 @@ class UnitObject(object):
         self.reconEF = 0
         self.antiairEF = 0
         
-        # Efficiency will scale from 0 (can't damage) to 10 ( Max damage ), Balancing unit types.
+        # Efficiency will scale from 0 (can't damage) to 10 ( Max damage ); Balancing unit types.
         # Sets unit efficiencies automatically based on unit type/name
         reader = self.title.split("#")
         if reader[0] == "tank":
@@ -77,11 +74,12 @@ class UnitObject(object):
             self.reconEF = 8
             self.antiairEF = 3
             
-# Unit creation, and insertion into the unit list
-def unitCR8(title, unit_list):
+# Unit creation and insertion into the given unit list. WILL ONLY WORK WITH A LIST
+def unitCR8(title):
     if title not in unitnames:
         raise Exception('invalid unit type attempted to be created')
-    elif len(unit_list) >= 49:
+    elif len(unit_list) >= 50: # Unit cap is 50. 
+        print("Unit cap reached")
         return None
     else:
         name = title

@@ -42,7 +42,6 @@ if __name__ == "__main__":
     unit_list.append(UnitObject("tank#3"))
     unit_list.append(UnitObject("tank#4"))
     unit_list.append(UnitObject("tank#5"))'''
-    bob = u.UnitObject("bobert")
     u.unitCR8("tank", unit_list)
     u.unitCR8("tank", unit_list)
     u.unitCR8("tank", unit_list)
