@@ -15,10 +15,7 @@ class UnitObject(object):
         self.health = 10        
         self.atk = (self.health/10)*(self.damage)
         self.title = title
-        
-        # Stops invalid titles from being created through brute force (through the unitobject class itself)
-        if title not in unitnames:
-            raise Exception('invalid unit type attempted to be created')    
+         
         
         # Initializes efficiencies 
         self.fighterEF = 0
@@ -31,6 +28,11 @@ class UnitObject(object):
         # Efficiency will scale from 0 (can't damage) to 10 ( Max damage ); Balancing unit types.
         # Sets unit efficiencies automatically based on unit type/name
         reader = self.title.split("#")
+        
+        # Stops invalid titles from being created through brute force; fixes error where unit created fully formatted would raise an error
+        if reader[0] not in unitnames:
+            raise Exception('invalid unit type attempted to be created')
+        
         if reader[0] == "tank":
             self.fighterEF = 0
             self.attackheliEF = 2
@@ -75,7 +77,7 @@ class UnitObject(object):
             self.antiairEF = 3
             
 # Unit creation and insertion into the given unit list. WILL ONLY WORK WITH A LIST
-def unitCR8(title):
+def unitCR8(title, unit_list):
     if title not in unitnames:
         raise Exception('invalid unit type attempted to be created')
     elif len(unit_list) >= 50: # Unit cap is 50. 
