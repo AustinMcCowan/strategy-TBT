@@ -17,7 +17,7 @@ def attack(self, target):
     else:
         '''have to add all unit types to this :/ Based on amount of unit types, will exponentially increase: 2 types = 2x2, 3 types = 3...
         so 9 types of units will force me to have to create 81 sections...'''
-        #-
+        # Since units created are forced to abide by list of names created, should work fine. 
         if selfreader[0] == "tank":
             if targetreader[0] == "infantry":
                 self.damage = self.infantryEF
@@ -292,15 +292,16 @@ def attack(self, target):
                 target.atk = (target.health/10)*(target.damage)
                 target.atk = round(target.atk, 2)            
             else:
-                pass        
-        # stats starting:
+                pass
+            
+        # ACTUAL ENCOUNTER:
         print(self.title, "Health:", self.health, "|", self.title, "damage:", self.atk)
         print(target.title, "Health:", target.health,"|", target.title, "damage:", target.atk)
         print(self.title, "attacks", target.title)
         # Actual attack and target unit getting stats adjusted
         target.health = (target.health - self.atk)
         target.health = round(target.health, 2)
-        target.atk = (target.health/10)*(target.damage)*(.67) # balance counter attacks
+        target.atk = (target.health/10)*(target.damage)*(.77) # balance counter attacks
         target.atk = round(target.atk, 2)
         # If the target unit survives, it counterattacks
         if target.health > 0.5:
