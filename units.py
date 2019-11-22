@@ -7,8 +7,7 @@ global unitnames # ONLY ACCEPTABLE TITLES. OTHER TITLES USED WILL RAISE ERROR/PR
 unitnames = ["tank", "infantry", "recon", "antiair", "fighter", "attackheli"]
 
 # object to represent unit
-class UnitObject(object):
-       
+class UnitObject(object):   
     def __init__(self, title):
         # Initializes base information
         self.damage = 0

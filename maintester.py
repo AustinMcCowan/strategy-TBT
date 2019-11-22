@@ -26,35 +26,50 @@ if __name__ == "__main__":
         
     while True:
         # Check if unit has reached or went under 0 to end loop
-        breakout = False
+        delete_list = []
         for i in range(len(unit_list)):
             if unit_list[i].health <= 0.5:
-                print("--unit was destroyed--\n--ending test--")
-                breakout = True
-                
-        position = (-1)
-        for unit in unit_list:
-            position += 1
-            if unit.health <= 0.5: # If units health drops equals or drops below .5, they are considered destroyed.
-                unit_list.pop(position)
-                position = (-1)
-                continue
+                print("--unit was destroyed--")
+                delete_list.append(i)
+        for i in range(len(delete_list)):
+            unit_list.pop(delete_list[i])
             
-            
-        
-        if breakout != False:
+        # Stops tester if only one or less unit remains
+        if len(unit_list) <= 1:
+            print("--not enough units to continue test, ending test--")
             break
+            
+        # testing 
+        call = input('''TEST | to attack, type 'attack' or 'a' | to create a unit, type 'create' or 'c' |
+        | to check the list of units, type 'list' or 'l' | type anything else to quit: ''')
+        
+        # attacking
+        if call == "attack" or call == "a":
+            first = input("Attacking unit: ")
+            second = input("Defending unit: ")
+            first_unit = 0
+            second_unit = 0
+            
+            # sets indexes/what units attack/defend
+            for i in range(len(unit_list)):
+                if unit_list[i].title == first:
+                    first_unit = i
+                if unit_list[i].title == second:
+                    second_unit = i           
+            ak.attack(unit_list[first_unit], unit_list[second_unit])
+            
+        # creating   
+        elif call == "create" or call == "c":
+            produce = input("Type of unit to create: ")
+            u.unitCR8(produce, unit_list)
+            
+        # check list of units    
+        elif call == "list" or call == "l":
+            for unit in unit_list:
+                print(unit.title)
                 
-        # attacking     
-        call = input("TEST attack: a = tank1 > tank2 | b = tank2 > tank1 | type anything else to quit: ")
-        if call == "a":
-            ak.attack(unit_list[0], unit_list[1])
-        elif call == "b":
-            ak.attack(unit_list[1], unit_list[0])
+        # End test
         else:
             print("\nDONE")
             break
-        
-    for unit in unit_list:
-        print(unit.title)
 
