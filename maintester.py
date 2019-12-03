@@ -25,14 +25,14 @@ if __name__ == "__main__":
         print(unit_list[i].title)  
         
     while True:
-        # Check if unit has reached or went under 0 to end loop
+        # Check if unit has reached or went under 0 to be deleted
         delete_list = []
         for i in range(len(unit_list)):
             if unit_list[i].health <= 0.5:
                 print("--unit was destroyed--")
-                delete_list.append(i)
-        for i in range(len(delete_list)):
-            unit_list.pop(delete_list[i])
+                delete = i
+                break
+        unit_list.pop(delete)
             
         # Stops tester if only one or less unit remains
         if len(unit_list) <= 1:
@@ -40,8 +40,7 @@ if __name__ == "__main__":
             break
             
         # testing 
-        call = input('''TEST | to attack, type 'attack' or 'a' | to create a unit, type 'create' or 'c' |
-        | to check the list of units, type 'list' or 'l' | type anything else to quit: ''')
+        call = input('''TEST | to attack, type 'attack' or 'a' | to create a unit, type 'create' or 'c' |\n| to check the list of units, type 'list' or 'l' | type anything else to quit: ''')
         
         # attacking
         if call == "attack" or call == "a":
