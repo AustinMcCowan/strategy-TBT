@@ -26,13 +26,11 @@ if __name__ == "__main__":
         
     while True:
         # Check if unit has reached or went under 0 to be deleted
-        delete_list = []
         for i in range(len(unit_list)):
             if unit_list[i].health <= 0.5:
                 print("--unit was destroyed--")
-                delete = i
+                unit_list.pop(i)
                 break
-        unit_list.pop(delete)
             
         # Stops tester if only one or less unit remains
         if len(unit_list) <= 1:
