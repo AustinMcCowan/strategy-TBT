@@ -212,8 +212,8 @@ def attack(self, target):
         target.atk = round(target.atk, 2)
         
         # If the target unit survives, it counterattacks.
-        print(target.title, "Health:", target.health,"|", target.title, "counterdamage:", target.atk)
         if target.health > 0.5 and target.damage != 0:
+            print(target.title, "Health:", target.health,"|", target.title, "counterdamage:", target.atk)
             print(target.title, "counterattacks", self.title)
             self.health = (self.health - target.atk)
             self.health = round(self.health, 2)
@@ -226,7 +226,8 @@ def attack(self, target):
             else:
                 print("Counterattack was lethal,", self.title, "destroyed")
                 print("ENDSCENARIO=========")
-        elif target.damage == 0:
+        elif target.damage == 0 and target.health > .5:
+            print(target.title, "Health:", target.health,"|", target.title, "counterdamage:", target.atk)
             print(target.title, "cannot counter attack")
             print("ENDSCENARIO=========")
         else:

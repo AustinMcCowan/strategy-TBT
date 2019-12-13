@@ -9,7 +9,7 @@ unitnames = ["tank", "infantry", "recon", "antiair", "fighter", "attackheli"]
 # object to represent unit
 class UnitObject(object):
     
-    def __init__(self, title, health=10):
+    def __init__(self, title, health=10, pos_x = 0, pos_y = 0):
         # Initializes base information
         self.damage = 0
         self.health = health       
