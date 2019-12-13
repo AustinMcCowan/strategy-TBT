@@ -15,7 +15,8 @@ class UnitObject(object):
         self.health = health       
         self.atk = (self.health/10)*(self.damage)
         self.title = title
-         
+        self.pos_x = pos_x
+        self.pos_y = pos_y
         
         # Initializes efficiencies 
         self.fighterEF = 0
