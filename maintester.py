@@ -44,21 +44,28 @@ if __name__ == "__main__":
         if call == "attack" or call == "a":
             first = input("Attacking unit: ")
             second = input("Defending unit: ")
-            first_unit = 0
-            second_unit = 0
+            first_unit = None
+            second_unit = None
             
             # sets indexes/what units attack/defend
             for i in range(len(unit_list)):
                 if unit_list[i].title == first:
                     first_unit = i
                 if unit_list[i].title == second:
-                    second_unit = i           
-            ak.attack(unit_list[first_unit], unit_list[second_unit])
+                    second_unit = i
+                    
+            if first_unit == second_unit or first_unit == None or second_unit == None:
+                print("Invalid Command")
+            else:
+                ak.attack(unit_list[first_unit], unit_list[second_unit])
             
         # creating   
         elif call == "create" or call == "c":
-            produce = input("Type of unit to create: ")
-            u.unitCR8(produce, unit_list)
+            try:
+                produce = input("Type of unit to create: ")
+                u.unitCR8(produce, unit_list)
+            except:
+                print("failed to create unit")
             
         # check list of units    
         elif call == "list" or call == "l":
