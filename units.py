@@ -77,7 +77,7 @@ class UnitObject(object):
             self.reconEF = 8
             self.antiairEF = 3
             
-# Unit creation and insertion into the given unit list. WILL ONLY WORK WITH A LIST
+# Unit creation and insertion into the given unit list. WILL ONLY WORK WITH A LIST (which can represent a team)
 def unitCR8(title, unit_list):
     if title not in unitnames:
         raise Exception('invalid unit type attempted to be created')

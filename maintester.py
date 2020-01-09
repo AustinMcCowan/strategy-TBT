@@ -6,6 +6,7 @@
 
 import units as u
 import attack as ak
+import tkinter as tk
 
 global unit_list
 unit_list = []

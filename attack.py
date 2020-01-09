@@ -185,8 +185,6 @@ def attack(self, target):
                             
             else:
                 pass
-            
-        
         
         # Sets up attack values
         self.atk = (self.health/10)*(self.damage)
