@@ -92,7 +92,9 @@ if __name__ == "__main__":
                 print("Invalid Unit or Target")
                 continue
             else:
-                ak.attack(current[first_unit], other[second_unit])
+                # This if statement still runs the attack code, but will force the turn to stay unchanged if an invalid attack was made
+                if ak.attack(current[first_unit], other[second_unit]) == None:
+                    continue
                 
         # creating   
         elif call == "create" or call == "c":
