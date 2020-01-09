@@ -89,7 +89,7 @@ if __name__ == "__main__":
                     second_unit = i
                     
             if first_unit == None or second_unit == None:
-                print("Invalid Command")
+                print("Invalid Unit or Target")
                 continue
             else:
                 ak.attack(current[first_unit], other[second_unit])
