@@ -8,40 +8,72 @@ import units as u
 import attack as ak
 import tkinter as tk
 
-global unit_list
-unit_list = []
+global red_list
+global blue_list
+red_list = []
+blue_list = []
+
+def delete_unit(unit_team):
+    for i in range(len(unit_team)):
+        if unit_team[i].health <= 0.5:
+            print("--unit was destroyed--")
+            unit_team.pop(i)
+            break    
+
+
 # Main Method
 if __name__ == "__main__":
-    
     print("\n TEST")
+    print("Preset teams: Red and blue\n")
+    u.unitCR8("tank", red_list)
+    u.unitCR8("tank", red_list)
+    u.unitCR8("tank", red_list)
+    u.unitCR8("tank", blue_list)
+    u.unitCR8("tank", blue_list)
+    u.unitCR8("tank", blue_list)
+    turn_decider = (5)
+    global current
+    global other
+    current = red_list
+    other = red_list
     
-    u.unitCR8("tank", unit_list)
-    u.unitCR8("tank", unit_list)
-    u.unitCR8("tank", unit_list)
-    u.unitCR8("tank", unit_list)
-    u.unitCR8("tank", unit_list)
-    u.unitCR8("tank", unit_list)
+    print("=============")
+    print("Red Team: ")
+    for i in range(len(red_list)):
+        print(red_list[i].title)
+    print("\nBlue Team: ")
+    for i in range(len(blue_list)):
+        print(blue_list[i].title)
+    print("=============")
     
-    for i in range(len(unit_list)):
-        print(unit_list[i].title)  
-        
     while True:
+        print("")
         # Check if unit has reached or went under 0 to be deleted
-        for i in range(len(unit_list)):
-            if unit_list[i].health <= 0.5:
-                print("--unit was destroyed--")
-                unit_list.pop(i)
-                break
-            
+        delete_unit(red_list)
+        delete_unit(blue_list)
+        if turn_decider > 0:
+            team_announcer = "Red"
+            current = red_list
+            other = blue_list
+        elif turn_decider < 0:
+            team_announcer = "Blue"
+            current = blue_list
+            other = red_list
+        else:
+            raise Exception("How did you break this")
+        
+        
         # Stops tester if only one or less unit remains
-        if len(unit_list) <= 1:
+        if len(red_list) <= 1 or len(blue_list) <= 1:
             print("--not enough units to continue test, ending test--")
             break
-            
-        # testing 
-        call = input('''TEST | to attack, type 'attack' or 'a' | to create a unit, type 'create' or 'c' |\n| to check the list of units, type 'list' or 'l' | type anything else to quit: ''')
         
-        # attacking
+        # testing
+        print("Current turn:", team_announcer)        
+        call = input('''| to attack, type 'attack' or 'a' | to create a unit, type 'create' or 'c' |
+| to check the list of units, type 'list' or 'l' | type 'q' to quit: ''')
+        
+        # attacking (Current turn team vs other)
         if call == "attack" or call == "a":
             first = input("Attacking unit: ")
             second = input("Defending unit: ")
@@ -49,32 +81,54 @@ if __name__ == "__main__":
             second_unit = None
             
             # sets indexes/what units attack/defend
-            for i in range(len(unit_list)):
-                if unit_list[i].title == first:
+            for i in range(len(current)):
+                if current[i].title == first:
                     first_unit = i
-                if unit_list[i].title == second:
+            for i in range(len(other)):
+                if other[i].title == second:
                     second_unit = i
                     
-            if first_unit == second_unit or first_unit == None or second_unit == None:
+            if first_unit == None or second_unit == None:
                 print("Invalid Command")
+                continue
             else:
-                ak.attack(unit_list[first_unit], unit_list[second_unit])
-            
+                ak.attack(current[first_unit], other[second_unit])
+                
         # creating   
         elif call == "create" or call == "c":
             try:
                 produce = input("Type of unit to create: ")
-                u.unitCR8(produce, unit_list)
+                u.unitCR8(produce, current)
             except:
                 print("failed to create unit")
             
         # check list of units    
         elif call == "list" or call == "l":
-            for unit in unit_list:
-                print(unit.title)
-                
+            print("\n=============")
+            print("Red Team: ")            
+            for unit in red_list:
+                print(unit.title, "| Health: ", unit.health)
+            
+            print("\nBlue Team: ")
+            for unit in blue_list:
+                print(unit.title, "| Health: ", unit.health)
+            print("=============")
+            continue
+        
         # End test
-        else:
+        elif call == "q":
             print("\nDONE")
             break
+        else:
+            continue
+        
+        if turn_decider > 0:
+            red_list = current
+            blue_list = other
+        elif turn_decider < 0:
+            blue_list = current
+            red_list = other
+            
+        turn_decider = turn_decider*(-1)
+        
 

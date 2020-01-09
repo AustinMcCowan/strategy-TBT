@@ -17,7 +17,6 @@ class UnitObject(object):
         self.title = title
         self.pos_x = pos_x
         self.pos_y = pos_y
-        
         # Initializes efficiencies 
         self.fighterEF = 0
         self.attackheliEF = 0 
@@ -77,7 +76,7 @@ class UnitObject(object):
             self.reconEF = 8
             self.antiairEF = 3
             
-# Unit creation and insertion into the given unit list. WILL ONLY WORK WITH A LIST (which can represent a team)
+# Unit creation and insertion into the given unit list. WILL ONLY WORK WITH A LIST
 def unitCR8(title, unit_list):
     if title not in unitnames:
         raise Exception('invalid unit type attempted to be created')
