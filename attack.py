@@ -224,10 +224,13 @@ def attack(self, target):
             else:
                 print("Counterattack was lethal,", self.title, "destroyed")
                 print("ENDSCENARIO=========")
+            
         elif target.damage == 0 and target.health > .5:
             print(target.title, "Health:", target.health,"|", target.title, "counterdamage:", target.atk)
             print(target.title, "cannot counter attack")
             print("ENDSCENARIO=========")
+            
         else:
             print(target.title, "was destroyed")
             print("ENDSCENARIO=========")
+        return True
