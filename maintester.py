@@ -13,6 +13,18 @@ global blue_list
 red_list = []
 blue_list = []
 
+class Visual(tk.Frame):
+    
+    def __init__(self):
+        tk.Frame.__init__(self)
+        
+        self.lbl_sampletext = tk.Label(self, text = '''| to attack, type 'attack' or 'a' | to create a unit, type 'create' or 'c' |
+| to check the list of units, type 'list' or 'l' | type 'q' to quit: ''')
+        self.lbl_sampletext.grid(row=0,column=0, rowspan=2)
+        
+        self.lb_current_team = tk.Label(self, text = "Current Team: ").grid(row=0,column=1)
+        self.entry_command = tk.Entry(self, text = "Command: ").grid(row=1, column=1)
+
 def delete_unit(unit_team):
     for i in range(len(unit_team)):
         if unit_team[i].health <= 0.5:
@@ -20,6 +32,12 @@ def delete_unit(unit_team):
             unit_team.pop(i)
             break    
 
+root = tk.Tk()
+root.title("maintester.py")
+
+frame_visual = Visual()
+frame_visual.grid(row = 0, column = 0, sticky = "news")
+frame_visual.tkraise()
 
 # Main Method
 if __name__ == "__main__":
@@ -72,7 +90,7 @@ if __name__ == "__main__":
         print("Current turn:", team_announcer)        
         call = input('''| to attack, type 'attack' or 'a' | to create a unit, type 'create' or 'c' |
 | to check the list of units, type 'list' or 'l' | type 'q' to quit: ''')
-        
+        global call_text
         # attacking (Current turn team vs other)
         if call == "attack" or call == "a":
             first = input("Attacking unit: ")
@@ -132,5 +150,5 @@ if __name__ == "__main__":
             red_list = other
             
         turn_decider = turn_decider*(-1)
-        
+        root.mainloop()
 
