@@ -60,7 +60,7 @@ if __name__ == "__main__":
             current = blue_list
             other = red_list
         else:
-            raise Exception("How did you break this")
+            raise Exception("How did you break this?")
         
         
         # Stops tester if only one or less unit remains
