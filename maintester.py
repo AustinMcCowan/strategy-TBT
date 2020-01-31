@@ -82,6 +82,8 @@ if __name__ == "__main__":
     print("=============")
     
     while True:
+        frame_visual.information = ''
+        frame_visual.entry_command.delete(0, 'end')
         print("")
         # Check if unit has reached or went under 0 to be deleted
         delete_unit(red_list)
