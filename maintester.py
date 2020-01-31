@@ -8,6 +8,7 @@ import units as u
 import attack as ak
 import tkinter as tk
 
+
 global red_list
 global blue_list
 red_list = []
@@ -19,11 +20,26 @@ class Visual(tk.Frame):
         tk.Frame.__init__(self)
         
         self.lbl_sampletext = tk.Label(self, text = '''| to attack, type 'attack' or 'a' | to create a unit, type 'create' or 'c' |
-| to check the list of units, type 'list' or 'l' | type 'q' to quit: ''')
+| to check the list of units, type 'list' or 'l' | type 'q' to quit: ''', bg="gray")
         self.lbl_sampletext.grid(row=0,column=0, rowspan=2)
         
-        self.lb_current_team = tk.Label(self, text = "Current Team: ").grid(row=0,column=1)
-        self.entry_command = tk.Entry(self, text = "Command: ").grid(row=1, column=1)
+        self.lbl_current_team = tk.Label(self, text = "Current Team: ")
+        self.lbl_current_team.grid(row=0,column=1)
+        
+        self.entry_command = tk.Entry(self, text = "Command: ")
+        self.entry_command.grid(row=1, column=1)
+        
+        self.btn_order = tk.Button(self, text="Give command", command = self.send_info)
+        self.btn_order.grid(row=2, column=0, columnspan=2)
+        
+        self.information = ''
+        
+    def send_info(self):
+        self.information = self.entry_command.get()
+        
+    def update_team(self, txt):
+        team = ("Current Team: " + txt)
+        frame_visual.lbl_current_team.configure(text = team)
 
 def delete_unit(unit_team):
     for i in range(len(unit_team)):
@@ -38,6 +54,7 @@ root.title("maintester.py")
 frame_visual = Visual()
 frame_visual.grid(row = 0, column = 0, sticky = "news")
 frame_visual.tkraise()
+call = ''
 
 # Main Method
 if __name__ == "__main__":
@@ -73,6 +90,7 @@ if __name__ == "__main__":
             team_announcer = "Red"
             current = red_list
             other = blue_list
+            
         elif turn_decider < 0:
             team_announcer = "Blue"
             current = blue_list
@@ -80,6 +98,7 @@ if __name__ == "__main__":
         else:
             raise Exception("How did you break this?")
         
+        frame_visual.update_team(team_announcer)
         
         # Stops tester if only one or less unit remains
         if len(red_list) <= 1 or len(blue_list) <= 1:
@@ -88,9 +107,9 @@ if __name__ == "__main__":
         
         # testing
         print("Current turn:", team_announcer)        
-        call = input('''| to attack, type 'attack' or 'a' | to create a unit, type 'create' or 'c' |
-| to check the list of units, type 'list' or 'l' | type 'q' to quit: ''')
-        global call_text
+        
+        pause = input("")
+        call = frame_visual.information
         # attacking (Current turn team vs other)
         if call == "attack" or call == "a":
             first = input("Attacking unit: ")
@@ -150,5 +169,5 @@ if __name__ == "__main__":
             red_list = other
             
         turn_decider = turn_decider*(-1)
-        root.mainloop()
+    root.mainloop()
 
