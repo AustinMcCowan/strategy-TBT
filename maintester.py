@@ -10,14 +10,14 @@ import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
 
 
-
 # Hold and initialize starting information. 
 class Data(object):
     red_list = []
-    blue_list = []    
+    blue_list = []
     current = []
     other = []
     turn_decider = (5)
+    team_announcer = ''
     def __init__(self):
         
         # Initial units to start with
@@ -26,27 +26,59 @@ class Data(object):
         u.unitCR8("tank", Data.red_list)
         u.unitCR8("tank", Data.blue_list)
         u.unitCR8("tank", Data.blue_list)
-        u.unitCR8("tank", Data.blue_list) 
+        u.unitCR8("tank", Data.blue_list)      
         
-        Data.current = Data.red_list
-        Data.other = Data.red_list        
-           
-    def delete_unit(self, unit_team):
+        # Initial team setting
+        if Data.turn_decider > 0:
+            Data.team_announcer = "Red"
+            Data.current = Data.red_list
+            Data.other = Data.blue_list
+            
+        elif Data.turn_decider < 0:
+            Data.team_announcer = "Blue"
+            Data.current = Data.blue_list
+            Data.other = Data.red_list
+        else:
+            raise Exception("How did you break this?")
+        
+    def delete_unit(unit_team):
         for i in range(len(unit_team)):
             if unit_team[i].health <= 0.5:
                 print("--unit was destroyed--")
                 unit_team.pop(i)
                 break
             
-    def update_turn(self):
+    # Occurs before action and at start of program (Already done in __init__)        
+    def temp_list_set():
+        if Data.turn_decider > 0:
+            Data.team_announcer = "Red"
+            Data.current = Data.red_list
+            Data.other = Data.blue_list
+            
+        elif Data.turn_decider < 0:
+            Data.team_announcer = "Blue"
+            Data.current = Data.blue_list
+            Data.other = Data.red_list
+        else:
+            raise Exception("How did you break this?")
+        
+    # Occurs after action        
+    def update_teams():
         if Data.turn_decider > 0:
             Data.red_list = Data.current
             Data.blue_list = Data.other
         elif turn_decider < 0:
             Data.blue_list = Data.current
             Data.red_list = Data.other
-            
-        Data.turn_decider = Data.turn_decider*(-1)         
+        
+        # Switches turn    
+        Data.turn_decider = Data.turn_decider*(-1)
+        # Deletes dead units
+        Data.delete_unit(Data.red_list)
+        Data.delete_unit(Data.blue_list)
+        # Now that turn is changed, the temp lists do too.
+        Data.temp_list_set()
+        
 
 class Visual(tk.Frame):
     
@@ -57,7 +89,8 @@ class Visual(tk.Frame):
  to check the list of units, type 'list' or 'l', type 'q' to quit: ''', bg="gray")
         self.lbl_sampletext.grid(row=0,column=0, rowspan=3)
         
-        self.lbl_current_team = tk.Label(self, text = "Current Team: ")
+        starter_team_announce = "Current Team: " + Data.team_announcer
+        self.lbl_current_team = tk.Label(self, text = starter_team_announce)
         self.lbl_current_team.grid(row=0,column=1)
         
         self.btn_attack = tk.Button(self, text="Attack", command = self.attack_call)
@@ -77,6 +110,11 @@ class Visual(tk.Frame):
         
         
         self.information = ''
+        
+    def update(self):
+        Data.update_teams()
+        txt = "Current Team: " + Data.team_announcer
+        self.lbl_current_team.configure(text = txt)  
         
     def attack_call(self):
         
@@ -101,14 +139,18 @@ class Visual(tk.Frame):
             # This if statement still runs the attack code, but will force the turn to stay unchanged if an invalid attack was made
             if ak.attack(Data.current[first_unit], Data.other[second_unit]) == None:
                 pass
+            else:
+                self.update()
          
     def create_call(self):
         try:
             produce = input("Type of unit to create: ")
             u.unitCR8(produce, Data.current)
+            self.update()
+            
         except:
             print("failed to create unit")        
-    
+            
     def list_call(self):
         print("\n=============")
         print("Red Team: ")            
@@ -122,15 +164,8 @@ class Visual(tk.Frame):
     
     def quit_call(self):
         root.destroy()
-    
-    def update_team(self, txt):
-        Data.update_turn()
-        team = ("Current Team: " + txt)
-        self.lbl_current_team.configure(text = team)
         
                 
-
-
 
 root = tk.Tk()
 root.title("maintester.py")
