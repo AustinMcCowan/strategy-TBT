@@ -7,83 +7,151 @@
 import units as u
 import attack as ak
 import tkinter as tk
+from tkinter.scrolledtext import ScrolledText
 
 
-global red_list
-global blue_list
-red_list = []
-blue_list = []
+
+# Hold and initialize starting information. 
+class Data(object):
+    red_list = []
+    blue_list = []    
+    current = []
+    other = []
+    turn_decider = (5)
+    def __init__(self):
+        
+        # Initial units to start with
+        u.unitCR8("tank", Data.red_list)
+        u.unitCR8("tank", Data.red_list)
+        u.unitCR8("tank", Data.red_list)
+        u.unitCR8("tank", Data.blue_list)
+        u.unitCR8("tank", Data.blue_list)
+        u.unitCR8("tank", Data.blue_list) 
+        
+        Data.current = Data.red_list
+        Data.other = Data.red_list        
+           
+    def delete_unit(self, unit_team):
+        for i in range(len(unit_team)):
+            if unit_team[i].health <= 0.5:
+                print("--unit was destroyed--")
+                unit_team.pop(i)
+                break
+            
+    def update_turn(self):
+        if Data.turn_decider > 0:
+            Data.red_list = Data.current
+            Data.blue_list = Data.other
+        elif turn_decider < 0:
+            Data.blue_list = Data.current
+            Data.red_list = Data.other
+            
+        Data.turn_decider = Data.turn_decider*(-1)         
 
 class Visual(tk.Frame):
     
     def __init__(self):
         tk.Frame.__init__(self)
         
-        self.lbl_sampletext = tk.Label(self, text = '''| to attack, type 'attack' or 'a' | to create a unit, type 'create' or 'c' |
-| to check the list of units, type 'list' or 'l' | type 'q' to quit: ''', bg="gray")
-        self.lbl_sampletext.grid(row=0,column=0, rowspan=2)
+        self.lbl_sampletext = tk.Label(self, text = ''' to attack, type 'attack' or 'a', to create a unit, type 'create' or 'c' ,
+ to check the list of units, type 'list' or 'l', type 'q' to quit: ''', bg="gray")
+        self.lbl_sampletext.grid(row=0,column=0, rowspan=3)
         
         self.lbl_current_team = tk.Label(self, text = "Current Team: ")
         self.lbl_current_team.grid(row=0,column=1)
         
-        self.entry_command = tk.Entry(self, text = "Command: ")
-        self.entry_command.grid(row=1, column=1)
+        self.btn_attack = tk.Button(self, text="Attack", command = self.attack_call)
+        self.btn_attack.grid(row=1, column=1)
         
-        self.btn_order = tk.Button(self, text="Give command", command = self.send_info)
-        self.btn_order.grid(row=2, column=0, columnspan=2)
+        self.btn_create = tk.Button(self, text="Create", command = self.create_call)
+        self.btn_create.grid(row=2, column=1)
+        
+        self.btn_list = tk.Button(self, text="List", command = self.list_call)
+        self.btn_list.grid(row=1, column=2)        
+        
+        self.btn_quit = tk.Button(self, text="Quit", command = self.quit_call)
+        self.btn_quit.grid(row=2, column=2)
+        
+        self.scr_text = ScrolledText(self, heigh = 10, width=40)
+        self.scr_text.grid(row=3, column=0, rowspan=2, sticky='news')
+        
         
         self.information = ''
         
-    def send_info(self):
-        self.information = self.entry_command.get()
+    def attack_call(self):
         
-    def update_team(self, txt):
-        team = ("Current Team: " + txt)
-        frame_visual.lbl_current_team.configure(text = team)
+        # attacking (Current turn team vs other)
 
-def delete_unit(unit_team):
-    for i in range(len(unit_team)):
-        if unit_team[i].health <= 0.5:
-            print("--unit was destroyed--")
-            unit_team.pop(i)
-            break    
+        first = input("Attacking unit: ")
+        second = input("Defending unit: ")
+        first_unit = None
+        second_unit = None
+        
+        # sets indexes/what units attack/defend
+        for i in range(len(Data.current)):
+            if Data.current[i].title == first:
+                first_unit = i
+        for i in range(len(Data.other)):
+            if Data.other[i].title == second:
+                second_unit = i
+                
+        if first_unit == None or second_unit == None:
+            print("Invalid Unit or Target")
+        else:
+            # This if statement still runs the attack code, but will force the turn to stay unchanged if an invalid attack was made
+            if ak.attack(Data.current[first_unit], Data.other[second_unit]) == None:
+                pass
+         
+    def create_call(self):
+        try:
+            produce = input("Type of unit to create: ")
+            u.unitCR8(produce, Data.current)
+        except:
+            print("failed to create unit")        
+    
+    def list_call(self):
+        print("\n=============")
+        print("Red Team: ")            
+        for unit in Data.red_list:
+            print(unit.title, "| Health: ", unit.health)
+        
+        print("\nBlue Team: ")
+        for unit in Data.blue_list:
+            print(unit.title, "| Health: ", unit.health)
+        print("=============")        
+    
+    def quit_call(self):
+        root.destroy()
+    
+    def update_team(self, txt):
+        Data.update_turn()
+        team = ("Current Team: " + txt)
+        self.lbl_current_team.configure(text = team)
+        
+                
+
+
 
 root = tk.Tk()
 root.title("maintester.py")
+data_storage = Data()
 
 frame_visual = Visual()
 frame_visual.grid(row = 0, column = 0, sticky = "news")
 frame_visual.tkraise()
-call = ''
+root.mainloop()
 
+
+
+'''
 # Main Method
 if __name__ == "__main__":
     print("\n TEST")
-    print("Preset teams: Red and blue\n")
-    u.unitCR8("tank", red_list)
-    u.unitCR8("tank", red_list)
-    u.unitCR8("tank", red_list)
-    u.unitCR8("tank", blue_list)
-    u.unitCR8("tank", blue_list)
-    u.unitCR8("tank", blue_list)
-    turn_decider = (5)
-    global current
-    global other
-    current = red_list
-    other = red_list
-    
+    print("Preset teams: Red and blue\n")    
     print("=============")
     print("Red Team: ")
-    for i in range(len(red_list)):
-        print(red_list[i].title)
-    print("\nBlue Team: ")
-    for i in range(len(blue_list)):
-        print(blue_list[i].title)
-    print("=============")
     
     while True:
-        frame_visual.information = ''
-        frame_visual.entry_command.delete(0, 'end')
         print("")
         # Check if unit has reached or went under 0 to be deleted
         delete_unit(red_list)
@@ -109,9 +177,9 @@ if __name__ == "__main__":
         
         # testing
         print("Current turn:", team_announcer)        
+        '''
         
-        pause = input("")
-        call = frame_visual.information
+'''
         # attacking (Current turn team vs other)
         if call == "attack" or call == "a":
             first = input("Attacking unit: ")
@@ -171,5 +239,4 @@ if __name__ == "__main__":
             red_list = other
             
         turn_decider = turn_decider*(-1)
-    root.mainloop()
-
+'''
