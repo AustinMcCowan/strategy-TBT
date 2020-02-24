@@ -81,9 +81,29 @@ class Data(object):
 
 # Subframe for attacking        
 class VisualAttackFrame(tk.Frame):
+    attack_list = []
+    defend_list = []
     def __init__(self, parent):
         tk.Frame.__init__(self, master=parent)
-
+        
+        self.lbl_attack = tk.Label(self, text="Unit Attacking:")
+        self.lbl_attack.grid(row=0, column=0, columnspan=2, sticky='news')
+        
+        self.drp_attack = tk.Entry(self)
+        self.drp_attack.grid(row=1, column=0, columnspan=2, sticky='news')
+        
+        self.lbl_defend = tk.Label(self, text="Unit Defending:")
+        self.lbl_defend.grid(row=2, column=0, columnspan=2, sticky='news')
+        
+        self.drp_defend = tk.Entry(self)
+        self.drp_defend.grid(row=3, column=0, columnspan=2, sticky='news')
+        
+        self.btn_cancel = tk.Button(self, text="Cancel")
+        self.btn_cancel.grid(row=4, column=0, sticky='news')
+        
+        self.btn_confirm = tk.Button(self, text="Confirm")
+        self.btn_cancel.grid(row=4, column=1, sticky='news')
+    
 # Subframe for creating units
 class VisualCreateFrame(tk.Frame):
     def __init__(self, parent):
@@ -101,7 +121,7 @@ class Visual(tk.Frame):
         
         starter_team_announce = "Current Team: " + Data.team_announcer
         self.lbl_current_team = tk.Label(self, text = starter_team_announce)
-        self.lbl_current_team.grid(row=0, column=1, columnspan=2)
+        self.lbl_current_team.grid(row=0, column=1, columnspan=2, padx=15)
         
         self.btn_attack = tk.Button(self, text="Attack", command = self.attack_call)
         self.btn_attack.grid(row=1, column=1)
