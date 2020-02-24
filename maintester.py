@@ -67,7 +67,7 @@ class Data(object):
         if Data.turn_decider > 0:
             Data.red_list = Data.current
             Data.blue_list = Data.other
-        elif turn_decider < 0:
+        elif Data.turn_decider < 0:
             Data.blue_list = Data.current
             Data.red_list = Data.other
         
@@ -78,8 +78,18 @@ class Data(object):
         Data.delete_unit(Data.blue_list)
         # Now that turn is changed, the temp lists do too.
         Data.temp_list_set()
-        
 
+# Subframe for attacking        
+class VisualAttackFrame(tk.Frame):
+    def __init__(self, parent):
+        tk.Frame.__init__(self, master=parent)
+
+# Subframe for creating units
+class VisualCreateFrame(tk.Frame):
+    def __init__(self, parent):
+        tk.Frame.__init__(self, master=parent)    
+
+# GUI
 class Visual(tk.Frame):
     
     def __init__(self):
@@ -91,7 +101,7 @@ class Visual(tk.Frame):
         
         starter_team_announce = "Current Team: " + Data.team_announcer
         self.lbl_current_team = tk.Label(self, text = starter_team_announce)
-        self.lbl_current_team.grid(row=0,column=1)
+        self.lbl_current_team.grid(row=0, column=1, columnspan=2)
         
         self.btn_attack = tk.Button(self, text="Attack", command = self.attack_call)
         self.btn_attack.grid(row=1, column=1)
@@ -107,7 +117,6 @@ class Visual(tk.Frame):
         
         self.scr_text = ScrolledText(self, heigh = 10, width=40)
         self.scr_text.grid(row=3, column=0, rowspan=2, sticky='news')
-        
         
         self.information = ''
         
@@ -166,7 +175,7 @@ class Visual(tk.Frame):
         root.destroy()
         
                 
-
+# Initialize stuff
 root = tk.Tk()
 root.title("maintester.py")
 data_storage = Data()
@@ -177,7 +186,7 @@ frame_visual.tkraise()
 root.mainloop()
 
 
-
+# Archived 
 '''
 # Main Method
 if __name__ == "__main__":
