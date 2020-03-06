@@ -192,16 +192,17 @@ def attack(self, target):
         target.atk = (target.health/10)*(target.damage)
         target.atk = round(target.atk, 2)        
         
+        msg = ''
         # Stops attack if the user has made an invalid attack
         if self.damage == 0:
-            print("invalid attack; this unit cannot attack the defending unit")
-            return None
+            msg = "invalid attack; this unit cannot attack the defending unit"
+            return (None, msg)
         
         # ACTUAL ENCOUNTER:
         # status of the two units:  
-        print(self.title, "Health:", self.health, "|", self.title, "damage:", self.atk)
-        print(target.title, "Health:", target.health,"|", target.title, "damage:", target.atk)
-        print(self.title, "attacks", target.title)
+        msg += str(self.title) + " Health: " + str(self.health) + " | " + str(self.title) + " damage: " + str(self.atk) + "\n"
+        msg += str(target.title) + " Health: " + str(target.health) + " | " + str(target.title) + " damage: " + str(target.atk) + "\n"
+        msg += str(self.title) + " attacks " + str(target.title) + "\n"
         
         # Attacking unit deals damage to defending unit
         target.health = (target.health - self.atk)
@@ -211,26 +212,26 @@ def attack(self, target):
         
         # If the target unit survives, it counterattacks.
         if target.health > 0.5 and target.damage != 0:
-            print(target.title, "Health:", target.health,"|", target.title, "counterdamage:", target.atk)
-            print(target.title, "counterattacks", self.title)
+            msg += str(target.title) + " Health: " + str(target.health) + " | " + str(target.title) + " counterdamage: " + str(target.atk) + "\n"
+            msg += str(target.title) + " counterattacks " + str(self.title) + "\n"
             self.health = (self.health - target.atk)
             self.health = round(self.health, 2)
             self.atk = (self.health/10)*(self.damage)
             self.atk = round(self.atk, 2)
             # if the attacking unit doesn't survive the counterattack, it is instead destroyed (in main program)
             if self.health > 0.5:
-                print(self.title, "Health:", self.health, "|", self.title, "damage:", self.atk)
-                print("ENDSCENARIO=========")
+                msg += str(self.title) + " Health: " + str(self.health) + " | " + str(self.title) + " damage: " + str(self.atk) + "\n"
+                msg += "ENDSCENARIO========="+"\n"
             else:
-                print("Counterattack was lethal,", self.title, "destroyed")
-                print("ENDSCENARIO=========")
+                msg += "Counterattack was lethal, " + str(self.title) + " destroyed " + "\n"
+                msg += "ENDSCENARIO========="+"\n"
             
         elif target.damage == 0 and target.health > .5:
-            print(target.title, "Health:", target.health,"|", target.title, "counterdamage:", target.atk)
-            print(target.title, "cannot counter attack")
-            print("ENDSCENARIO=========")
+            msg += str(target.title) + " Health: " + str(target.health) + " | " + str(target.title) + " counterdamage: " + str(target.atk) + "\n"
+            msg += str(target.title) + " cannot counter attack " + "\n"
+            msg += "ENDSCENARIO=========" + "\n"
             
         else:
-            print(target.title, "was destroyed")
-            print("ENDSCENARIO=========")
-        return True
+            msg += str(target.title) + "was destroyed" + "\n"
+            msg += "ENDSCENARIO=========" + "\n"
+        return (True, msg)

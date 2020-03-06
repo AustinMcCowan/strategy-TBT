@@ -84,25 +84,25 @@ class VisualAttackFrame(tk.Frame):
     attack_list = []
     defend_list = []
     def __init__(self, parent):
-        tk.Frame.__init__(self, master=parent)
+        tk.Frame.__init__(self, master=parent, bg="#CCC", highlightbackground = "blue", highlightthickness=1)
         
-        self.lbl_attack = tk.Label(self, text="Unit Attacking:")
+        self.lbl_attack = tk.Label(self, text="Unit Attacking:", bg="#CCC")
         self.lbl_attack.grid(row=0, column=0, columnspan=2, sticky='news')
         
-        self.drp_attack = tk.Entry(self)
+        self.drp_attack = tk.Entry(self, bg="#CCC")
         self.drp_attack.grid(row=1, column=0, columnspan=2, sticky='news')
         
-        self.lbl_defend = tk.Label(self, text="Unit Defending:")
+        self.lbl_defend = tk.Label(self, text="Unit Defending:", bg="#CCC")
         self.lbl_defend.grid(row=2, column=0, columnspan=2, sticky='news')
         
-        self.drp_defend = tk.Entry(self)
+        self.drp_defend = tk.Entry(self, bg="#CCC")
         self.drp_defend.grid(row=3, column=0, columnspan=2, sticky='news')
         
-        self.btn_cancel = tk.Button(self, text="Cancel")
+        self.btn_cancel = tk.Button(self, text="Cancel", bg="#CCC")
         self.btn_cancel.grid(row=4, column=0, sticky='news')
         
-        self.btn_confirm = tk.Button(self, text="Confirm")
-        self.btn_cancel.grid(row=4, column=1, sticky='news')
+        self.btn_confirm = tk.Button(self, text="Confirm", bg="#CCC")
+        self.btn_confirm.grid(row=4, column=1, sticky='news')
     
 # Subframe for creating units
 class VisualCreateFrame(tk.Frame):
@@ -116,24 +116,24 @@ class Visual(tk.Frame):
         tk.Frame.__init__(self)
         
         self.lbl_sampletext = tk.Label(self, text = ''' to attack, type 'attack' or 'a', to create a unit, type 'create' or 'c' ,
- to check the list of units, type 'list' or 'l', type 'q' to quit: ''', bg="gray")
-        self.lbl_sampletext.grid(row=0,column=0, rowspan=3)
+ to check the list of units, type 'list' or 'l', type 'q' to quit: ''', bg="#BBB")
+        self.lbl_sampletext.grid(row=0,column=0, rowspan=3, sticky='news')
         
         starter_team_announce = "Current Team: " + Data.team_announcer
         self.lbl_current_team = tk.Label(self, text = starter_team_announce)
         self.lbl_current_team.grid(row=0, column=1, columnspan=2, padx=15)
         
         self.btn_attack = tk.Button(self, text="Attack", command = self.attack_call)
-        self.btn_attack.grid(row=1, column=1)
+        self.btn_attack.grid(row=1, column=1, sticky='news')
         
         self.btn_create = tk.Button(self, text="Create", command = self.create_call)
-        self.btn_create.grid(row=2, column=1)
+        self.btn_create.grid(row=2, column=1, sticky='news')
         
         self.btn_list = tk.Button(self, text="List", command = self.list_call)
-        self.btn_list.grid(row=1, column=2)        
+        self.btn_list.grid(row=1, column=2, sticky='news')        
         
         self.btn_quit = tk.Button(self, text="Quit", command = self.quit_call)
-        self.btn_quit.grid(row=2, column=2)
+        self.btn_quit.grid(row=2, column=2, sticky='news')
         
         self.scr_text = ScrolledText(self, heigh = 10, width=40)
         self.scr_text.grid(row=3, column=0, rowspan=2, sticky='news')
@@ -146,7 +146,8 @@ class Visual(tk.Frame):
         self.lbl_current_team.configure(text = txt)  
         
     def attack_call(self):
-        
+        frm_attack = VisualAttackFrame(self)
+        frm_attack.grid(row=3, column=1, rowspan=2, columnspan=2, sticky='news')
         # attacking (Current turn team vs other)
 
         first = input("Attacking unit: ")
@@ -166,7 +167,9 @@ class Visual(tk.Frame):
             print("Invalid Unit or Target")
         else:
             # This if statement still runs the attack code, but will force the turn to stay unchanged if an invalid attack was made
-            if ak.attack(Data.current[first_unit], Data.other[second_unit]) == None:
+            result = ak.attack(Data.current[first_unit], Data.other[second_unit])
+            self.scr_text.insert("insert", result[1])
+            if result[0] == None:
                 pass
             else:
                 self.update()
