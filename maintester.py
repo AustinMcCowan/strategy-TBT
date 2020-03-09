@@ -81,21 +81,25 @@ class Data(object):
 
 # Subframe for attacking        
 class VisualAttackFrame(tk.Frame):
-    attack_list = []
-    defend_list = []
     def __init__(self, parent):
+        self.attack_list = ["1"]
+        self.defend_list = ["2"]        
         tk.Frame.__init__(self, master=parent, bg="#CCC", highlightbackground = "blue", highlightthickness=1)
         
         self.lbl_attack = tk.Label(self, text="Unit Attacking:", bg="#CCC")
         self.lbl_attack.grid(row=0, column=0, columnspan=2, sticky='news')
         
-        self.drp_attack = tk.Entry(self, bg="#CCC")
+        self.tkvar_attack = tk.StringVar(self)
+        self.tkvar_attack.set(self.attack_list[0])
+        self.drp_attack = tk.OptionMenu(self, self.tkvar_attack, *self.attack_list, bg="#CCC")
         self.drp_attack.grid(row=1, column=0, columnspan=2, sticky='news')
         
         self.lbl_defend = tk.Label(self, text="Unit Defending:", bg="#CCC")
         self.lbl_defend.grid(row=2, column=0, columnspan=2, sticky='news')
         
-        self.drp_defend = tk.Entry(self, bg="#CCC")
+        self.tkvar_defend = tk.StringVar(self)
+        self.tkvar_defend.set(self.defend_list[0])
+        self.drp_defend = tk.OptionMenu(self, self.tkvar_defend, *self.defend_list, bg="#CCC")
         self.drp_defend.grid(row=3, column=0, columnspan=2, sticky='news')
         
         self.btn_cancel = tk.Button(self, text="Cancel", bg="#CCC")
@@ -103,7 +107,10 @@ class VisualAttackFrame(tk.Frame):
         
         self.btn_confirm = tk.Button(self, text="Confirm", bg="#CCC")
         self.btn_confirm.grid(row=4, column=1, sticky='news')
-    
+        
+    def send_attack_order(self):
+        first = ''
+        
 # Subframe for creating units
 class VisualCreateFrame(tk.Frame):
     def __init__(self, parent):
@@ -123,7 +130,7 @@ class Visual(tk.Frame):
         self.lbl_current_team = tk.Label(self, text = starter_team_announce)
         self.lbl_current_team.grid(row=0, column=1, columnspan=2, padx=15)
         
-        self.btn_attack = tk.Button(self, text="Attack", command = self.attack_call)
+        self.btn_attack = tk.Button(self, text="Attack", command = self.open_attack_frame)
         self.btn_attack.grid(row=1, column=1, sticky='news')
         
         self.btn_create = tk.Button(self, text="Create", command = self.create_call)
@@ -145,13 +152,26 @@ class Visual(tk.Frame):
         txt = "Current Team: " + Data.team_announcer
         self.lbl_current_team.configure(text = txt)  
         
-    def attack_call(self):
-        frm_attack = VisualAttackFrame(self)
-        frm_attack.grid(row=3, column=1, rowspan=2, columnspan=2, sticky='news')
+    def open_attack_frame(self):
+        temp_attack_list = []
+        temp_defend_list = []
+        
+        self.frm_attack = VisualAttackFrame(self)
+        self.frm_attack.grid(row=3, column=1, rowspan=2, columnspan=2, sticky='news')
+        
+        for i in range(len(Data.current)):
+            temp_attack_list.append(Data.current[i].title)
+        for i in range(len(Data.other)):
+            temp_defend_list.append(Data.other[i].title)
+            
+        self.frm_attack.attack_list = temp_attack_list
+        self.frm_attack.tkvar_attack.set(self.frm_attack.attack_list[0])
+        self.frm_attack.defend_list = temp_defend_list
+        self.frm_attack.tkvar_defend.set(self.frm_attack.defend_list[0])
+        
+    def attack_call(self, first, second):
         # attacking (Current turn team vs other)
 
-        first = input("Attacking unit: ")
-        second = input("Defending unit: ")
         first_unit = None
         second_unit = None
         
@@ -173,6 +193,7 @@ class Visual(tk.Frame):
                 pass
             else:
                 self.update()
+        self.frm_attack.destroy()
          
     def create_call(self):
         try:
