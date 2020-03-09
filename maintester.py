@@ -81,9 +81,9 @@ class Data(object):
 
 # Subframe for attacking        
 class VisualAttackFrame(tk.Frame):
-    def __init__(self, parent):
-        self.attack_list = ["1"]
-        self.defend_list = ["2"]        
+    def __init__(self, parent, attack_list, defend_list):
+        self.attack_list = attack_list
+        self.defend_list = defend_list        
         tk.Frame.__init__(self, master=parent, bg="#CCC", highlightbackground = "blue", highlightthickness=1)
         
         self.lbl_attack = tk.Label(self, text="Unit Attacking:", bg="#CCC")
@@ -109,6 +109,7 @@ class VisualAttackFrame(tk.Frame):
         self.btn_confirm.grid(row=4, column=1, sticky='news')
         
     def send_attack_order(self):
+        # Grab data from frame and use it on attack_call
         first = ''
         
 # Subframe for creating units
@@ -156,18 +157,14 @@ class Visual(tk.Frame):
         temp_attack_list = []
         temp_defend_list = []
         
-        self.frm_attack = VisualAttackFrame(self)
-        self.frm_attack.grid(row=3, column=1, rowspan=2, columnspan=2, sticky='news')
-        
         for i in range(len(Data.current)):
             temp_attack_list.append(Data.current[i].title)
+            
         for i in range(len(Data.other)):
             temp_defend_list.append(Data.other[i].title)
-            
-        self.frm_attack.attack_list = temp_attack_list
-        self.frm_attack.tkvar_attack.set(self.frm_attack.attack_list[0])
-        self.frm_attack.defend_list = temp_defend_list
-        self.frm_attack.tkvar_defend.set(self.frm_attack.defend_list[0])
+        
+        self.frm_attack = VisualAttackFrame(self, temp_attack_list, temp_defend_list)
+        self.frm_attack.grid(row=3, column=1, rowspan=2, columnspan=2, sticky='news')
         
     def attack_call(self, first, second):
         # attacking (Current turn team vs other)
