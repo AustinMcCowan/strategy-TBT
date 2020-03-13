@@ -29,17 +29,7 @@ class Data(object):
         u.unitCR8("tank", Data.blue_list)      
         
         # Initial team setting
-        if Data.turn_decider > 0:
-            Data.team_announcer = "Red"
-            Data.current = Data.red_list
-            Data.other = Data.blue_list
-            
-        elif Data.turn_decider < 0:
-            Data.team_announcer = "Blue"
-            Data.current = Data.blue_list
-            Data.other = Data.red_list
-        else:
-            raise Exception("How did you break this?")
+        Data.temp_list_set()
         
     def delete_unit(unit_team):
         for i in range(len(unit_team)):
@@ -91,7 +81,7 @@ class VisualAttackFrame(tk.Frame):
         
         self.tkvar_attack = tk.StringVar(self)
         self.tkvar_attack.set(self.attack_list[0])
-        self.drp_attack = tk.OptionMenu(self, self.tkvar_attack, *self.attack_list, bg="#CCC")
+        self.drp_attack = tk.OptionMenu(self, self.tkvar_attack, *self.attack_list)
         self.drp_attack.grid(row=1, column=0, columnspan=2, sticky='news')
         
         self.lbl_defend = tk.Label(self, text="Unit Defending:", bg="#CCC")
@@ -99,7 +89,7 @@ class VisualAttackFrame(tk.Frame):
         
         self.tkvar_defend = tk.StringVar(self)
         self.tkvar_defend.set(self.defend_list[0])
-        self.drp_defend = tk.OptionMenu(self, self.tkvar_defend, *self.defend_list, bg="#CCC")
+        self.drp_defend = tk.OptionMenu(self, self.tkvar_defend, *self.defend_list)
         self.drp_defend.grid(row=3, column=0, columnspan=2, sticky='news')
         
         self.btn_cancel = tk.Button(self, text="Cancel", bg="#CCC")
@@ -157,11 +147,11 @@ class Visual(tk.Frame):
         temp_attack_list = []
         temp_defend_list = []
         
-        for i in range(len(Data.current)):
-            temp_attack_list.append(Data.current[i].title)
+        for unit in Data.current:
+            temp_attack_list.append(unit.title)
             
-        for i in range(len(Data.other)):
-            temp_defend_list.append(Data.other[i].title)
+        for unit in Data.other:
+            temp_defend_list.append(unit.title)
         
         self.frm_attack = VisualAttackFrame(self, temp_attack_list, temp_defend_list)
         self.frm_attack.grid(row=3, column=1, rowspan=2, columnspan=2, sticky='news')
