@@ -109,7 +109,9 @@ class VisualAttackFrame(tk.Frame):
 # Subframe for creating units
 class VisualCreateFrame(tk.Frame):
     def __init__(self, parent):
-        tk.Frame.__init__(self, master=parent)    
+        tk.Frame.__init__(self, master=parent)
+        
+        
 
 # GUI
 class Visual(tk.Frame):
@@ -163,6 +165,16 @@ class Visual(tk.Frame):
         self.color_swap()
             
     def open_attack_frame(self):
+        # Stops the spam creation of frames
+        all_gone = False
+        while all_gone != True:
+            try:
+                self.frm_attack.destroy()
+                self.frm_create.destroy()
+            except:
+                all_gone = True
+        
+        # Actual code
         temp_attack_list = []
         temp_defend_list = []
         
