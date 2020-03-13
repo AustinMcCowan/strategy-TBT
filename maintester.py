@@ -117,10 +117,11 @@ class Visual(tk.Frame):
     def __init__(self):
         tk.Frame.__init__(self)
         
-        self.lbl_sampletext = tk.Label(self, text = ''' to attack, type 'attack' or 'a', to create a unit, type 'create' or 'c' ,
+        self.lbl_information = tk.Label(self, text = ''' to attack, type 'attack' or 'a', to create a unit, type 'create' or 'c' ,
  to check the list of units, type 'list' or 'l', type 'q' to quit: ''', bg="#BBB")
-        self.lbl_sampletext.grid(row=0,column=0, rowspan=3, sticky='news')
+        self.lbl_information.grid(row=0,column=0, rowspan=3, sticky='news')
         
+        self.color_swap()
         starter_team_announce = "Current Team: " + Data.team_announcer
         self.lbl_current_team = tk.Label(self, text = starter_team_announce)
         self.lbl_current_team.grid(row=0, column=1, columnspan=2, padx=15)
@@ -145,11 +146,22 @@ class Visual(tk.Frame):
         self.frm_empty = tk.Frame(self, bg = "#AAA")
         self.frm_empty.grid(row=3, column=1, rowspan=2, columnspan=2, sticky='news')
         
+        
+    def color_swap(self):
+        if "red" in Data.team_announcer.lower():
+            color = "#ffa8a8"
+            
+        if "blue" in Data.team_announcer.lower():
+            color = "#c1ecec"
+        
+        self.lbl_information.config(bg=color)
+        
     def update(self):
         Data.update_teams()
         txt = "Current Team: " + Data.team_announcer
         self.lbl_current_team.configure(text = txt)  
-        
+        self.color_swap()
+            
     def open_attack_frame(self):
         temp_attack_list = []
         temp_defend_list = []
@@ -163,6 +175,7 @@ class Visual(tk.Frame):
         self.frm_attack = VisualAttackFrame(self, temp_attack_list, temp_defend_list)
         self.frm_attack.grid(row=3, column=1, rowspan=2, columnspan=2, sticky='news')
         self.frm_attack.tkraise()
+        
         
     def attack_call(self, first, second):
         # attacking (Current turn team vs other)
