@@ -109,10 +109,26 @@ class VisualAttackFrame(tk.Frame):
 # Subframe for creating units
 class VisualCreateFrame(tk.Frame):
     def __init__(self, parent):
-        tk.Frame.__init__(self, master=parent)
+        color = Data.team_announcer.lower()
         
+        tk.Frame.__init__(self, master=parent, bg="#CCC", highlightbackground = color, highlightthickness=1)
         
-
+        self.lbl_create = tk.Label(self, text="Create Unit:")
+        self.lbl_create.grid(row=0, column=0, columnspan=2, sticky='news')
+        
+        self.unitnames = ["tank", "infantry", "recon", "antiair", "fighter", "attackheli"]
+        self.tkvar_names = tk.StringVar(self)
+        self.tkvar_names.set(self.unitnames[0])
+        
+        self.dbx_pick_unit = tk.OptionMenu(self, self.tkvar_names, *self.unitnames)
+        self.dbx_pick_unit.grid(row=1, column=0, columnspan=2, sticky='news')
+        
+        self.btn_cancel = tk.Button(self, text="Cancel", command=self.destroy)
+        self.btn_cancel.grid(row=2, column=0, sticky='news')
+        
+        self.btn_confirm = tk.Button(self, text="Confirm")
+        self.btn_confirm.grid(row=2, column=1, sticky='news')
+        
 # GUI
 class Visual(tk.Frame):
     
@@ -131,7 +147,7 @@ class Visual(tk.Frame):
         self.btn_attack = tk.Button(self, text="Attack", command = self.open_attack_frame)
         self.btn_attack.grid(row=1, column=1, sticky='news')
         
-        self.btn_create = tk.Button(self, text="Create", command = self.create_call)
+        self.btn_create = tk.Button(self, text="Create", command = self.open_create_frame)
         self.btn_create.grid(row=2, column=1, sticky='news')
         
         self.btn_list = tk.Button(self, text="List", command = self.list_call)
@@ -169,10 +185,17 @@ class Visual(tk.Frame):
         all_gone = False
         while all_gone != True:
             try:
-                self.frm_attack.destroy()
                 self.frm_create.destroy()
             except:
                 all_gone = True
+                
+        # For attack frames        
+        all_gone = False
+        while all_gone != True:
+            try:
+                self.frm_attack.destroy()
+            except:
+                all_gone = True        
         
         # Actual code
         temp_attack_list = []
@@ -214,7 +237,28 @@ class Visual(tk.Frame):
             else:
                 self.update()
         self.frm_attack.destroy()
-         
+        
+    def open_create_frame(self):
+        # Stops the spam creation of frames
+        all_gone = False
+        while all_gone != True:
+            try:
+                self.frm_create.destroy()
+            except:
+                all_gone = True
+                
+        # For attack frames        
+        all_gone = False
+        while all_gone != True:
+            try:
+                self.frm_attack.destroy()
+            except:
+                all_gone = True
+                
+        self.frm_create = VisualCreateFrame(self)
+        self.frm_create.grid(row=3, column=1, rowspan=2, columnspan=2, sticky='news')
+        self.frm_create.tkraise()
+        
     def create_call(self):
         try:
             produce = input("Type of unit to create: ")
