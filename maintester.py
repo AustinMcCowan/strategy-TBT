@@ -73,8 +73,10 @@ class Data(object):
 class VisualAttackFrame(tk.Frame):
     def __init__(self, parent, attack_list, defend_list):
         self.attack_list = attack_list
-        self.defend_list = defend_list        
-        tk.Frame.__init__(self, master=parent, bg="#CCC", highlightbackground = "blue", highlightthickness=1)
+        self.defend_list = defend_list
+        color = Data.team_announcer.lower()
+        
+        tk.Frame.__init__(self, master=parent, bg="#CCC", highlightbackground = color, highlightthickness=1)
         
         self.lbl_attack = tk.Label(self, text="Unit Attacking:", bg="#CCC")
         self.lbl_attack.grid(row=0, column=0, columnspan=2, sticky='news')
@@ -92,16 +94,18 @@ class VisualAttackFrame(tk.Frame):
         self.drp_defend = tk.OptionMenu(self, self.tkvar_defend, *self.defend_list)
         self.drp_defend.grid(row=3, column=0, columnspan=2, sticky='news')
         
-        self.btn_cancel = tk.Button(self, text="Cancel", bg="#CCC")
+        self.btn_cancel = tk.Button(self, text="Cancel", bg="#CCC", command=self.destroy)
         self.btn_cancel.grid(row=4, column=0, sticky='news')
         
-        self.btn_confirm = tk.Button(self, text="Confirm", bg="#CCC")
+        self.btn_confirm = tk.Button(self, text="Confirm", bg="#CCC", command=self.send_attack_order)
         self.btn_confirm.grid(row=4, column=1, sticky='news')
         
     def send_attack_order(self):
         # Grab data from frame and use it on attack_call
-        first = ''
+        first = self.tkvar_attack.get()
+        second = self.tkvar_defend.get()
         
+        frame_visual.attack_call(first, second)
 # Subframe for creating units
 class VisualCreateFrame(tk.Frame):
     def __init__(self, parent):
@@ -133,10 +137,13 @@ class Visual(tk.Frame):
         self.btn_quit = tk.Button(self, text="Quit", command = self.quit_call)
         self.btn_quit.grid(row=2, column=2, sticky='news')
         
-        self.scr_text = ScrolledText(self, heigh = 10, width=40)
+        self.scr_text = ScrolledText(self, heigh = 10, width=60)
         self.scr_text.grid(row=3, column=0, rowspan=2, sticky='news')
         
-        self.information = ''
+        '''Since this zone/area of the program will be empty unless a command is taking place, a placeholder with dark grey 
+        background is placed here to indicate it is empty/no action occuring'''
+        self.frm_empty = tk.Frame(self, bg = "#AAA")
+        self.frm_empty.grid(row=3, column=1, rowspan=2, columnspan=2, sticky='news')
         
     def update(self):
         Data.update_teams()
@@ -155,6 +162,7 @@ class Visual(tk.Frame):
         
         self.frm_attack = VisualAttackFrame(self, temp_attack_list, temp_defend_list)
         self.frm_attack.grid(row=3, column=1, rowspan=2, columnspan=2, sticky='news')
+        self.frm_attack.tkraise()
         
     def attack_call(self, first, second):
         # attacking (Current turn team vs other)
@@ -192,15 +200,17 @@ class Visual(tk.Frame):
             print("failed to create unit")        
             
     def list_call(self):
-        print("\n=============")
-        print("Red Team: ")            
+        msg = ''
+        msg += "\n=======================================\n"
+        msg += "Red Team: "            
         for unit in Data.red_list:
-            print(unit.title, "| Health: ", unit.health)
+            msg += str(unit.title) + " | Health: " + str(unit.health) + "\n"
         
-        print("\nBlue Team: ")
+        msg += "\nBlue Team: "
         for unit in Data.blue_list:
-            print(unit.title, "| Health: ", unit.health)
-        print("=============")        
+            msg += str(unit.title) + " | Health: " + str(unit.health) + "\n"
+        msg += "=======================================\n"
+        self.scr_text.insert("insert", msg)
     
     def quit_call(self):
         root.destroy()
