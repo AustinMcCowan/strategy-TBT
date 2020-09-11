@@ -21,12 +21,12 @@ class Data(object):
     def __init__(self):
         
         # Initial units to start with
-        u.unitCR8("tank", Data.red_list)
-        u.unitCR8("tank", Data.red_list)
-        u.unitCR8("tank", Data.red_list)
-        u.unitCR8("tank", Data.blue_list)
-        u.unitCR8("tank", Data.blue_list)
-        u.unitCR8("tank", Data.blue_list)      
+        u.unitCR8("tank", Data.red_list, "Red")
+        u.unitCR8("tank", Data.red_list, "Red")
+        u.unitCR8("tank", Data.red_list, "Red")
+        u.unitCR8("tank", Data.blue_list, "Blue")
+        u.unitCR8("tank", Data.blue_list, "Blue")
+        u.unitCR8("tank", Data.blue_list, "Blue")      
         
         # Initial team setting
         Data.temp_list_set()
@@ -69,6 +69,7 @@ class Data(object):
         # Now that turn is changed, the temp lists do too.
         Data.temp_list_set()
 
+
 # Subframe for attacking        
 class VisualAttackFrame(tk.Frame):
     def __init__(self, parent, attack_list, defend_list):
@@ -106,6 +107,8 @@ class VisualAttackFrame(tk.Frame):
         second = self.tkvar_defend.get()
         
         frame_visual.attack_call(first, second)
+        
+        
 # Subframe for creating units
 class VisualCreateFrame(tk.Frame):
     def __init__(self, parent):
@@ -135,8 +138,7 @@ class Visual(tk.Frame):
     def __init__(self):
         tk.Frame.__init__(self)
         
-        self.lbl_information = tk.Label(self, text = ''' to attack, type 'attack' or 'a', to create a unit, type 'create' or 'c' ,
- to check the list of units, type 'list' or 'l', type 'q' to quit: ''', bg="#BBB")
+        self.lbl_information = tk.Label(self, text = '''Placeholder text inbound''', bg="#BBB")
         self.lbl_information.grid(row=0,column=0, rowspan=3, sticky='news')
         
         self.color_swap()
@@ -182,20 +184,15 @@ class Visual(tk.Frame):
             
     def open_attack_frame(self):
         # Stops the spam creation of frames
-        all_gone = False
-        while all_gone != True:
-            try:
-                self.frm_create.destroy()
-            except:
-                all_gone = True
-                
-        # For attack frames        
-        all_gone = False
-        while all_gone != True:
-            try:
-                self.frm_attack.destroy()
-            except:
-                all_gone = True        
+        try:
+            self.frm_create.destroy()
+        except:
+            pass
+        
+        try:
+            self.frm_attack.destroy()
+        except:
+            pass
         
         # Actual code
         temp_attack_list = []
@@ -240,21 +237,16 @@ class Visual(tk.Frame):
         
     def open_create_frame(self):
         # Stops the spam creation of frames
-        all_gone = False
-        while all_gone != True:
-            try:
-                self.frm_create.destroy()
-            except:
-                all_gone = True
-                
-        # For attack frames        
-        all_gone = False
-        while all_gone != True:
-            try:
-                self.frm_attack.destroy()
-            except:
-                all_gone = True
-                
+        try:
+            self.frm_create.destroy()
+        except:
+            pass
+        
+        try:
+            self.frm_attack.destroy() 
+        except:
+            pass
+        
         self.frm_create = VisualCreateFrame(self)
         self.frm_create.grid(row=3, column=1, rowspan=2, columnspan=2, sticky='news')
         self.frm_create.tkraise()
@@ -262,7 +254,7 @@ class Visual(tk.Frame):
     def create_call(self):
         try:
             produce = input("Type of unit to create: ")
-            u.unitCR8(produce, Data.current)
+            u.unitCR8(produce, Data.current, Data.team_announcer)
             self.update()
             
         except:
@@ -271,11 +263,11 @@ class Visual(tk.Frame):
     def list_call(self):
         msg = ''
         msg += "\n=======================================\n"
-        msg += "Red Team: "            
+        msg += "Red Team:\n"            
         for unit in Data.red_list:
             msg += str(unit.title) + " | Health: " + str(unit.health) + "\n"
         
-        msg += "\nBlue Team: "
+        msg += "\nBlue Team:\n"
         for unit in Data.blue_list:
             msg += str(unit.title) + " | Health: " + str(unit.health) + "\n"
         msg += "=======================================\n"

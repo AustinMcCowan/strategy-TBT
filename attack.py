@@ -200,9 +200,9 @@ def attack(self, target):
         
         # ACTUAL ENCOUNTER:
         # status of the two units:  
-        msg += str(self.title) + " Health: " + str(self.health) + " | " + str(self.title) + " damage: " + str(self.atk) + "\n"
-        msg += str(target.title) + " Health: " + str(target.health) + " | " + str(target.title) + " damage: " + str(target.atk) + "\n"
-        msg += str(self.title) + " attacks " + str(target.title) + "\n"
+        msg += self.color + " " + str(self.title) + " Health: " + str(self.health) + " | " + self.color + " " + str(self.title) + " damage: " + str(self.atk) + "\n"
+        msg += target.color + " " + str(target.title) + " Health: " + str(target.health) + " | " + target.color + " " + str(target.title) + " damage: " + str(target.atk) + "\n"
+        msg += self.color + " " + str(self.title) + " attacks " + target.color + " " + str(target.title) + "\n"
         
         # Attacking unit deals damage to defending unit
         target.health = (target.health - self.atk)
@@ -212,26 +212,26 @@ def attack(self, target):
         
         # If the target unit survives, it counterattacks.
         if target.health > 0.5 and target.damage != 0:
-            msg += str(target.title) + " Health: " + str(target.health) + " | " + str(target.title) + " counterdamage: " + str(target.atk) + "\n"
-            msg += str(target.title) + " counterattacks " + str(self.title) + "\n"
+            msg += target.color + " " + str(target.title) + " Health: " + str(target.health) + " | " + target.color + " " + str(target.title) + " counterdamage: " + str(target.atk) + "\n"
+            msg += target.color + " " + str(target.title) + " counterattacks " + self.color + " " + str(self.title) + "\n"
             self.health = (self.health - target.atk)
             self.health = round(self.health, 2)
             self.atk = (self.health/10)*(self.damage)
             self.atk = round(self.atk, 2)
             # if the attacking unit doesn't survive the counterattack, it is instead destroyed (in main program)
             if self.health > 0.5:
-                msg += str(self.title) + " Health: " + str(self.health) + " | " + str(self.title) + " damage: " + str(self.atk) + "\n"
+                msg += self.color + " " + str(self.title) + " Health: " + str(self.health) + " | " + self.color + " " + str(self.title) + " damage: " + str(self.atk) + "\n"
                 msg += "ENDSCENARIO========="+"\n"
             else:
-                msg += "Counterattack was lethal, " + str(self.title) + " destroyed " + "\n"
+                msg += "Counterattack was lethal, " + self.color + " " + str(self.title) + " destroyed " + "\n"
                 msg += "ENDSCENARIO========="+"\n"
             
         elif target.damage == 0 and target.health > .5:
-            msg += str(target.title) + " Health: " + str(target.health) + " | " + str(target.title) + " counterdamage: " + str(target.atk) + "\n"
-            msg += str(target.title) + " cannot counter attack " + "\n"
+            msg += target.color + " " + str(target.title) + " Health: " + str(target.health) + " | " + target.color + " " + str(target.title) + " counterdamage: " + str(target.atk) + "\n"
+            msg += target.color + " " + str(target.title) + " cannot counter attack " + "\n"
             msg += "ENDSCENARIO=========" + "\n"
             
         else:
-            msg += str(target.title) + "was destroyed" + "\n"
+            msg += target.color + " " + str(target.title) + "was destroyed" + "\n"
             msg += "ENDSCENARIO=========" + "\n"
         return (True, msg)
