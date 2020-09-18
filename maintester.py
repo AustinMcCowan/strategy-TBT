@@ -129,8 +129,13 @@ class VisualCreateFrame(tk.Frame):
         self.btn_cancel = tk.Button(self, text="Cancel", command=self.destroy)
         self.btn_cancel.grid(row=2, column=0, sticky='news')
         
-        self.btn_confirm = tk.Button(self, text="Confirm")
+        self.btn_confirm = tk.Button(self, text="Confirm", command=self.send_create_order)
         self.btn_confirm.grid(row=2, column=1, sticky='news')
+    
+    def send_create_order(self):
+        picked_unit = self.tkvar_names.get()
+        
+        frame_visual.create_call(picked_unit)
         
 # GUI
 class Visual(tk.Frame):
@@ -251,15 +256,16 @@ class Visual(tk.Frame):
         self.frm_create.grid(row=3, column=1, rowspan=2, columnspan=2, sticky='news')
         self.frm_create.tkraise()
         
-    def create_call(self):
+    def create_call(self, produce):
         try:
-            produce = input("Type of unit to create: ")
             u.unitCR8(produce, Data.current, Data.team_announcer)
             self.update()
             
         except:
-            print("failed to create unit")        
+            print("failed to create unit")
             
+        self.frm_create.destroy() 
+        
     def list_call(self):
         msg = ''
         msg += "\n=======================================\n"
