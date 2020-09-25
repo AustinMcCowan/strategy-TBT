@@ -21,12 +21,12 @@ class Data(object):
     def __init__(self):
         
         # Initial units to start with
-        u.unitCR8("tank", Data.red_list, "Red")
-        u.unitCR8("tank", Data.red_list, "Red")
-        u.unitCR8("tank", Data.red_list, "Red")
-        u.unitCR8("tank", Data.blue_list, "Blue")
-        u.unitCR8("tank", Data.blue_list, "Blue")
-        u.unitCR8("tank", Data.blue_list, "Blue")      
+        u.unitCR8("tank", Data.red_list, "Red", True)
+        u.unitCR8("tank", Data.red_list, "Red", True)
+        u.unitCR8("tank", Data.red_list, "Red", True)
+        u.unitCR8("tank", Data.blue_list, "Blue", True)
+        u.unitCR8("tank", Data.blue_list, "Blue", True)
+        u.unitCR8("tank", Data.blue_list, "Blue", True)      
         
         # Initial team setting
         Data.temp_list_set()
@@ -49,10 +49,11 @@ class Data(object):
             Data.team_announcer = "Blue"
             Data.current = Data.blue_list
             Data.other = Data.red_list
+            
         else:
             raise Exception("How did you break this?")
         
-    # Occurs after action        
+    # Occurs after all actions        
     def update_teams():
         if Data.turn_decider > 0:
             Data.red_list = Data.current
@@ -61,15 +62,25 @@ class Data(object):
             Data.blue_list = Data.current
             Data.red_list = Data.other
         
-        # Switches turn    
-        Data.turn_decider = Data.turn_decider*(-1)
-        # Deletes dead units
+        end_turn = True
+        i = 1
+        while i < len(Data.current):
+            if Data.current[i].available == True:
+                i = 51
+                end_turn = False
+            else:
+                i += 1
+        
+        if end_turn == True:   
+            Data.turn_decider = Data.turn_decider*(-1)
+            for unit in Data.other:
+                Data.other[unit].available = True
+            
+        # Deletes dead units, updates temp lists
         Data.delete_unit(Data.red_list)
         Data.delete_unit(Data.blue_list)
-        # Now that turn is changed, the temp lists do too.
-        Data.temp_list_set()
-
-
+        Data.temp_list_set()            
+        
 # Subframe for attacking        
 class VisualAttackFrame(tk.Frame):
     def __init__(self, parent, attack_list, defend_list):
@@ -203,12 +214,14 @@ class Visual(tk.Frame):
         temp_attack_list = []
         temp_defend_list = []
         
+        # Takes the current turn units and puts them in a temp list according to their role.
         for unit in Data.current:
             temp_attack_list.append(unit.title)
             
         for unit in Data.other:
             temp_defend_list.append(unit.title)
         
+        # Creates the attack frame and then raises it
         self.frm_attack = VisualAttackFrame(self, temp_attack_list, temp_defend_list)
         self.frm_attack.grid(row=3, column=1, rowspan=2, columnspan=2, sticky='news')
         self.frm_attack.tkraise()
