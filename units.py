@@ -18,7 +18,7 @@ class UnitObject(object):
         self.pos_x = pos_x
         self.pos_y = pos_y
         self.color = color
-        self.available = avaliable
+        self.available = available
         # Initializes efficiencies 
         self.fighterEF = 0
         self.attackheliEF = 0 

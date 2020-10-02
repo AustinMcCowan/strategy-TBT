@@ -61,8 +61,10 @@ class Data(object):
         elif Data.turn_decider < 0:
             Data.blue_list = Data.current
             Data.red_list = Data.other
-        
+        # a temporary boolean that will be used to determine if the turn should switch
         end_turn = True
+        
+        # Checks the list of units available in the current team, if none: switch team.
         i = 1
         while i < len(Data.current):
             if Data.current[i].available == True:
@@ -71,15 +73,21 @@ class Data(object):
             else:
                 i += 1
         
+        # Checks to see if the End turn button was pressed
+        if frame_visual.endturn == True:
+            end_turn = True
+        
+        # Finally, checks if any of the criteria above were fulfilled. If so: Ends turn.    
         if end_turn == True:   
             Data.turn_decider = Data.turn_decider*(-1)
             for unit in Data.other:
-                Data.other[unit].available = True
+                unit.available = True
             
         # Deletes dead units, updates temp lists
         Data.delete_unit(Data.red_list)
         Data.delete_unit(Data.blue_list)
         Data.temp_list_set()            
+        frame_visual.endturn = False
         
 # Subframe for attacking        
 class VisualAttackFrame(tk.Frame):
@@ -154,10 +162,12 @@ class Visual(tk.Frame):
     def __init__(self):
         tk.Frame.__init__(self)
         
+        self.endturn = False
+        
         self.lbl_information = tk.Label(self, text = '''Placeholder text inbound''', bg="#BBB")
         self.lbl_information.grid(row=0,column=0, rowspan=3, sticky='news')
         
-        self.color_swap()
+        self.color_adjust()
         starter_team_announce = "Current Team: " + Data.team_announcer
         self.lbl_current_team = tk.Label(self, text = starter_team_announce)
         self.lbl_current_team.grid(row=0, column=1, columnspan=2, padx=15)
@@ -171,8 +181,8 @@ class Visual(tk.Frame):
         self.btn_list = tk.Button(self, text="List", command = self.list_call)
         self.btn_list.grid(row=1, column=2, sticky='news')        
         
-        self.btn_quit = tk.Button(self, text="Quit", command = self.quit_call)
-        self.btn_quit.grid(row=2, column=2, sticky='news')
+        self.btn_endturn = tk.Button(self, text="End Turn", command = self.endturn_call)
+        self.btn_endturn.grid(row=2, column=2, sticky='news')
         
         self.scr_text = ScrolledText(self, heigh = 10, width=60)
         self.scr_text.grid(row=3, column=0, rowspan=2, sticky='news')
@@ -183,7 +193,7 @@ class Visual(tk.Frame):
         self.frm_empty.grid(row=3, column=1, rowspan=2, columnspan=2, sticky='news')
         
         
-    def color_swap(self):
+    def color_adjust(self):
         if "red" in Data.team_announcer.lower():
             color = "#ffa8a8"
             
@@ -192,11 +202,12 @@ class Visual(tk.Frame):
         
         self.lbl_information.config(bg=color)
         
+    # Updates the gui and basically asks itself if its okay to switch turns   
     def update(self):
         Data.update_teams()
         txt = "Current Team: " + Data.team_announcer
-        self.lbl_current_team.configure(text = txt)  
-        self.color_swap()
+        self.lbl_current_team.configure(text = txt)
+        self.color_adjust()
             
     def open_attack_frame(self):
         # Stops the spam creation of frames
@@ -292,10 +303,20 @@ class Visual(tk.Frame):
         msg += "=======================================\n"
         self.scr_text.insert("insert", msg)
     
-    def quit_call(self):
-        root.destroy()
+    def endturn_call(self):
+        try:
+            self.frm_create.destroy()
+        except:
+            pass
         
-                
+        try:
+            self.frm_attack.destroy()
+        except:
+            pass
+        
+        self.endturn = True 
+        self.update()
+        
 # Initialize stuff
 root = tk.Tk()
 root.title("maintester.py")
