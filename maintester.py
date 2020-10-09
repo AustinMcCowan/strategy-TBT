@@ -73,7 +73,8 @@ class Data(object):
                     end_turn = False
                 else:
                     i += 1
-        
+        except:
+            pass
         # Checks to see if the End turn button was pressed
         if frame_visual.endturn == True:
             end_turn = True
