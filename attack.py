@@ -15,176 +15,51 @@ def attack(self, target):
     elif self.health <= 0.5:
         pass
     else:
-        '''have to add all unit types to this :/ Based on amount of unit types, will exponentially increase: 2 types = 2x2, 3 types = 3...
-        so 9 types of units will force me to have to create 81 sections...'''
-        # Since units created are forced to abide by list of names created, should work fine. 
+        # Since units created are forced to abide by list of names created, should work fine.
+        # Set the target damage
         if selfreader[0] == "tank":
-            if targetreader[0] == "infantry":
-                self.damage = self.infantryEF
-                target.damage = target.tankEF
-                
-            elif targetreader[0] == "tank":
-                self.damage = self.tankEF
-                target.damage = target.tankEF
-                
-            elif targetreader[0] == "recon":
-                self.damage = self.reconEF
-                target.damage = target.tankEF
-                 
-            elif targetreader[0] == "antiair":
-                self.damage = self.antiairEF
-                target.damage = target.tankEF
-                
-            elif targetreader[0] == "fighter":
-                self.damage = self.fighterEF
-                target.damage = target.tankEF
-                
-            elif targetreader[0] == "attackheli":
-                self.damage = self.attackheliEF
-                target.damage = target.tankEF
-                            
-            else:
-                pass
+            target.damage = target.tankEF
+        
+        elif selfreader[0] == "infantry":
+            target.damage = target.infantryEF
             
-        if selfreader[0] == "infantry":
-            if targetreader[0] == "infantry":
-                self.damage = self.infantryEF
-                target.damage = target.infantryEF
-                
-            elif targetreader[0] == "tank":
-                self.damage = self.tankEF
-                target.damage = target.infantryEF
-                
-            elif targetreader[0] == "recon":
-                self.damage = self.reconEF
-                target.damage = target.infantryEF
-                 
-            elif targetreader[0] == "antiair":
-                self.damage = self.antiairEF
-                target.damage = target.infantryEF
-                
-            elif targetreader[0] == "fighter":
-                self.damage = self.fighterEF
-                target.damage = target.infantryEF
-                
-            elif targetreader[0] == "attackheli":
-                self.damage = self.attackheliEF
-                target.damage = target.infantryEF
-                            
-            else:
-                pass
-           
-        if selfreader[0] == "recon":
-            if targetreader[0] == "infantry":
-                self.damage = self.infantryEF
-                target.damage = target.reconEF
-                
-            elif targetreader[0] == "tank":
-                self.damage = self.tankEF
-                target.damage = target.reconEF
-                
-            elif targetreader[0] == "recon":
-                self.damage = self.reconEF
-                target.damage = target.reconEF
-                 
-            elif targetreader[0] == "antiair":
-                self.damage = self.antiairEF
-                target.damage = target.reconEF
-                
-            elif targetreader[0] == "fighter":
-                self.damage = self.fighterEF
-                target.damage = target.reconEF
-                
-            elif targetreader[0] == "attackheli":
-                self.damage = self.attackheliEF
-                target.damage = target.reconEF
-                            
-            else:
-                pass
+        elif selfreader[0] == "recon":
+            target.damage = target.reconEF
         
-        if selfreader[0] == "antiair":
-            if targetreader[0] == "infantry":
-                self.damage = self.infantryEF
-                target.damage = target.antiairEF
-                
-            elif targetreader[0] == "tank":
-                self.damage = self.tankEF
-                target.damage = target.antiairEF
-                
-            elif targetreader[0] == "recon":
-                self.damage = self.reconEF
-                target.damage = target.antiairEF
-                 
-            elif targetreader[0] == "antiair":
-                self.damage = self.antiairEF
-                target.damage = target.antiairEF
-                
-            elif targetreader[0] == "fighter":
-                self.damage = self.fighterEF
-                target.damage = target.antiairEF
-                
-            elif targetreader[0] == "attackheli":
-                self.damage = self.attackheliEF
-                target.damage = target.antiairEF
-                            
-            else:
-                pass
+        elif selfreader[0] == "antiair":
+            target.damage = target.antiairEF
+            
+        elif selfreader[0] == "fighter":
+            target.damage = target.fighterEF
         
-        if selfreader[0] == "fighter":
-            if targetreader[0] == "infantry":
-                self.damage = self.infantryEF
-                target.damage = target.fighterEF
-                
-            elif targetreader[0] == "tank":
-                self.damage = self.tankEF
-                target.damage = target.fighterEF
-                
-            elif targetreader[0] == "recon":
-                self.damage = self.reconEF
-                target.damage = target.fighterEF
-                 
-            elif targetreader[0] == "antiair":
-                self.damage = self.antiairEF
-                target.damage = target.fighterEF
-                
-            elif targetreader[0] == "fighter":
-                self.damage = self.fighterEF
-                target.damage = target.fighterEF
-                
-            elif targetreader[0] == "attackheli":
-                self.damage = self.attackheliEF
-                target.damage = target.fighterEF
-                            
-            else:
-                pass
+        elif selfreader[0] == "attackheli":
+            target.damage = target.attackheliEF
         
-        if selfreader[0] == "attackheli":
-            if targetreader[0] == "infantry":
-                self.damage = self.infantryEF
-                target.damage = target.attackheliEF
-                
-            elif targetreader[0] == "tank":
-                self.damage = self.tankEF
-                target.damage = target.attackheliEF
-                
-            elif targetreader[0] == "recon":
-                self.damage = self.reconEF
-                target.damage = target.attackheliEF
-                 
-            elif targetreader[0] == "antiair":
-                self.damage = self.antiairEF
-                target.damage = target.attackheliEF
-                
-            elif targetreader[0] == "fighter":
-                self.damage = self.fighterEF
-                target.damage = target.attackheliEF
-                
-            elif targetreader[0] == "attackheli":
-                self.damage = self.attackheliEF
-                target.damage = target.attackheliEF
-                            
-            else:
-                pass
+        else:
+            pass
+        
+        # Set self damage
+        if targetreader[0] == "tank":
+            self.damage = self.tankEF
+            
+        elif targetreader[0] == "infantry":
+            self.damage = self.infantryEF
+        
+        elif targetreader[0] == "recon":
+            self.damage = self.reconEF
+        
+        elif targetreader[0] == "antiair":
+            self.damage = self.antiairEF
+        
+        elif targetreader[0] == "fighter":
+            self.damage = self.fighterEF
+            
+        elif targetreader[0] == "attackheli":
+            self.damage = self.attackheliEF
+        
+        else:
+            pass
+        
         
         # Sets up attack values
         self.atk = (self.health/10)*(self.damage)
@@ -196,6 +71,11 @@ def attack(self, target):
         # Stops attack if the user has made an invalid attack
         if self.damage == 0:
             msg = "invalid attack; this unit cannot attack the defending unit"
+            return (None, msg)
+        
+        # This should almost never occur in finished product due to unavailable units being removed from being selectable in current turn
+        if self.available == False:
+            msg = "invalid command; this unit has already been used"
             return (None, msg)
         
         # ACTUAL ENCOUNTER:
@@ -234,4 +114,6 @@ def attack(self, target):
         else:
             msg += target.color + " " + str(target.title) + "was destroyed" + "\n"
             msg += "ENDSCENARIO=========" + "\n"
+            
+        self.available = False
         return (True, msg)

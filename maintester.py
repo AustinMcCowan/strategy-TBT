@@ -65,7 +65,7 @@ class Data(object):
         end_turn = True
         
         # Checks the list of units available in the current team, if none: switch team.
-        i = 1
+        i = 0
         while i < len(Data.current):
             if Data.current[i].available == True:
                 i = 51
@@ -184,7 +184,7 @@ class Visual(tk.Frame):
         self.btn_endturn = tk.Button(self, text="End Turn", command = self.endturn_call)
         self.btn_endturn.grid(row=2, column=2, sticky='news')
         
-        self.scr_text = ScrolledText(self, heigh = 10, width=60)
+        self.scr_text = ScrolledText(self, height = 10, width=60)
         self.scr_text.grid(row=3, column=0, rowspan=2, sticky='news')
         
         '''Since this zone/area of the program will be empty unless a command is taking place, a placeholder with dark grey 
@@ -202,7 +202,8 @@ class Visual(tk.Frame):
         
         self.lbl_information.config(bg=color)
         
-    # Updates the gui and basically asks itself if its okay to switch turns   
+    # Updates the gui and basically asks itself if its okay to switch turns
+    # So when anything significant happens or changes, call this function.
     def update(self):
         Data.update_teams()
         txt = "Current Team: " + Data.team_announcer
@@ -225,10 +226,12 @@ class Visual(tk.Frame):
         temp_attack_list = []
         temp_defend_list = []
         
-        # Takes the current turn units and puts them in a temp list according to their role.
+        # Takes the current turn units (that are available) and puts them in a temp list
         for unit in Data.current:
-            temp_attack_list.append(unit.title)
-            
+            if unit.available == True:
+                temp_attack_list.append(unit.title)
+                
+        # Puts all opposite team units in a temp list (as their availability changes nothing)     
         for unit in Data.other:
             temp_defend_list.append(unit.title)
         
@@ -259,9 +262,8 @@ class Visual(tk.Frame):
             result = ak.attack(Data.current[first_unit], Data.other[second_unit])
             self.scr_text.insert("insert", result[1])
             if result[0] == None:
-                pass
-            else:
-                self.update()
+                pass 
+            self.update()
         self.frm_attack.destroy()
         
     def open_create_frame(self):
