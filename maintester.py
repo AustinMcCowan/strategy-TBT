@@ -65,13 +65,14 @@ class Data(object):
         end_turn = True
         
         # Checks the list of units available in the current team, if none: switch team.
-        i = 0
-        while i < len(Data.current):
-            if Data.current[i].available == True:
-                i = 51
-                end_turn = False
-            else:
-                i += 1
+        try:
+            i = 0
+            while i < len(Data.current):
+                if Data.current[i].available == True:
+                    i = 51
+                    end_turn = False
+                else:
+                    i += 1
         
         # Checks to see if the End turn button was pressed
         if frame_visual.endturn == True:
