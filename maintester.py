@@ -329,6 +329,7 @@ root = tk.Tk()
 root.title("maintester.py")
 data_storage = Data()
 
+# Setting up layout and gui
 frame_visual = Visual()
 frame_visual.grid(row = 0, column = 0, sticky = "news")
 frame_visual.grid_columnconfigure(0, weight = 0)
