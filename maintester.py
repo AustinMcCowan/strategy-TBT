@@ -167,32 +167,35 @@ class Visual(tk.Frame):
         self.endturn = False
         
         self.lbl_information = tk.Label(self, text = '''Placeholder text inbound''', bg="#BBB")
-        self.lbl_information.grid(row=0,column=0, rowspan=3, sticky='news')
+        self.lbl_information.grid(row=0, column=0, rowspan=3, sticky='news')
         
         self.color_adjust()
         starter_team_announce = "Current Team: " + Data.team_announcer
         self.lbl_current_team = tk.Label(self, text = starter_team_announce)
-        self.lbl_current_team.grid(row=0, column=1, columnspan=2, padx=15)
+        self.lbl_current_team.grid(row=0, column=2, columnspan=2, padx=15)
         
         self.btn_attack = tk.Button(self, text="Attack", command = self.open_attack_frame)
-        self.btn_attack.grid(row=1, column=1, sticky='news')
+        self.btn_attack.grid(row=1, column=2, sticky='news')
         
         self.btn_create = tk.Button(self, text="Create", command = self.open_create_frame)
-        self.btn_create.grid(row=2, column=1, sticky='news')
+        self.btn_create.grid(row=2, column=2, sticky='news')
         
         self.btn_list = tk.Button(self, text="List", command = self.list_call)
-        self.btn_list.grid(row=1, column=2, sticky='news')        
+        self.btn_list.grid(row=1, column=3, sticky='news')        
         
         self.btn_endturn = tk.Button(self, text="End Turn", command = self.endturn_call)
-        self.btn_endturn.grid(row=2, column=2, sticky='news')
+        self.btn_endturn.grid(row=2, column=3, sticky='news')
         
-        self.scr_text = ScrolledText(self, height = 10, width=60)
-        self.scr_text.grid(row=3, column=0, rowspan=2, sticky='news')
+        self.scr_text = ScrolledText(self, height = 10, width = 60)
+        self.scr_text.grid(row=3, column=0, sticky='news')
+        
+        self.frm_board = tk.Frame(self, bg = "#0F0")
+        self.frm_board.grid(row=0, column=1, rowspan=4, sticky='news')
         
         '''Since this zone/area of the program will be empty unless a command is taking place, a placeholder with dark grey 
         background is placed here to indicate it is empty/no action occuring'''
         self.frm_empty = tk.Frame(self, bg = "#AAA")
-        self.frm_empty.grid(row=3, column=1, rowspan=2, columnspan=2, sticky='news')
+        self.frm_empty.grid(row=3, column=2, columnspan=2, sticky='news')
         
         
     def color_adjust(self):
@@ -239,7 +242,7 @@ class Visual(tk.Frame):
         
         # Creates the attack frame and then raises it
         self.frm_attack = VisualAttackFrame(self, temp_attack_list, temp_defend_list)
-        self.frm_attack.grid(row=3, column=1, rowspan=2, columnspan=2, sticky='news')
+        self.frm_attack.grid(row=3, column=2, rowspan=2, columnspan=2, sticky='news')
         self.frm_attack.tkraise()
         
         
@@ -281,7 +284,7 @@ class Visual(tk.Frame):
             pass
         
         self.frm_create = VisualCreateFrame(self)
-        self.frm_create.grid(row=3, column=1, rowspan=2, columnspan=2, sticky='news')
+        self.frm_create.grid(row=3, column=2, rowspan=2, columnspan=2, sticky='news')
         self.frm_create.tkraise()
         
     def create_call(self, produce):
@@ -328,7 +331,18 @@ data_storage = Data()
 
 frame_visual = Visual()
 frame_visual.grid(row = 0, column = 0, sticky = "news")
+frame_visual.grid_columnconfigure(0, weight = 0)
+frame_visual.grid_columnconfigure(1, weight = 500)
+frame_visual.grid_columnconfigure(2, weight = 125)
+frame_visual.grid_columnconfigure(3, weight = 125)
+frame_visual.grid_rowconfigure(0, weight = 4)
+frame_visual.grid_rowconfigure(1, weight = 16)
+frame_visual.grid_rowconfigure(2, weight = 16)
+frame_visual.grid_rowconfigure(3, weight = 64)
 frame_visual.tkraise()
+
+root.grid_columnconfigure(0, weight = 1)
+root.grid_rowconfigure(0, weight = 1)
 root.mainloop()
 
 
