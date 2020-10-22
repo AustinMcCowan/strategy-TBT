@@ -3,9 +3,11 @@
 # 9/6/2019
 ''' Unit design and control file '''
 
-global unitnames # ONLY ACCEPTABLE TITLES. OTHER TITLES USED WILL RAISE ERROR/PROBLEM
+global unitnames
+global unit_move_limits # ONLY ACCEPTABLE TITLES. OTHER TITLES USED WILL RAISE ERROR/PROBLEM
+'''Make these two separate lists because its easier to loop through. Also not that difficult to assign values, just grab index'''
 unitnames = ["tank", "infantry", "recon", "antiair", "fighter", "attackheli"]
-
+unit_move_limits = [5, 3, 7, 5, 10, 8]
 # object to represent unit
 class UnitObject(object):
     
@@ -80,15 +82,22 @@ class UnitObject(object):
             self.antiairEF = 3
             
 # Unit creation and insertion into the given unit list. WILL ONLY WORK WITH A LIST
-def unitCR8(title, unit_list, team="", usable=False):
+def unitCR8(title, unit_list, team="", usable=False):   
     if title not in unitnames:
         raise Exception('invalid unit type attempted to be created')
     elif len(unit_list) >= 50: # Unit cap is 50. 
         print("Unit cap reached")
         return None
+            
     else:
+        distance = unit_move_limits[unitnames.index(title)]
         name = title
         number = 1
+        
+        '''Cycles through the team list chosen, and finds units that share the same type, and increases that units number 
+        if it is shared with another unit of the same type. The reason it loops 50 times is due to 2 reasons: The unit cap is 50.
+        And the fact that a unit could have a higher number than a unit farther in the list (which means this loop needs to
+        loop again to see if the new number is equal to that units number).'''  
         for i in range(50): # Uses 50 -> unit cap
             for i in range(len(unit_list)):
                 namer = unit_list[i].title.split("#")
@@ -98,6 +107,6 @@ def unitCR8(title, unit_list, team="", usable=False):
                         number += 1
         number = str(number)
         name = name + "#" + number
-        unit_list.append(UnitObject(name, color=team, available=usable))
+        unit_list.append(UnitObject(name, color=team, available=usable, move_limit=distance))
     
      
