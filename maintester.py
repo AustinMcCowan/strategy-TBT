@@ -31,6 +31,7 @@ class Data(object):
         # Initial team setting
         Data.temp_list_set()
         
+    # Since only one unit can be destroyed at a time due to update occuring after every action. This should not cause problems   
     def delete_unit(unit_team):
         for i in range(len(unit_team)):
             if unit_team[i].health <= 0.5:
@@ -38,7 +39,7 @@ class Data(object):
                 unit_team.pop(i)
                 break
             
-    # Occurs before action and at start of program (Already done in __init__)        
+    # Occurs after action and at start of program (Already done in __init__)        
     def temp_list_set():
         if Data.turn_decider > 0:
             Data.team_announcer = "Red"
@@ -61,10 +62,11 @@ class Data(object):
         elif Data.turn_decider < 0:
             Data.blue_list = Data.current
             Data.red_list = Data.other
+            
         # a temporary boolean that will be used to determine if the turn should switch
         end_turn = True
         
-        # Checks the list of units available in the current team, if none: switch team.
+        # Checks the list of units available in the current team, if there is atleast one: do not switch team.
         try:
             i = 0
             while i < len(Data.current):
@@ -75,6 +77,7 @@ class Data(object):
                     i += 1
         except:
             pass
+        
         # Checks to see if the End turn button was pressed
         if frame_visual.endturn == True:
             end_turn = True
@@ -153,10 +156,20 @@ class VisualCreateFrame(tk.Frame):
         self.btn_confirm = tk.Button(self, text="Confirm", command=self.send_create_order)
         self.btn_confirm.grid(row=2, column=1, sticky='news')
     
+        self.grid_columnconfigure(0, weight=50)
+        self.grid_columnconfigure(1, weight=50)
+        
     def send_create_order(self):
         picked_unit = self.tkvar_names.get()
         
         frame_visual.create_call(picked_unit)
+# handles and spawns the grid. 
+class GridControl(tk.Frame):
+    
+    def __init__(self, parent):
+        color = Data.team_announcer.lower()
+        tk.Frame.__init__(self, master=parent, bg="#333", highlightbackground = color, highlightthickness=1)  
+        
         
 # GUI
 class Visual(tk.Frame):
