@@ -91,7 +91,7 @@ class Data(object):
         Data.temp_list_set()            
         frame_visual.endturn = False
         
-# Subframe for attacking        
+# Subframe for attacking/commands        
 class VisualAttackFrame(tk.Frame):
     def __init__(self, parent, attack_list, defend_list):
         self.attack_list = attack_list
@@ -189,7 +189,7 @@ class Visual(tk.Frame):
         self.scr_text = ScrolledText(self, height = 10, width = 60)
         self.scr_text.grid(row=3, column=0, sticky='news')
         
-        self.frm_board = tk.Frame(self, bg = "#0F0")
+        self.frm_board = tk.Frame(self, bg = "#0F0", width=300)
         self.frm_board.grid(row=0, column=1, rowspan=4, sticky='news')
         
         '''Since this zone/area of the program will be empty unless a command is taking place, a placeholder with dark grey 
@@ -345,103 +345,3 @@ frame_visual.tkraise()
 root.grid_columnconfigure(0, weight = 1)
 root.grid_rowconfigure(0, weight = 1)
 root.mainloop()
-
-
-# Archived 
-'''
-# Main Method
-if __name__ == "__main__":
-    print("\n TEST")
-    print("Preset teams: Red and blue\n")    
-    print("=============")
-    print("Red Team: ")
-    
-    while True:
-        print("")
-        # Check if unit has reached or went under 0 to be deleted
-        delete_unit(red_list)
-        delete_unit(blue_list)
-        if turn_decider > 0:
-            team_announcer = "Red"
-            current = red_list
-            other = blue_list
-            
-        elif turn_decider < 0:
-            team_announcer = "Blue"
-            current = blue_list
-            other = red_list
-        else:
-            raise Exception("How did you break this?")
-        
-        frame_visual.update_team(team_announcer)
-        
-        # Stops tester if only one or less unit remains
-        if len(red_list) <= 1 or len(blue_list) <= 1:
-            print("--not enough units to continue test, ending test--")
-            break
-        
-        # testing
-        print("Current turn:", team_announcer)        
-        '''
-        
-'''
-        # attacking (Current turn team vs other)
-        if call == "attack" or call == "a":
-            first = input("Attacking unit: ")
-            second = input("Defending unit: ")
-            first_unit = None
-            second_unit = None
-            
-            # sets indexes/what units attack/defend
-            for i in range(len(current)):
-                if current[i].title == first:
-                    first_unit = i
-            for i in range(len(other)):
-                if other[i].title == second:
-                    second_unit = i
-                    
-            if first_unit == None or second_unit == None:
-                print("Invalid Unit or Target")
-                continue
-            else:
-                # This if statement still runs the attack code, but will force the turn to stay unchanged if an invalid attack was made
-                if ak.attack(current[first_unit], other[second_unit]) == None:
-                    continue
-                
-        # creating   
-        elif call == "create" or call == "c":
-            try:
-                produce = input("Type of unit to create: ")
-                u.unitCR8(produce, current)
-            except:
-                print("failed to create unit")
-            
-        # check list of units    
-        elif call == "list" or call == "l":
-            print("\n=============")
-            print("Red Team: ")            
-            for unit in red_list:
-                print(unit.title, "| Health: ", unit.health)
-            
-            print("\nBlue Team: ")
-            for unit in blue_list:
-                print(unit.title, "| Health: ", unit.health)
-            print("=============")
-            continue
-        
-        # End test
-        elif call == "q":
-            print("\nDONE")
-            break
-        else:
-            continue
-        
-        if turn_decider > 0:
-            red_list = current
-            blue_list = other
-        elif turn_decider < 0:
-            blue_list = current
-            red_list = other
-            
-        turn_decider = turn_decider*(-1)
-'''
