@@ -165,9 +165,24 @@ class VisualCreateFrame(tk.Frame):
         frame_visual.create_call(picked_unit)
 # handles and spawns the grid. 
 class GridControl(tk.Frame):
+    units = {}
+    selected = None
+    selected_unit = None
+    highlighted = None
+    icons = {}
     
-    def __init__(self, parent):
+    def canvas_size(self):
+        return(self.columns * self.square_size,
+               self.rows * self.square_size)
+        
+    def __init__(self, parent, gridboard, square_size=10):
         color = Data.team_announcer.lower()
+        self.gridboard = gridboard
+        self.square_size = 10
+        self.parent = parent
+        
+        canvas_width = self.columns * square_size 
+        canvas_height = self.rows * square_size
         tk.Frame.__init__(self, master=parent, bg="#333", highlightbackground = color, highlightthickness=1)  
         
         
