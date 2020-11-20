@@ -8,7 +8,8 @@ import units as u
 import attack as ak
 import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
-
+from tkinter import *
+from tkinter import ttk
 
 # Hold and initialize starting information. 
 class Data(object):
@@ -165,27 +166,25 @@ class VisualCreateFrame(tk.Frame):
         frame_visual.create_call(picked_unit)
 # handles and spawns the grid. 
 class GridControl(tk.Frame):
-    units = {}
-    selected = None
-    selected_unit = None
-    highlighted = None
-    icons = {}
-    
-    def canvas_size(self):
-        return(self.columns * self.square_size,
-               self.rows * self.square_size)
-        
-    def __init__(self, parent, gridboard, square_size=10):
+    # Everything is placeholder as of right now
+    def __init__(self, parent, gridboard=None):
         color = Data.team_announcer.lower()
-        self.gridboard = gridboard
-        self.square_size = 10
         self.parent = parent
-        
-        canvas_width = self.columns * square_size 
-        canvas_height = self.rows * square_size
-        tk.Frame.__init__(self, master=parent, bg="#333", highlightbackground = color, highlightthickness=1)  
-        
-        
+        tk.Frame.__init__(self, master=parent, highlightbackground = color, highlightthickness=1) 
+        self.gridboard = Canvas(self, bg="#0F0")
+        self.presence = "alive"
+        self.gridboard.grid(column=0, row=0, sticky='news')
+        self.gridboard.create_line((10, 5, 200, 50))
+            
+    ''' I will need to develop a tile system to better control tiles and drawing. I may create images for every scenario (i.e infantry
+    on road, infantry on factory, tank on grass, used tank on grass). Create a dictionary (plausibly 2: one for units, one for tile type)'''
+    # Will be used to place and draw units on the board. drawBoard (may be renamed later) will be used after every action most likely.
+    def drawPiece(self, posx, posy, unit_type):
+        pass
+    
+    def drawBoard(self):
+        pass
+    
 # GUI
 class Visual(tk.Frame):
     
@@ -217,8 +216,10 @@ class Visual(tk.Frame):
         self.scr_text = ScrolledText(self, height = 10, width = 60)
         self.scr_text.grid(row=3, column=0, sticky='news')
         
-        self.frm_board = tk.Frame(self, bg = "#0F0", width=300)
+        
+        self.frm_board = GridControl(self)
         self.frm_board.grid(row=0, column=1, rowspan=4, sticky='news')
+        print(self.frm_board.presence)
         
         '''Since this zone/area of the program will be empty unless a command is taking place, a placeholder with dark grey 
         background is placed here to indicate it is empty/no action occuring'''
