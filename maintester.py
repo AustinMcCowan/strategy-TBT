@@ -167,20 +167,43 @@ class VisualCreateFrame(tk.Frame):
 # handles and spawns the grid. 
 class GridControl(tk.Frame):
     # Everything is placeholder as of right now
-    def __init__(self, parent, gridboard=None):
+    def __init__(self, parent):
         color = Data.team_announcer.lower()
         self.parent = parent
-        tk.Frame.__init__(self, master=parent, highlightbackground = color, highlightthickness=1) 
+        tk.Frame.__init__(self, master=parent, highlightbackground = color, highlightthickness=1)
+        # Creates the canvas (the main piece for this class) and places it
         self.gridboard = Canvas(self, bg="#0F0")
         self.presence = "alive"
         self.gridboard.grid(column=0, row=0, sticky='news')
         self.gridboard.create_line((10, 5, 200, 50))
-            
+
+    
+    # Holds the file paths for the images to be used in drawTile, only placeholder for now. Will also add 
+    blue_active_unit = {"infantry-grass":"image", "infantry-road":"image"}
+    blue_inactive_unit = {"infantry-grass":"image", "infantry-road":"image"}
+    
+    red_active_unit = {"infantry-grass":"image", "infantry-road":"image"}
+    red_inactive_unit = {"infantry-grass":"image", "infantry-road":"image"}    
+    
     ''' I will need to develop a tile system to better control tiles and drawing. I may create images for every scenario (i.e infantry
     on road, infantry on factory, tank on grass, used tank on grass). Create a dictionary (plausibly 2: one for units, one for tile type)'''
-    # Will be used to place and draw units on the board. drawBoard (may be renamed later) will be used after every action most likely.
-    def drawPiece(self, posx, posy, unit_type):
-        pass
+    # Will be used to place and draw units on the board. drawBoard (may be renamed later) will be used after every action most likely.    
+    def drawTile(self, unit, tile, posx, posy):
+        unit_type = unit.title.split("#")[0]
+        unit_reader = str(unit_type) + "-" + str(tile)
+    
+        if unit.availability == True:
+            img = active_unit[unit_reader]
+            imgfile = PhotoImage(file=img)
+            canvas.create_image(posx, posy, image=imgfile)
+        
+        elif unit.availability == False:
+            img = inactive_unit[unit_reader]
+            imgfile = PhotoImage(file=img)
+            canvas.create_image(posx, posy, image=imgfile)
+
+    else:
+        raise Exception("Error has occured: drawing failed")
     
     def drawBoard(self):
         pass
