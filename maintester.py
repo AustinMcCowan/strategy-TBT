@@ -167,7 +167,7 @@ class VisualCreateFrame(tk.Frame):
 # handles and spawns the grid. 
 class GridControl(tk.Frame):
     # Everything is placeholder as of right now
-    def __init__(self, parent):
+    def __init__(self, parent, boardsize = 30):
         color = Data.team_announcer.lower()
         self.parent = parent
         tk.Frame.__init__(self, master=parent, highlightbackground = color, highlightthickness=1)
@@ -176,9 +176,9 @@ class GridControl(tk.Frame):
         self.presence = "alive"
         self.gridboard.grid(column=0, row=0, sticky='news')
         self.gridboard.create_line((10, 5, 200, 50))
-
+        self.boardsize = boardsize
     
-    # Holds the file paths for the images to be used in drawTile, only placeholder for now. Will also add 
+    # Holds the file paths for the images to be used in draw_tile, only placeholder for now. Will also add 
     blue_active_unit = {"infantry-grass":"image", "infantry-road":"image"}
     blue_inactive_unit = {"infantry-grass":"image", "infantry-road":"image"}
     
@@ -187,27 +187,57 @@ class GridControl(tk.Frame):
     
     ''' I will need to develop a tile system to better control tiles and drawing. I may create images for every scenario (i.e infantry
     on road, infantry on factory, tank on grass, used tank on grass). Create a dictionary (plausibly 2: one for units, one for tile type)'''
-    # Will be used to place and draw units on the board. drawBoard (may be renamed later) will be used after every action most likely.    
-    def drawTile(self, unit, tile, posx, posy):
-        unit_type = unit.title.split("#")[0]
-        unit_reader = str(unit_type) + "-" + str(tile)
-    
-        if unit.availability == True:
-            img = active_unit[unit_reader]
-            imgfile = PhotoImage(file=img)
-            canvas.create_image(posx, posy, image=imgfile)
+    # Will be used to place and draw units on the board. draw_board (may be renamed later) will be used after every action most likely.
+    def draw_tile(self, unit, tile, posx, posy):
+        # Set up an error message to be deployed whenever a tile fails to draw. May be over the top right now due to incomplete drawing system
+        tile_location = "(" + str(posx) + "," + str(self.boardsize - posy) + ")"
+        error = "Error has occured: Drawing tile at " + tile_location + " has failed"
         
-        elif unit.availability == False:
-            img = inactive_unit[unit_reader]
-            imgfile = PhotoImage(file=img)
-            canvas.create_image(posx, posy, image=imgfile)
-
-    else:
-        raise Exception("Error has occured: drawing failed")
-    
-    def drawBoard(self):
-        pass
-    
+        # if/then to determine if a unit was said to be on the tile being drawn
+        if unit != None:
+            unit_type = unit.title.split("#")[0]
+            unit_reader = str(unit_type) + "-" + str(tile)
+            if unit.color.lower() == "red":
+                if unit.availability == True:
+                    # Put together the process for analyzing the data given and locate the proper image
+                    img = red_active_unit[unit_reader]
+                    imgfile = PhotoImage(file=img)
+                    canvas.create_image(posx, posy, image=imgfile)
+                    
+                elif unit.availability == False:
+                    # Put together the process for analyzing the data given and locate the proper image
+                    img = inactive_unit[unit_reader]
+                    imgfile = PhotoImage(file=img)
+                    canvas.create_image(posx, posy, image=imgfile)
+        
+                else: 
+                    raise Exception(error)
+                
+            elif unit.color.lower() == "blue":
+                pass
+            
+            else:
+                raise Exception(error)   
+            
+        elif unit == None:
+            # For drawing tiles without units on them
+            pass
+        
+        else:
+            raise Exception(error)
+        
+    # Will run drawTile for everytile
+    def draw_board(self):
+        posx = 0
+        posy = 0
+        # For each column
+        for i in range(self.boardsize):
+            posy = i+1
+            # For each row
+            for j in range(self.boardsize):
+                posx = j+1
+                pass
+                
 # GUI
 class Visual(tk.Frame):
     
@@ -243,6 +273,7 @@ class Visual(tk.Frame):
         self.frm_board = GridControl(self)
         self.frm_board.grid(row=0, column=1, rowspan=4, sticky='news')
         print(self.frm_board.presence)
+        self.frm_board.draw_board()
         
         '''Since this zone/area of the program will be empty unless a command is taking place, a placeholder with dark grey 
         background is placed here to indicate it is empty/no action occuring'''
