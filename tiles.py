@@ -16,3 +16,8 @@ tiletypes = {
     "mountain":[],
     "city":[]
 }
+
+class TileObject(object):
+    
+    def __init__(self, tile_id, move_cost):
+        pass
