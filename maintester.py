@@ -202,13 +202,13 @@ class GridControl(tk.Frame):
                     # Put together the process for analyzing the data given and locate the proper image
                     img = red_active_unit[unit_reader]
                     imgfile = PhotoImage(file=img)
-                    canvas.create_image(posx, posy, image=imgfile)
+                    canvas.create_image(posx, posy, image=imgfile) # Currently only a format ( i guess )
                     
                 elif unit.availability == False:
                     # Put together the process for analyzing the data given and locate the proper image
                     img = inactive_unit[unit_reader]
                     imgfile = PhotoImage(file=img)
-                    canvas.create_image(posx, posy, image=imgfile)
+                    canvas.create_image(posx, posy, image=imgfile) # Currently only a format ( i guess )
         
                 else: 
                     raise Exception(error)
