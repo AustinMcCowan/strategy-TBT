@@ -33,18 +33,21 @@ class TileObject(object):
         self.tile_id = tile_id 
         self.pos_x = pos_x 
         self.pos_y = pos_y
-        self.functionality = False
+        # These parameters / variables / stats are set to none as they are not required for each tile type.
+        self.functionality = False # May actually remove functionality in future, as it is redundant when I can just check the reader. Although its simpler to type this.
         self.usable = None
         self.health = None
+        self.color = None
 
-        # Start setting up functionality
+        # Start setting up functionality, tiles with functionality will bring in income and can be captured.
         reader = self.tile_id.split("#")
         if reader[0] not in tiletypes:
             raise Exception('Invalid tile type detected')
         if reader[0] in ["city", "factory"]:
             self.functionality = True
+            self.health = 20 # If a tile has functionality, it can be captured. When it reaches 0, it will convert to the team color that captured it.
 
-        # Will enable the usable variable if functionality exists, this is 
-        if self.functionality != False:
+        # Will enable the usable variable if functionality exists and the tile is a factory
+        if (self.functionality != False) and (reader[0] == "factory"):
             self.usable = True
         
