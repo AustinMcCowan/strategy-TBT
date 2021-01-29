@@ -180,14 +180,20 @@ class GridControl(tk.Frame):
         self.boardsize = boardsize
     
     # Holds the file paths for the images to be used in draw_tile, only placeholder for now. 
-    # Variations include: tile type, unit type, availability in unit, availability in interactive tile, color of unit, color of tile
-    blue_active_unit = {"infantry-grass":"image", "infantry-road":"image"}
-    blue_inactive_unit = {"infantry-grass":"image", "infantry-road":"image"}
-    
-    red_active_unit = {"infantry-grass":"image", "infantry-road":"image"}
-    red_inactive_unit = {"infantry-grass":"image", "infantry-road":"image"}
+    # Variations include: (tile type, unit type, availability in unit), availability in interactive tile, color of unit, color of tile
+    blueunit_img = {"active-infantry-grass":"image", "active-infantry-road":"image"}
+    bluefuncttile_blueunit_img = {}
+    inactive_bluefuncttile_blueunit_img = {}
+    redfuncttile_blueunit_img = {}
+    inactive_redfuncttile_blueunit_img = {}
 
-    funct_tiles = {}    
+    redunit_img = {"active-infantry-grass":"image", "active-infantry-road":"image"}
+    bluefuncttile_redunit_img = {}
+    inactive_bluefuncttile_redunit_img = {}
+    redfuncttile_redunit_img = {}
+    inactive_redfuncttile_redunit_img = {}
+    
+    justtile_img = {}
     
     ''' I will need to develop a tile system to better control tiles and drawing. I may create images for every scenario (i.e infantry
     on road, infantry on factory, tank on grass, used tank on grass). Create a dictionary (plausibly 2: one for units, one for tile type)'''
@@ -200,9 +206,17 @@ class GridControl(tk.Frame):
         # This will check what kind of tile it is through a chain of "if/elif/else"
         # if/then to determine if a unit was said to be on the tile being drawn
         if unit != None:
+            activity = ""
+            if unit.availability == True:
+                activity = "active"
+            elif unit.availability == False:
+                activity = "inactive"
+            else:
+                raise Exception(error)
+            
             unit_type = unit.title.split("#")[0]
             tile_type = tile.tile_id.split("#")[0]
-            unit_reader = str(unit_type) + "-" + str(tile_type)
+            dict_reader = str(activity) + "-" + str(unit_type) + "-" + str(tile_type)
 
             if unit.color.lower() == "red":
                 if unit.availability == True:
@@ -242,7 +256,14 @@ class GridControl(tk.Frame):
                         raise Exception(error)
 
                 elif tile_type == "city":
-                    pass
+                    if tile.color.lower() == "red":
+                        pass
+                    elif tile.color.lower() == "blue":
+                        pass
+                    elif tile.color == None:
+                        pass
+                    else:
+                        raise Exception(error)
         
         else:
             raise Exception(error)
@@ -432,10 +453,6 @@ class Visual(tk.Frame):
         
         self.endturn = True 
         self.update()
-
-# Test stuff
-random_tile = t.TileObject("grass#1")
-print(random_tile.move_cost) 
 
 # Initialize stuff
 root = tk.Tk()
