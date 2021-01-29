@@ -24,8 +24,8 @@ tiletypes = {
 class TileObject(object):
     # Holds tile positions (i.e 1:(1,2,1,4), 2:(2,2,1,4)...)
     tiles = {}
-    
-    def __init__(self, tile_id, move_cost, pos_x, pos_y, defense=0, occupied=False):
+
+    def __init__(self, tile_id, pos_x=0, pos_y=0, defense=0, occupied=False):
         # Set up base stats for tiles
         # Decided to make move_cost a dictionary as to reduce variable count
         self.move_cost = {"foot": None,
@@ -37,9 +37,9 @@ class TileObject(object):
         self.pos_y = pos_y
         # These parameters / variables / stats are set to none as they are not required for each tile type.
         self.functionality = False # May actually remove functionality in future, as it is redundant when I can just check the reader. Although its simpler to type this.
-        self.usable = None
-        self.health = None
-        self.color = None
+        self.usable = None # Used when a tile is a factory, refresh on turn end, disable when factory is used. Cannot be used when not captured.
+        self.health = None # Enabled when functionality exists. It allows infantry to capture (Should be set to 20, subtract unit health from it when being captured. Revert when unit stops)
+        self.color = None # When captured (if having functionality) changes what color it is based on capturing unit.
 
         # Start setting up functionality, tiles with functionality will bring in income and can be captured.
         reader = self.tile_id.split("#")
@@ -50,6 +50,11 @@ class TileObject(object):
             self.health = 20 # If a tile has functionality, it can be captured. When it reaches 0, it will convert to the team color that captured it.
 
         # Will enable the usable variable if functionality exists and the tile is a factory
-        if (self.functionality != False) and (reader[0] == "factory"):
+        if (self.functionality != False) and (reader[0] == "factory") and self.color != None:
             self.usable = True
+
+        # Sets movement costs
+        self.move_cost["foot"] = tiletypes[reader[0]][1]
+        self.move_cost["tires"] = tiletypes[reader[0]][2]
+        self.move_cost["tread"] = tiletypes[reader[0]][3]
         

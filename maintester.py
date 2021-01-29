@@ -179,12 +179,15 @@ class GridControl(tk.Frame):
         self.gridboard.create_line((10, 5, 200, 50))
         self.boardsize = boardsize
     
-    # Holds the file paths for the images to be used in draw_tile, only placeholder for now. Will also add 
+    # Holds the file paths for the images to be used in draw_tile, only placeholder for now. 
+    # Variations include: tile type, unit type, availability in unit, availability in interactive tile, color of unit, color of tile
     blue_active_unit = {"infantry-grass":"image", "infantry-road":"image"}
     blue_inactive_unit = {"infantry-grass":"image", "infantry-road":"image"}
     
     red_active_unit = {"infantry-grass":"image", "infantry-road":"image"}
-    red_inactive_unit = {"infantry-grass":"image", "infantry-road":"image"}    
+    red_inactive_unit = {"infantry-grass":"image", "infantry-road":"image"}
+
+    funct_tiles = {}    
     
     ''' I will need to develop a tile system to better control tiles and drawing. I may create images for every scenario (i.e infantry
     on road, infantry on factory, tank on grass, used tank on grass). Create a dictionary (plausibly 2: one for units, one for tile type)'''
@@ -210,7 +213,7 @@ class GridControl(tk.Frame):
                     
                 elif unit.availability == False:
                     # Put together the process for analyzing the data given and locate the proper image
-                    img = inactive_unit[unit_reader]
+                    img = red_inactive_unit[unit_reader]
                     imgfile = PhotoImage(file=img)
                     canvas.create_image(posx, posy, image=imgfile) # Currently only a format ( i guess )
         
@@ -222,10 +225,24 @@ class GridControl(tk.Frame):
             
             else:
                 raise Exception(error)   
-            
+
+        # For drawing tiles without units on them   
         elif unit == None:
-            # For drawing tiles without units on them
-            pass
+            # Determines if the tile is interactive
+            if tile.funtionality != "False":
+                # Determines if the tile is a factory
+                if tile_type == "factory":
+                    if tile.color.lower() == "red":
+                        pass
+                    elif tile.color.lower() == "blue":
+                        pass
+                    elif tile.color == None:
+                        pass
+                    else:
+                        raise Exception(error)
+
+                elif tile_type == "city":
+                    pass
         
         else:
             raise Exception(error)
@@ -241,6 +258,11 @@ class GridControl(tk.Frame):
             for j in range(self.boardsize):
                 posx = j+1
                 pass
+    
+    # Will check to see if a tile is occupied during a move
+    def check_tile(self):
+        pass
+
                 
 # GUI
 class Visual(tk.Frame):
@@ -410,7 +432,11 @@ class Visual(tk.Frame):
         
         self.endturn = True 
         self.update()
-        
+
+# Test stuff
+random_tile = t.TileObject("grass#1")
+print(random_tile.move_cost) 
+
 # Initialize stuff
 root = tk.Tk()
 root.title("maintester.py")
