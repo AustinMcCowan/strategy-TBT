@@ -278,7 +278,7 @@ class Visual(tk.Frame):
         self.color_adjust()
         starter_team_announce = "Current Team: " + Data.team_announcer
         self.lbl_current_team = tk.Label(self, text = starter_team_announce)
-        self.lbl_current_team.grid(row=0, column=2, columnspan=2, padx=15)
+        self.lbl_current_team.grid(row=0, column=2, columnspan=2)
         
         self.btn_attack = tk.Button(self, text="Attack", command = self.open_attack_frame)
         self.btn_attack.grid(row=1, column=2, sticky='news')
