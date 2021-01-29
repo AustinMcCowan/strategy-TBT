@@ -22,6 +22,8 @@ tiletypes = {
 }
 
 class TileObject(object):
+    # Holds tile positions (i.e 1:(1,2,1,4), 2:(2,2,1,4)...)
+    tiles = {}
     
     def __init__(self, tile_id, move_cost, pos_x, pos_y, defense=0, occupied=False):
         # Set up base stats for tiles

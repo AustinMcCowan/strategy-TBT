@@ -7,6 +7,7 @@
 import units as u
 import attack as ak
 import tkinter as tk
+import tiles as t
 from tkinter.scrolledtext import ScrolledText
 from tkinter import *
 from tkinter import ttk
@@ -35,7 +36,7 @@ class Data(object):
     # Since only one unit can be destroyed at a time due to update occuring after every action. This should not cause problems   
     def delete_unit(unit_team):
         for i in range(len(unit_team)):
-            if unit_team[i].health <= 0.5:
+            if unit_team[i].health <= 0.5: 
                 print("--unit was destroyed--")
                 unit_team.pop(i)
                 break
@@ -53,7 +54,7 @@ class Data(object):
             Data.other = Data.red_list
             
         else:
-            raise Exception("How did you break this?")
+            raise Exception("Error: temp unit lists failed to update")
         
     # Occurs after all actions        
     def update_teams():
@@ -193,10 +194,13 @@ class GridControl(tk.Frame):
         tile_location = "(" + str(posx) + "," + str(self.boardsize - posy) + ")"
         error = "Error has occured: Drawing tile at " + tile_location + " has failed"
         
+        # This will check what kind of tile it is through a chain of "if/elif/else"
         # if/then to determine if a unit was said to be on the tile being drawn
         if unit != None:
             unit_type = unit.title.split("#")[0]
-            unit_reader = str(unit_type) + "-" + str(tile)
+            tile_type = tile.tile_id.split("#")[0]
+            unit_reader = str(unit_type) + "-" + str(tile_type)
+
             if unit.color.lower() == "red":
                 if unit.availability == True:
                     # Put together the process for analyzing the data given and locate the proper image
