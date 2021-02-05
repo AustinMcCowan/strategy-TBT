@@ -194,6 +194,10 @@ class GridControl(tk.Frame):
     inactive_redfuncttile_redunit_img = {}
     
     justtile_img = {}
+    bluefuncttile_img = {}
+    inactive_bluefuncttile_img = {}
+    redfuncttile_img = {}
+    inactive_redfuncttile = {}
     
     ''' I will need to develop a tile system to better control tiles and drawing. I may create images for every scenario (i.e infantry
     on road, infantry on factory, tank on grass, used tank on grass). Create a dictionary (plausibly 2: one for units, one for tile type)'''
@@ -202,6 +206,12 @@ class GridControl(tk.Frame):
         # Set up an error message to be deployed whenever a tile fails to draw. May be over the top right now due to incomplete drawing system
         tile_location = "(" + str(posx) + "," + str(self.boardsize - posy) + ")"
         error = "Error has occured: Drawing tile at " + tile_location + " has failed"
+        
+        # Inner function reserved to actually create the image
+        def paint_tile(self, imgbranch, reader):
+            img = imgbranch[reader]
+            imgfile = PhotoImage(file=img)
+            canvas.create_image(posx, posy, image=imgfile) # Currently only a format ( i guess )
         
         # This will check what kind of tile it is through a chain of "if/elif/else"
         # if/then to determine if a unit was said to be on the tile being drawn
@@ -219,29 +229,57 @@ class GridControl(tk.Frame):
             dict_reader = str(activity) + "-" + str(unit_type) + "-" + str(tile_type)
 
             if unit.color.lower() == "red":
-                if unit.availability == True:
-                    # Put together the process for analyzing the data given and locate the proper image
-                    img = red_active_unit[unit_reader]
-                    imgfile = PhotoImage(file=img)
-                    canvas.create_image(posx, posy, image=imgfile) # Currently only a format ( i guess )
-                    
-                elif unit.availability == False:
-                    # Put together the process for analyzing the data given and locate the proper image
-                    img = red_inactive_unit[unit_reader]
-                    imgfile = PhotoImage(file=img)
-                    canvas.create_image(posx, posy, image=imgfile) # Currently only a format ( i guess )
-        
+                if tile.usable == True:
+                    if tile.color.lower() == "blue": #bluefuncttile_redunit_img 
+                        pass
+                    elif tile.color.lower() == "red": #redfuncttile_redunit_img
+                        pass
+                    else:
+                        raise Exception(error) # Tile cannot be usable if not captured by red/blue
+
+                elif tile.usable == False:
+                    if tile.color.lower() == "blue": #inactive_bluefuncttile_redunit_img 
+                        pass
+                    elif tile.color.lower() == "red": #inactive_redfuncttile_redunit_img
+                        pass
+                    else:
+                        raise Exception(error) # Tile cannot be usable if not captured by red/blue
+                
+                elif tile.usable == None: # redunit_img
+                    pass
+                
                 else: 
                     raise Exception(error)
                 
             elif unit.color.lower() == "blue":
-                pass
-            
+                if tile.usable == True:
+                    if tile.color.lower() == "blue": #bluefuncttile_blueunit_img 
+                        pass
+                    elif tile.color.lower() == "red": #redfuncttile_blueunit_img
+                        pass
+                    else:
+                        raise Exception(error) # Tile cannot be usable if not captured by red/blue
+
+                elif tile.usable == False:
+                    if tile.color.lower() == "blue": #inactive_bluefuncttile_blueunit_img
+                        pass
+                    elif tile.color.lower() == "red": #inactive_redfuncttile_blueunit_img
+                        pass
+                    else: 
+                        raise Exception(error) # Tile cannot be usable if not captured
+
+                elif tile.usable == None: # blueunit_img
+                    pass
+
+                else:
+                    raise Exception(error) # 'usable' is broken on unit.
+
             else:
-                raise Exception(error)   
+                raise Exception(error) # Unit is either assigned to no team or a false one.  
 
         # For drawing tiles without units on them   
         elif unit == None:
+
             # Determines if the tile is interactive
             if tile.funtionality != "False":
                 # Determines if the tile is a factory
@@ -264,6 +302,7 @@ class GridControl(tk.Frame):
                         pass
                     else:
                         raise Exception(error)
+            
         
         else:
             raise Exception(error)
