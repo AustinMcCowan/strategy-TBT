@@ -12,20 +12,20 @@ lists, this should not create problems.
 # information format: Functionality, defense rating, movement costs: foot, tires, tread (air isnt needed as its always 1)
 global tiletypes
 tiletypes = {
-    "grass":[False, 1, 2, 2], 
-    "road":[False, 1, 1, 1], 
-    "factory":[True, 2, 2, 2],
-    "water":[False, 100, 100, 100],
-    "mountain":[False, 3, 100, 100],
-    "city":[True, 2, 2, 2],
-    "forest":[False, 2, 3, 3]
+    "grass":[False, 1, 1, 2, 2], 
+    "road":[False, 0, 1, 1, 1], 
+    "factory":[True, 3, 2, 2, 2],
+    "water":[False, 0, 100, 100, 100],
+    "mountain":[False, 4, 3, 100, 100],
+    "city":[True, 3, 2, 2, 2],
+    "forest":[False, 2, 2, 3, 3]
 }
 
 class TileObject(object):
     # Holds tile positions (i.e 1:(1,2,1,4), 2:(2,2,1,4)...) Might move to Data class in maintester
     tiles = {}
 
-    def __init__(self, tile_id, pos_x=0, pos_y=0, defense=0, color=None, occupied=False):
+    def __init__(self, tile_id, pos_x=0, pos_y=0, color=None, occupied=False):
         # Set up base stats for tiles
         # Decided to make move_cost a dictionary as to reduce variable count
         self.move_cost = {"foot": None,
@@ -35,6 +35,7 @@ class TileObject(object):
         self.tile_id = tile_id 
         self.pos_x = pos_x 
         self.pos_y = pos_y
+        self.defense = 0
         # These parameters / variables / stats are set to none as they are not required for each tile type.
         self.functionality = False # May actually remove functionality in future, as it is redundant when I can just check the reader. Although its simpler to type this.
         self.usable = None # Used when a tile is a factory, refresh on turn end, disable when factory is used. Cannot be used when not captured.
@@ -54,7 +55,10 @@ class TileObject(object):
             self.usable = True
 
         # Sets movement costs
-        self.move_cost["foot"] = tiletypes[reader[0]][1]
-        self.move_cost["tires"] = tiletypes[reader[0]][2]
-        self.move_cost["tread"] = tiletypes[reader[0]][3]
+        self.move_cost["foot"] = tiletypes[reader[0]][2]
+        self.move_cost["tires"] = tiletypes[reader[0]][3]
+        self.move_cost["tread"] = tiletypes[reader[0]][4]
+        self.defense = tiletypes[reader[0]][1]
         
+def tileCR8(tile_id, tile_list, posx, posy, color=None, occupied=False):
+    tile_list.append(TileObject(tile_id, posx, posy, color, occupied))

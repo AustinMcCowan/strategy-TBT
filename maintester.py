@@ -20,6 +20,7 @@ class Data(object):
     other = []
     turn_decider = (5)
     team_announcer = ''
+    tile_list = []
     def __init__(self):
         
         # Initial units to start with
@@ -311,13 +312,18 @@ class GridControl(tk.Frame):
     def draw_board(self):
         posx = 0
         posy = 0
+        index = 0
         # For each column
         for i in range(self.boardsize):
             posy = i+1
             # For each row
             for j in range(self.boardsize):
                 posx = j+1
-                pass
+                ''' Need to create an instruction list of sorts that basically determines what tiles / units are
+                placed on the board, in order of index, i.e 1:("grass", "red_infantry")'''
+                # tile_id = list[index][0] + "#" + str(index)   << format for tile_id of sorts
+                # t.tileCR8(tile_id)
+                index += 1 # Just add this afterwards so as to not cause problems with indexing on information list
     
     # Will check to see if a tile is occupied during a move
     def check_tile(self):
