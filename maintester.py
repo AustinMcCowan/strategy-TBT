@@ -211,7 +211,7 @@ class GridControl(tk.Frame):
         def paint_tile(imgbranch):
             img = imgbranch[dict_reader]
             imgfile = PhotoImage(file=img)
-            canvas.create_image(posx, posy, image=imgfile) # Currently only a format ( i guess )
+            self.gridboard.create_image(posx, posy, image=imgfile) # Currently only a format ( i guess )
         
         # This will check what kind of tile it is through a chain of "if/elif/else"
         dict_reader = None
