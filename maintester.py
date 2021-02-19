@@ -308,8 +308,9 @@ class GridControl(tk.Frame):
         else:
             raise Exception(error)
         
-    # Will run drawTile for everytile
-    def draw_board(self):
+    # Will run through the board size, creating and drawing a tile for each slot. This function will only ever need to be ran once.
+    # I need to set an initialize for the tiles, since having them be created inside draw_board will mean tiles will be created every action.
+    def initial_draw_board(self):
         posx = 0
         posy = 0
         index = 0
@@ -325,11 +326,45 @@ class GridControl(tk.Frame):
                 # t.tileCR8(tile_id)
                 index += 1 # Just add this afterwards so as to not cause problems with indexing on information list
     
-    # Will check to see if a tile is occupied during a move
-    def check_tile(self):
-        pass
+    # Will run drawTile for every tile.
+    def draw_board(self):
+        posx = 0
+        posy = 0
+        index = 0
+        # For each column
+        for i in range(self.boardsize):
+            posy = i+1
+            # For each row
+            for j in range(self.boardsize):
+                posx = j+1
+                chosen_unit = None
+                # tile_id = list[index][0] + "#" + str(index)   << format for tile_id of sorts
+                # This should work later due to units not being able to occupy the same space.
+                present_unit = check_tile(posx, posy) 
 
-                
+                # drawTile(unit, tile, posx, posy) 
+                index += 1 # Just add this afterwards so as to not cause problems with indexing on information list
+
+    # Will check to see if a tile is occupied during a move. Will be used to stop actions if unit is present.
+    def check_tile(self, posx, posy):
+        # Format as so: [blue unit check, red unit check]
+        result = [None, None]
+        for unit in Data.red_list:
+            if (unit.pos_x == posx) and (unit.pos_y == posy):
+                result[0] = (True, unit)
+                break
+            else:
+                continue
+        
+        for unit in Data.blue_list:
+            if (unit.pos_x == posx) and (unit.pos_y == posy):
+                result[1] = (True, unit)
+                break
+            else:
+                continue
+
+        return result
+
 # GUI
 class Visual(tk.Frame):
     
