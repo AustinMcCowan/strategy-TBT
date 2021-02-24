@@ -141,7 +141,14 @@ class Data(object):
             97:["grass", None],
             98:["grass", None],
             99:["grass", None]
-        }   
+        }
+
+        ''' COORDINATES ARE EXTREMELY IMPORTANT FOR HANDLING MOUSE CLICKS AND TILE SETTING '''
+        # Will sync posx with proper pixel locations on canvas/gridboard (may need to update each time window is resized)
+        Data.x_coordinates = {} 
+
+        # Will sync posy with proper pixel locations on canvas/gridboard (May need to update each time window is resized)
+        Data.y_coordinates = {}
 
         # Initial team setting
         Data.temp_list_set()
@@ -442,10 +449,8 @@ class GridControl(tk.Frame):
                 placed on the board, in order of index, i.e 1:("grass", "red_infantry")'''
                 # tile_id = Data.layout[index][0] + "#" + str(index)   << format for tile_id of sorts
                 # This should work later due to units not being able to occupy the same space.
-                unit_presence = self.check_tile(posx, posy) 
+                # Will also need to do unitCR8 functions here to initialize stuff on the board
 
-                for result in unit_presence:
-                    pass
                 # drawTile(unit, tile, posx, posy) 
                 index += 1 # Just add this afterwards so as to not cause problems with indexing on information list
 
@@ -464,10 +469,27 @@ class GridControl(tk.Frame):
                 chosen_unit = None
                 # tile_id = list[index][0] + "#" + str(index)   << format for tile_id of sorts
                 # This should work later due to units not being able to occupy the same space.
-                unit_presence = self.check_tile(posx, posy) 
+                tile_info = self.check_tile(posx, posy) # Checks tile information and returns it 
+                unit_presence = False # Used to check if there is a unit prese
 
-                for result in unit_presence:
-                    pass
+                # Grabs unit (if there is) from unit_presence and confirms this with 'does_unit_exist'
+                for result in tile_info:
+                    try:
+                        if result[0] == True:
+                            chosen_unit = result[1]
+                            unit_presence = True
+                    except TypeError:
+                        pass
+
+                    except:
+                        print("Error has occured in grabbing tile information")
+                
+                # If a unit is present on the tile, use it. If not, put None value in its place
+                if unit_presence == True:
+                    self.draw_tile(chosen_unit, Data.tile_list[index], posx, posy)
+                else:
+                    self.draw_tile(None, Data.tile_list[index], posx, posy)
+
                 # drawTile(unit, tile, posx, posy) 
                 index += 1 # Just add this afterwards so as to not cause problems with indexing on information list
 
@@ -530,8 +552,8 @@ class Visual(tk.Frame):
         
         self.frm_board = GridControl(self)
         self.frm_board.grid(row=0, column=1, rowspan=4, sticky='news')
-        print(self.frm_board.presence)
-        self.frm_board.initialize_board()
+        print(self.frm_board.presence) # Makes sure the board is actually created/exists.
+        self.frm_board.initialize_board() # Set up initial units and set the tiles
         
         '''Since this zone/area of the program will be empty unless a command is taking place, a placeholder with dark grey 
         background is placed here to indicate it is empty/no action occuring'''
@@ -551,12 +573,16 @@ class Visual(tk.Frame):
     # Updates the gui and basically asks itself if its okay to switch turns
     # So when anything significant happens or changes, call this function.
     def update(self):
-        Data.update_teams()
-        txt = "Current Team: " + Data.team_announcer
-        self.lbl_current_team.configure(text = txt)
-        self.color_adjust()
-        self.frm_board.draw_board()
-            
+        try:
+            self.frm_board.draw_board()
+        except IndexError:
+            print("IndexError: Data.tile_list not setup currently")
+        finally:
+            Data.update_teams()
+            txt = "Current Team: " + Data.team_announcer
+            self.lbl_current_team.configure(text = txt)
+            self.color_adjust()
+        
     def open_attack_frame(self):
         # Stops the spam creation of frames
         try:
