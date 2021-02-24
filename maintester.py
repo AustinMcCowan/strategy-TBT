@@ -6,11 +6,17 @@
 
 import units as u
 import attack as ak
-import tkinter as tk
 import tiles as t
-from tkinter.scrolledtext import ScrolledText
-from tkinter import *
-from tkinter import ttk
+try:
+    import tkinter as tk
+    from tkinter.scrolledtext import ScrolledText
+    from tkinter import *
+    from tkinter import ttk
+except:
+    import Tkinter as tk
+    from Tkinter.scrolledtext import ScrolledText
+    from Tkinter import *
+    from Tkinter import ttk
 
 # Hold and initialize starting information. 
 class Data(object):
@@ -20,20 +26,129 @@ class Data(object):
     other = []
     turn_decider = (5)
     team_announcer = ''
-    tile_list = []
+    tile_list = [] 
     def __init__(self):
         
-        # Initial units to start with
+        # Initial units to start with (TO BE REMOVED/REWORKED)
+        '''
         u.unitCR8("tank", Data.red_list, "Red", True)
-        u.unitCR8("tank", Data.red_list, "Red", True)
-        u.unitCR8("tank", Data.red_list, "Red", True)
+        u.unitCR8("infantry", Data.red_list, "Red", True)
+        u.unitCR8("recon", Data.red_list, "Red", True)
         u.unitCR8("tank", Data.blue_list, "Blue", True)
-        u.unitCR8("tank", Data.blue_list, "Blue", True)
-        u.unitCR8("tank", Data.blue_list, "Blue", True)      
-        
+        u.unitCR8("infantry", Data.blue_list, "Blue", True)
+        u.unitCR8("recon", Data.blue_list, "Blue", True)      
+        '''
+
+        # Initialize map layout / units (formatted as such = index:["tiletype", "team#unittype"/None])
+        Data.layout = {
+            0:["grass", "red#tank"],
+            1:["grass", None],
+            2:["grass", None],
+            3:["grass", None],
+            4:["grass", None],
+            5:["grass", None],
+            6:["grass", None],
+            7:["grass", None],
+            8:["grass", None],
+            9:["grass", "blue#tank"],
+            10:["grass", "red#infantry"],
+            11:["grass", None],
+            12:["grass", None],
+            13:["grass", None],
+            14:["grass", None],
+            15:["grass", None],
+            16:["grass", None],
+            17:["grass", None],
+            18:["grass", None],
+            19:["grass", "blue#infantry"],
+            20:["grass", "red#recon"],
+            21:["grass", None],
+            22:["grass", None],
+            23:["grass", None],
+            24:["grass", None],
+            25:["grass", None],
+            26:["grass", None],
+            27:["grass", None],
+            28:["grass", None],
+            29:["grass", "blue#recon"],
+            30:["grass", None],
+            31:["grass", None],
+            32:["grass", None],
+            33:["grass", None],
+            34:["grass", None],
+            35:["grass", None],
+            36:["grass", None],
+            37:["grass", None],
+            38:["grass", None],
+            39:["grass", None],
+            40:["grass", None],
+            41:["grass", None],
+            42:["grass", None],
+            43:["grass", None],
+            44:["grass", None],
+            45:["grass", None],
+            46:["grass", None],
+            47:["grass", None],
+            48:["grass", None],
+            49:["grass", None],
+            50:["grass", None],
+            51:["grass", None],
+            52:["grass", None],
+            53:["grass", None],
+            54:["grass", None],
+            55:["grass", None],
+            56:["grass", None],
+            57:["grass", None],
+            58:["grass", None],
+            59:["grass", None],
+            60:["grass", None],
+            61:["grass", None],
+            62:["grass", None],
+            63:["grass", None],
+            64:["grass", None],
+            65:["grass", None],
+            66:["grass", None],
+            67:["grass", None],
+            68:["grass", None],
+            69:["grass", None],
+            70:["grass", None],
+            71:["grass", None],
+            72:["grass", None],
+            73:["grass", None],
+            74:["grass", None],
+            75:["grass", None],
+            76:["grass", None],
+            77:["grass", None],
+            78:["grass", None],
+            79:["grass", None],
+            80:["grass", None],
+            81:["grass", None],
+            82:["grass", None],
+            83:["grass", None],
+            84:["grass", None],
+            85:["grass", None],
+            86:["grass", None],
+            87:["grass", None],
+            88:["grass", None],
+            89:["grass", None],
+            90:["grass", None],
+            91:["grass", None],
+            92:["grass", None],
+            93:["grass", None],
+            94:["grass", None],
+            95:["grass", None],
+            96:["grass", None],
+            97:["grass", None],
+            98:["grass", None],
+            99:["grass", None]
+        }   
+
         # Initial team setting
         Data.temp_list_set()
+
+
         
+
     # Since only one unit can be destroyed at a time due to update occuring after every action. This should not cause problems   
     def delete_unit(unit_team):
         for i in range(len(unit_team)):
@@ -166,19 +281,20 @@ class VisualCreateFrame(tk.Frame):
         picked_unit = self.tkvar_names.get()
         
         frame_visual.create_call(picked_unit)
+
 # handles and spawns the grid. 
 class GridControl(tk.Frame):
     # Everything is placeholder as of right now
-    def __init__(self, parent, boardsize = 30):
+    def __init__(self, parent, boardsize = 10):
         color = Data.team_announcer.lower()
         self.parent = parent
         tk.Frame.__init__(self, master=parent, highlightbackground = color, highlightthickness=1)
         # Creates the canvas (the main piece for this class) and places it
-        self.gridboard = Canvas(self, bg="#0F0")
+        self.gridboard = tk.Canvas(self, bg="#0F0")
         self.presence = "alive"
         self.gridboard.grid(column=0, row=0, sticky='news')
         self.gridboard.create_line((10, 5, 200, 50))
-        self.boardsize = boardsize
+        self.boardsize = boardsize # Which translates to both directions (width and length being = to boardsize)
     
     # Holds the file paths for the images to be used in draw_tile, only placeholder for now. 
     # Variations include: (tile type, unit type, availability in unit), availability in interactive tile, color of unit, color of tile
@@ -310,27 +426,35 @@ class GridControl(tk.Frame):
         
     # Will run through the board size, creating and drawing a tile for each slot. This function will only ever need to be ran once.
     # I need to set an initialize for the tiles, since having them be created inside draw_board will mean tiles will be created every action.
-    def initial_draw_board(self):
+    def initialize_board(self):
         posx = 0
         posy = 0
         index = 0
+        self.gridboard.delete("all") # Remove all items on the canvas to prevent memory problems.
         # For each column
         for i in range(self.boardsize):
-            posy = i+1
+            posy = i
             # For each row
             for j in range(self.boardsize):
-                posx = j+1
+                posx = j
+                chosen_unit = None
                 ''' Need to create an instruction list of sorts that basically determines what tiles / units are
                 placed on the board, in order of index, i.e 1:("grass", "red_infantry")'''
-                # tile_id = list[index][0] + "#" + str(index)   << format for tile_id of sorts
-                # t.tileCR8(tile_id)
+                # tile_id = Data.layout[index][0] + "#" + str(index)   << format for tile_id of sorts
+                # This should work later due to units not being able to occupy the same space.
+                unit_presence = self.check_tile(posx, posy) 
+
+                for result in unit_presence:
+                    pass
+                # drawTile(unit, tile, posx, posy) 
                 index += 1 # Just add this afterwards so as to not cause problems with indexing on information list
-    
+
     # Will run drawTile for every tile.
     def draw_board(self):
         posx = 0
         posy = 0
         index = 0
+        self.gridboard.delete("all") # Remove all items on the canvas to prevent memory problems.
         # For each column
         for i in range(self.boardsize):
             posy = i+1
@@ -340,8 +464,10 @@ class GridControl(tk.Frame):
                 chosen_unit = None
                 # tile_id = list[index][0] + "#" + str(index)   << format for tile_id of sorts
                 # This should work later due to units not being able to occupy the same space.
-                present_unit = check_tile(posx, posy) 
+                unit_presence = self.check_tile(posx, posy) 
 
+                for result in unit_presence:
+                    pass
                 # drawTile(unit, tile, posx, posy) 
                 index += 1 # Just add this afterwards so as to not cause problems with indexing on information list
 
@@ -363,7 +489,12 @@ class GridControl(tk.Frame):
             else:
                 continue
 
-        return result
+        # Just another safeguard to insure a problem hasn't occured in unit placement 
+        # Reason for not 'if result[0] == result[1]:' is because they could both be None, which is fine.
+        if None not in result:
+            raise Exception("Error has occured during draw: Red unit and blue unit coexist on one tile")
+        else:
+            return result
 
 # GUI
 class Visual(tk.Frame):
@@ -400,7 +531,7 @@ class Visual(tk.Frame):
         self.frm_board = GridControl(self)
         self.frm_board.grid(row=0, column=1, rowspan=4, sticky='news')
         print(self.frm_board.presence)
-        self.frm_board.draw_board()
+        self.frm_board.initialize_board()
         
         '''Since this zone/area of the program will be empty unless a command is taking place, a placeholder with dark grey 
         background is placed here to indicate it is empty/no action occuring'''
@@ -424,6 +555,7 @@ class Visual(tk.Frame):
         txt = "Current Team: " + Data.team_announcer
         self.lbl_current_team.configure(text = txt)
         self.color_adjust()
+        self.frm_board.draw_board()
             
     def open_attack_frame(self):
         # Stops the spam creation of frames

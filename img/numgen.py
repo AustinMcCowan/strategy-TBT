@@ -1,5 +1,5 @@
 # Used just to generate text for img_codex.txt
-
+'''
 for i in range(500):
     interval_string = str(i)
     value = ""
@@ -10,5 +10,8 @@ for i in range(500):
     else:
         value = interval_string + " ="
     print(value)
-    
-    
+    '''
+
+for i in range(100):
+    interval_string = str(i) + ':["grass", None],'
+    print(interval_string)
