@@ -143,7 +143,7 @@ class Data(object):
             99:["grass", None]
         }
 
-        ''' COORDINATES ARE EXTREMELY IMPORTANT FOR HANDLING MOUSE CLICKS AND TILE SETTING '''
+        '''>> COORDINATES ARE IMPORTANT FOR HANDLING MOUSE CLICKS AND TILE SETTING <<'''
         # Will sync posx with proper pixel locations on canvas/gridboard (may need to update each time window is resized)
         Data.x_coordinates = {} 
 
