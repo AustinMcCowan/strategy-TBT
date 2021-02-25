@@ -13,5 +13,5 @@ for i in range(500):
     '''
 
 for i in range(100):
-    interval_string = str(i) + ':["grass", None],'
+    interval_string = str(i) + ':[0, 0],'
     print(interval_string)

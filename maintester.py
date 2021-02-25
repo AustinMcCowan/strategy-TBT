@@ -302,7 +302,8 @@ class GridControl(tk.Frame):
         self.gridboard.grid(column=0, row=0, sticky='news')
         self.gridboard.create_line((10, 5, 200, 50))
         self.boardsize = boardsize # Which translates to both directions (width and length being = to boardsize)
-    
+        self.initialize_coordinates()
+
     # Holds the file paths for the images to be used in draw_tile, only placeholder for now. 
     # Variations include: (tile type, unit type, availability in unit), availability in interactive tile, color of unit, color of tile
     blueunit_img = {"active-infantry-grass":"image", "active-infantry-road":"image"}
@@ -430,7 +431,24 @@ class GridControl(tk.Frame):
             
         else:
             raise Exception(error)
-        
+
+    def initialize_coordinates(self):
+        frameheight, framewidth = self.gridboard.winfo_height(), self.gridboard.winfo_width()
+        current_x, current_y = 0, 0
+        interval_height = frameheight / self.boardsize
+        interval_width = framewidth / self.boardsize
+        set_height = interval_height
+        set_width = interval_width
+
+        for i in range(self.boardsize): 
+            Data.x_coordinates[i] = [current_x, set_width]
+            current_x = set_width + 1 # Removes overlapping 
+            set_width += interval_width
+
+            Data.y_coordinates[i] = [current_y, set_height]
+            curent_y = set_height + 1 # Removes overlapping
+            set_height += interval_height
+    
     # Will run through the board size, creating and drawing a tile for each slot. This function will only ever need to be ran once.
     # I need to set an initialize for the tiles, since having them be created inside draw_board will mean tiles will be created every action.
     def initialize_board(self):
@@ -462,10 +480,10 @@ class GridControl(tk.Frame):
         self.gridboard.delete("all") # Remove all items on the canvas to prevent memory problems.
         # For each column
         for i in range(self.boardsize):
-            posy = i+1
+            posy = i
             # For each row
             for j in range(self.boardsize):
-                posx = j+1
+                posx = j
                 chosen_unit = None
                 # tile_id = list[index][0] + "#" + str(index)   << format for tile_id of sorts
                 # This should work later due to units not being able to occupy the same space.
@@ -559,8 +577,14 @@ class Visual(tk.Frame):
         background is placed here to indicate it is empty/no action occuring'''
         self.frm_empty = tk.Frame(self, bg = "#AAA")
         self.frm_empty.grid(row=3, column=2, columnspan=2, sticky='news')
-        
-        
+
+    # This method will be responsible for handling changes in the window size and will update coordinates in Data, as well as redraw the board.
+    def resize(self, event):
+        frameheight, framewidth = self.frm_board.winfo_height(), self.frm_board.winfo_width()
+        self.frm_board.gridboard.config(width=framewidth, height=frameheight)
+        print("width: " + str(self.frm_board.gridboard.winfo_width()))
+        print("height: "+ str(self.frm_board.gridboard.winfo_height()))
+
     def color_adjust(self):
         if "red" in Data.team_announcer.lower():
             color = "#ffa8a8"
@@ -701,14 +725,15 @@ data_storage = Data()
 frame_visual = Visual()
 frame_visual.grid(row = 0, column = 0, sticky = "news")
 frame_visual.grid_columnconfigure(0, weight = 0)
-frame_visual.grid_columnconfigure(1, weight = 500)
-frame_visual.grid_columnconfigure(2, weight = 125)
-frame_visual.grid_columnconfigure(3, weight = 125)
+frame_visual.grid_columnconfigure(1, weight = 400)
+frame_visual.grid_columnconfigure(2, weight = 125, pad = 50, minsize = 150)
+frame_visual.grid_columnconfigure(3, weight = 125, pad = 50, minsize = 150)
 frame_visual.grid_rowconfigure(0, weight = 4)
 frame_visual.grid_rowconfigure(1, weight = 16)
 frame_visual.grid_rowconfigure(2, weight = 16)
 frame_visual.grid_rowconfigure(3, weight = 64)
 frame_visual.tkraise()
+frame_visual.frm_board.bind("<Configure>", frame_visual.resize)
 
 root.grid_columnconfigure(0, weight = 1)
 root.grid_rowconfigure(0, weight = 1)
