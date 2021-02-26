@@ -532,7 +532,7 @@ class GridControl(tk.Frame):
                 
         Data.temp_list_set()
 
-    # Will run drawTile for every tile.
+    # Will run draw_tile for every tile.
     def draw_board(self):
         posx = 0
         posy = 0
