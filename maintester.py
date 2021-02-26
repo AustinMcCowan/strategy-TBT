@@ -329,7 +329,7 @@ class GridControl(tk.Frame):
     # Will be used to place and draw units on the board. draw_board (may be renamed later) will be used after every action most likely.
     def draw_tile(self, unit, tile, posx, posy):
         # Set up an error message to be deployed whenever a tile fails to draw.
-        tile_location = "(" + str(posx) + "," + str(self.boardsize - posy) + ")"
+        tile_location = "(" + str(posx) + "," + str(posy) + ")"
         error = "Error has occured: Drawing tile at " + tile_location + " has failed"
         
         # Inner function reserved to actually create the image
@@ -432,7 +432,7 @@ class GridControl(tk.Frame):
         else:
             raise Exception(error)
 
-    def initialize_coordinates(self):
+    def initialize_coordinates(self): # This will spew out some wacky coordinates at first, but its irrelevant as they are reset nearly immediately.
         frameheight, framewidth = self.gridboard.winfo_height(), self.gridboard.winfo_width()
         current_x, current_y = 0, 0
         interval_height = frameheight / self.boardsize
@@ -448,14 +448,13 @@ class GridControl(tk.Frame):
             Data.y_coordinates[i] = [current_y, set_height]
             curent_y = set_height + 1 # Removes overlapping
             set_height += interval_height
-    
+
     # Will run through the board size, creating and drawing a tile for each slot. This function will only ever need to be ran once.
     # I need to set an initialize for the tiles, since having them be created inside draw_board will mean tiles will be created every action.
     def initialize_board(self):
         posx = 0
         posy = 0
         index = 0
-        self.gridboard.delete("all") # Remove all items on the canvas to prevent memory problems.
         # For each column
         for i in range(self.boardsize):
             posy = i
@@ -463,14 +462,48 @@ class GridControl(tk.Frame):
             for j in range(self.boardsize):
                 posx = j
                 chosen_unit = None
+                # ---- UNIT SETTING ----
                 ''' Need to create an instruction list of sorts that basically determines what tiles / units are
-                placed on the board, in order of index, i.e 1:("grass", "red_infantry")'''
+                placed on the board, in order of index, i.e 1:("grass", "red_infantry") (DONE)'''
                 # tile_id = Data.layout[index][0] + "#" + str(index)   << format for tile_id of sorts
                 # This should work later due to units not being able to occupy the same space.
-                # Will also need to do unitCR8 functions here to initialize stuff on the board
+                if Data.layout[index][1] != None:
+                    layout_unit_reader = Data.layout[index][1].split("#")
+                    if layout_reader[0].lower() == "red":
+                        u.unitCR8(layout_unit_reader[1], Data.red_list, "Red", True, posx, posy)
+                    elif layout_reader[0].lower() == "blue":
+                        u.unitCR8(layout_unit_reader[1], Data.blue_list, "Blue", True, posx, posy)
 
-                # drawTile(unit, tile, posx, posy) 
+                # --- TILE SETTING ----
+                layout_tile_reader = 
+                tile_id = Data.layout[index][0] + "#" + str(index)
+
+
+
+                # ---- DRAWING ----
+                tile_info = self.check_tile(posx, posy) # Checks tile information and returns it 
+                unit_presence = False # Used to check if there is a unit present
+
+                # Grabs unit (if there is) from unit_presence and confirms this with 'does_unit_exist'
+                for result in tile_info:
+                    try:
+                        if result[0] == True:
+                            chosen_unit = result[1]
+                            unit_presence = True
+                    except TypeError:
+                        pass
+
+                    except:
+                        print("Error has occured in grabbing tile information")
+                
+                # If a unit is present on the tile, use it. If not, put None value in its place
+                if unit_presence == True:
+                    self.draw_tile(chosen_unit, Data.tile_list[index], posx, posy)
+                else:
+                    self.draw_tile(None, Data.tile_list[index], posx, posy) 
                 index += 1 # Just add this afterwards so as to not cause problems with indexing on information list
+                
+        Data.temp_list_set()
 
     # Will run drawTile for every tile.
     def draw_board(self):
@@ -488,7 +521,7 @@ class GridControl(tk.Frame):
                 # tile_id = list[index][0] + "#" + str(index)   << format for tile_id of sorts
                 # This should work later due to units not being able to occupy the same space.
                 tile_info = self.check_tile(posx, posy) # Checks tile information and returns it 
-                unit_presence = False # Used to check if there is a unit prese
+                unit_presence = False # Used to check if there is a unit present
 
                 # Grabs unit (if there is) from unit_presence and confirms this with 'does_unit_exist'
                 for result in tile_info:
@@ -584,6 +617,8 @@ class Visual(tk.Frame):
         self.frm_board.gridboard.config(width=framewidth, height=frameheight)
         print("width: " + str(self.frm_board.gridboard.winfo_width()))
         print("height: "+ str(self.frm_board.gridboard.winfo_height()))
+        self.frm_board.initialize_coordinates()
+        # self.frm_board.draw_board()
 
     def color_adjust(self):
         if "red" in Data.team_announcer.lower():

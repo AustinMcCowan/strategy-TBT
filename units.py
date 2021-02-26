@@ -82,13 +82,12 @@ class UnitObject(object):
             self.antiairEF = 3
             
 # Unit creation and insertion into the given unit list. WILL ONLY WORK WITH A LIST
-def unitCR8(title, unit_list, team="", usable=False):   
+def unitCR8(title, unit_list, team="", usable=False, posx=0, posy=0):   
     if title not in unitnames:
         raise Exception('invalid unit type attempted to be created')
     elif len(unit_list) >= 50: # Unit cap is 50. 
         print("Unit cap reached")
-        return None
-            
+        return None         
     else:
         distance = unit_move_limits[unitnames.index(title)]
         name = title
@@ -107,6 +106,6 @@ def unitCR8(title, unit_list, team="", usable=False):
                         number += 1
         number = str(number)
         name = name + "#" + number
-        unit_list.append(UnitObject(name, color=team, available=usable, move_limit=distance))
+        unit_list.append(UnitObject(name, color=team, available=usable, move_limit=distance, pos_x=posx, pos_y=posy))
     
      
