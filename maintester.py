@@ -303,7 +303,7 @@ class GridControl(tk.Frame):
         self.gridboard.grid(column=0, row=0, sticky='news')
         self.gridboard.create_line((10, 5, 200, 50))
         self.boardsize = boardsize # Which translates to both directions (width and length being = to boardsize)
-        self.initialize_coordinates()
+        self.set_coordinates()
 
     # Holds the file paths for the images to be used in draw_tile, only placeholder for now. 
     # Variations include: (tile type, unit type, availability in unit), availability in interactive tile, color of unit, color of tile
@@ -439,7 +439,7 @@ class GridControl(tk.Frame):
             #print(error)
             pass
 
-    def initialize_coordinates(self): # This will spew out some wacky coordinates at first, but its irrelevant as they are reset nearly immediately.
+    def set_coordinates(self): # This will spew out some wacky coordinates at first, but its irrelevant as they are reset nearly immediately.
         frameheight, framewidth = self.gridboard.winfo_height(), self.gridboard.winfo_width()
         current_x, current_y = 0, 0
         interval_height = frameheight / self.boardsize
@@ -532,7 +532,7 @@ class GridControl(tk.Frame):
                 
         Data.temp_list_set()
 
-    # Will run draw_tile for every tile.
+    # Will run drawtile for every tile.
     def draw_board(self):
         posx = 0
         posy = 0
@@ -644,7 +644,7 @@ class Visual(tk.Frame):
         self.frm_board.gridboard.config(width=framewidth, height=frameheight)
         print("width: " + str(self.frm_board.gridboard.winfo_width()))
         print("height: "+ str(self.frm_board.gridboard.winfo_height()))
-        self.frm_board.initialize_coordinates()
+        self.frm_board.set_coordinates()
         self.frm_board.draw_board()
 
     def color_adjust(self):
