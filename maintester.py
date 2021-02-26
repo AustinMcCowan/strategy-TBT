@@ -39,7 +39,8 @@ class Data(object):
         u.unitCR8("recon", Data.blue_list, "Blue", True)      
         '''
 
-        # Initialize map layout / units (formatted as such = index:["tiletype", "team#unittype"/None])
+        # Initialize map layout / units (formatted as such = index:["tilecolor#tiletype", "team#unittype"/None])
+        # For tiles, color is optional, and is only usable on factories or cities
         Data.layout = {
             0:["grass", "red#tank"],
             1:["grass", None],
@@ -339,98 +340,104 @@ class GridControl(tk.Frame):
             self.gridboard.create_image(posx, posy, image=imgfile) # Currently only a format ( i guess )
         
         # This will check what kind of tile it is through a chain of "if/elif/else"
-        dict_reader = None
-        if unit != None:
-            activity = ""
-            if unit.availability == True:
-                activity = "active"
-            elif unit.availability == False:
-                activity = "inactive"
-            else:
-                raise Exception(error)
-            
-            unit_type = unit.title.split("#")[0]
-            tile_type = tile.tile_id.split("#")[0]
-            dict_reader = str(activity) + "-" + str(unit_type) + "-" + str(tile_type)
+        try:
+            dict_reader = None
+            if unit != None:
+                activity = ""
+                if unit.available == True:
+                    activity = "active"
+                elif unit.available == False:
+                    activity = "inactive"
+                else:
+                    raise Exception(error)
+                
+                unit_type = unit.title.split("#")[0]
+                tile_type = tile.tile_id.split("#")[0]
+                dict_reader = str(activity) + "-" + str(unit_type) + "-" + str(tile_type)
 
-            if unit.color.lower() == "red":
+                if unit.color.lower() == "red":
+                    if tile.usable == True:
+                        if tile.color.lower() == "blue":  
+                            paint_tile(bluefuncttile_redunit_img)
+                        elif tile.color.lower() == "red": 
+                            paint_tile(redfuncttile_redunit_img)
+                        else:
+                            raise Exception(error) # Tile cannot be usable if not captured by red/blue
+
+                    elif tile.usable == False:
+                        if tile.color.lower() == "blue":  
+                            paint_tile(inactive_bluefuncttile_redunit_img)
+                        elif tile.color.lower() == "red": 
+                            paint_tile(inactive_redfuncttile_redunit_img)
+                        else:
+                            raise Exception(error) # Tile cannot be usable if not captured by red/blue
+                    
+                    elif tile.usable == None: 
+                        paint_tile(redunit_img)
+                    
+                    else: 
+                        raise Exception(error)
+                    
+                elif unit.color.lower() == "blue":
+                    if tile.usable == True:
+                        if tile.color.lower() == "blue": 
+                            paint_tile(bluefuncttile_blueunit_img)
+                        elif tile.color.lower() == "red":
+                            paint_tile(redfuncttile_blueunit_img)
+                        else:
+                            raise Exception(error) # Tile cannot be usable if not captured by red/blue
+
+                    elif tile.usable == False:
+                        if tile.color.lower() == "blue":
+                            paint_tile(inactive_bluefuncttile_blueunit_img)
+                        elif tile.color.lower() == "red": 
+                            paint_tile(inactive_redfuncttile_blueunit_img)
+                        else: 
+                            raise Exception(error) # Tile cannot be usable if not captured
+
+                    elif tile.usable == None: # 
+                        paint_tile(blueunit_img)
+
+                    else:
+                        raise Exception(error) # 'usable' is broken on unit.
+
+                else:
+                    raise Exception(error) # Unit is either assigned to no team or a false one.  
+
+            # For drawing tiles without units on them   
+            elif unit == None:
+                tile_type = tile.tile_id.split("#")[0]
+                dict_reader = str(tile_type)
+
                 if tile.usable == True:
-                    if tile.color.lower() == "blue":  
-                        paint_tile(bluefuncttile_redunit_img)
+                    if tile.color.lower() == "blue":
+                        paint_tile(bluefuncttile_img)
                     elif tile.color.lower() == "red": 
-                        paint_tile(redfuncttile_redunit_img)
+                        paint_tile(redfuncttile_img)
                     else:
                         raise Exception(error) # Tile cannot be usable if not captured by red/blue
 
                 elif tile.usable == False:
-                    if tile.color.lower() == "blue":  
-                        paint_tile(inactive_bluefuncttile_redunit_img)
+                    if tile.color.lower() == "blue": 
+                        paint_tile(inactive_bluefuncttile_img)
                     elif tile.color.lower() == "red": 
-                        paint_tile(inactive_redfuncttile_redunit_img)
+                        paint_tile(inactive_redfuncttile_img)
                     else:
                         raise Exception(error) # Tile cannot be usable if not captured by red/blue
                 
                 elif tile.usable == None: 
-                    paint_tile(redunit_img)
+                    paint_tile(justtile_img)
                 
                 else: 
                     raise Exception(error)
                 
-            elif unit.color.lower() == "blue":
-                if tile.usable == True:
-                    if tile.color.lower() == "blue": 
-                        paint_tile(bluefuncttile_blueunit_img)
-                    elif tile.color.lower() == "red":
-                        paint_tile(redfuncttile_blueunit_img)
-                    else:
-                        raise Exception(error) # Tile cannot be usable if not captured by red/blue
-
-                elif tile.usable == False:
-                    if tile.color.lower() == "blue":
-                        paint_tile(inactive_bluefuncttile_blueunit_img)
-                    elif tile.color.lower() == "red": 
-                        paint_tile(inactive_redfuncttile_blueunit_img)
-                    else: 
-                        raise Exception(error) # Tile cannot be usable if not captured
-
-                elif tile.usable == None: # 
-                    paint_tile(blueunit_img)
-
-                else:
-                    raise Exception(error) # 'usable' is broken on unit.
-
             else:
-                raise Exception(error) # Unit is either assigned to no team or a false one.  
-
-        # For drawing tiles without units on them   
-        elif unit == None:
-            tile_type = tile.tile_id.split("#")[0]
-            dict_reader = str(tile_type)
-
-            if tile.usable == True:
-                if tile.color.lower() == "blue":
-                    paint_tile(bluefuncttile_img)
-                elif tile.color.lower() == "red": 
-                    paint_tile(redfuncttile_img)
-                else:
-                    raise Exception(error) # Tile cannot be usable if not captured by red/blue
-
-            elif tile.usable == False:
-                if tile.color.lower() == "blue": 
-                    paint_tile(inactive_bluefuncttile_img)
-                elif tile.color.lower() == "red": 
-                    paint_tile(inactive_redfuncttile_img)
-                else:
-                    raise Exception(error) # Tile cannot be usable if not captured by red/blue
-            
-            elif tile.usable == None: 
-                paint_tile(justtile_img)
-            
-            else: 
                 raise Exception(error)
-            
-        else:
-            raise Exception(error)
+        except:
+            # Just going to comment this out as it currently fills up console way too much
+            #print("draw_tile is not set up properly")
+            #print(error)
+            pass
 
     def initialize_coordinates(self): # This will spew out some wacky coordinates at first, but its irrelevant as they are reset nearly immediately.
         frameheight, framewidth = self.gridboard.winfo_height(), self.gridboard.winfo_width()
@@ -469,18 +476,12 @@ class GridControl(tk.Frame):
                 # This should work later due to units not being able to occupy the same space.
                 if Data.layout[index][1] != None:
                     layout_unit_reader = Data.layout[index][1].split("#")
-                    if layout_reader[0].lower() == "red":
+                    if layout_unit_reader[0].lower() == "red":
                         u.unitCR8(layout_unit_reader[1], Data.red_list, "Red", True, posx, posy)
-                    elif layout_reader[0].lower() == "blue":
+                    elif layout_unit_reader[0].lower() == "blue":
                         u.unitCR8(layout_unit_reader[1], Data.blue_list, "Blue", True, posx, posy)
 
-                # --- TILE SETTING ----
-                layout_tile_reader = 
-                tile_id = Data.layout[index][0] + "#" + str(index)
-
-
-
-                # ---- DRAWING ----
+                # ---- TILE CHECKING ----
                 tile_info = self.check_tile(posx, posy) # Checks tile information and returns it 
                 unit_presence = False # Used to check if there is a unit present
 
@@ -495,6 +496,32 @@ class GridControl(tk.Frame):
 
                     except:
                         print("Error has occured in grabbing tile information")
+
+                # ---- TILE SETTING ----
+                # tileCR8(tile_id, tile_list, posx, posy, color=None, occupied=False):
+                try:
+                    layout_tile_reader = Data.layout[index][0].split("#")
+                except:
+                    layout_tile_reader = Data.layout[index][0]
+
+                # Checks to see if there is color present and tiletype present
+                tile_id = ""
+                try:
+                    if len(layout_tile_reader) > 1:
+                        tile_id = layout_tile_reader[1] + "#" + str(index)
+                        tile_color = layout_tile_reader[0]
+                        t.tileCR8(tile_id, Data.tile_list, posx, posy, color=tile_color, occupied=unit_presence)
+                    else:
+                        tile_id = Data.layout[index][0] + "#" + str(index)
+                        t.tileCR8(tile_id, Data.tile_list, posx, posy, occupied=unit_presence)
+                except:
+                    print("Tile type missing; Solving issue...")
+                    Data.layout[index][0] = "grass"
+                    tile_id = Data.layout[index][0] + "#" + str(index)
+                    t.tileCR8(tile_id, Data.tile_list, posx, posy, occupied=unit_presence)
+
+
+                # ---- DRAWING ----
                 
                 # If a unit is present on the tile, use it. If not, put None value in its place
                 if unit_presence == True:
@@ -618,7 +645,7 @@ class Visual(tk.Frame):
         print("width: " + str(self.frm_board.gridboard.winfo_width()))
         print("height: "+ str(self.frm_board.gridboard.winfo_height()))
         self.frm_board.initialize_coordinates()
-        # self.frm_board.draw_board()
+        self.frm_board.draw_board()
 
     def color_adjust(self):
         if "red" in Data.team_announcer.lower():

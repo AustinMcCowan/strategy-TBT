@@ -51,7 +51,7 @@ class TileObject(object):
             self.health = 20 # If a tile has functionality, it can be captured. When it reaches 0, it will convert to the team color that captured it.
 
         # Will enable the usable variable if functionality exists and the tile is a factory
-        if (self.functionality != False) and (reader[0] == "factory") and self.color != None:
+        if (self.functionality != False) and (reader[0] == "factory") and (self.color != None):
             self.usable = True
 
         # Sets movement costs
@@ -61,4 +61,8 @@ class TileObject(object):
         self.defense = tiletypes[reader[0]][1]
         
 def tileCR8(tile_id, tile_list, posx, posy, color=None, occupied=False):
-    tile_list.append(TileObject(tile_id, posx, posy, color, occupied))
+    tile_reader = tile_id.split("#")
+    if tile_reader[0] not in list(tiletypes.keys()):
+        raise Exception("Error: Incompatible tile type attempted to be used")
+    else:
+        tile_list.append(TileObject(tile_id, posx, posy, color, occupied))
