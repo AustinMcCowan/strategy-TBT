@@ -1,4 +1,4 @@
-# Used just to generate text for img_codex.txt
+# Used to generate items for layout or other things.
 '''
 for i in range(500):
     interval_string = str(i)
