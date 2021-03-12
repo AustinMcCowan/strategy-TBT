@@ -349,7 +349,7 @@ class GridControl(tk.Frame):
             position_x = current_x + (x_size/2)
             position_y = current_y + (y_size/2)
             # Applying Coordinates/positions and setting image
-            img = img.resize((x_size, y_size), Image.ANTIALIAS)
+            img = img.resize((x_size, y_size), Image.ANTIALIAS) # Properly fitting image into its coordinates
             self.gridboard.create_image(position_x, position_y, image=img) # Currently only a format ( i guess )
         
         # This will check what kind of tile it is through a chain of "if/elif/else"
