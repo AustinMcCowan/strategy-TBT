@@ -307,6 +307,7 @@ class GridControl(tk.Frame):
 
     # Holds the file paths for the images to be used in draw_tile, only placeholder for now. 
     # Variations include: (tile type, unit type, availability in unit), availability in interactive tile, color of unit, color of tile
+    # (EDIT) I may be able to abuse png's and as a result drastically reduce image count, as I can split tiles and units.
     blueunit_img = {"active-infantry-grass":"image", "active-infantry-road":"image"}
     bluefuncttile_blueunit_img = {}
     inactive_bluefuncttile_blueunit_img = {}
@@ -335,9 +336,21 @@ class GridControl(tk.Frame):
         
         # Inner function reserved to actually create the image
         def paint_tile(imgbranch):
-            img = imgbranch[dict_reader]
-            imgfile = PhotoImage(file=img)
-            self.gridboard.create_image(posx, posy, image=imgfile) # Currently only a format ( i guess )
+            # Finding the image
+            imgfile = imgbranch[dict_reader]
+            img = ImageTk.PhotoImage(Image.open(imgfile))
+            # Setting up coordinates/positions
+            current_x = Data.x_coordinates[posx][0] - 1
+            current_y = Data.y_coordinates[posy][0] - 1
+            edge_x = Data.x_coordinates[posx][1] + 1
+            edge_y = Data.y_coordinates[posy][1] + 1
+            x_size = (edge_x - current_x)
+            y_size = (edge_y - current_y)
+            position_x = current_x + (x_size/2)
+            position_y = current_y + (y_size/2)
+            # Applying Coordinates/positions and setting image
+            img = img.resize((x_size, y_size), Image.ANTIALIAS)
+            self.gridboard.create_image(position_x, position_y, image=img) # Currently only a format ( i guess )
         
         # This will check what kind of tile it is through a chain of "if/elif/else"
         try:
@@ -441,19 +454,19 @@ class GridControl(tk.Frame):
 
     def set_coordinates(self): # This will spew out some wacky coordinates at first, but its irrelevant as they are reset nearly immediately.
         frameheight, framewidth = self.gridboard.winfo_height(), self.gridboard.winfo_width()
-        current_x, current_y = 0, 0
+        current_x, current_y = 1, 1
         interval_height = frameheight / self.boardsize
         interval_width = framewidth / self.boardsize
-        set_height = interval_height
-        set_width = interval_width
+        set_height = interval_height - 1
+        set_width = interval_width - 1
 
         for i in range(self.boardsize): 
             Data.x_coordinates[i] = [current_x, set_width]
-            current_x = set_width + 1 # Removes overlapping 
+            current_x = set_width + 2 # Removes overlapping 
             set_width += interval_width
 
             Data.y_coordinates[i] = [current_y, set_height]
-            curent_y = set_height + 1 # Removes overlapping
+            current_y = set_height + 2 # Removes overlapping
             set_height += interval_height
 
     # Will run through the board size, creating and drawing a tile for each slot. This function will only ever need to be ran once.
