@@ -12,11 +12,13 @@ try:
     from tkinter.scrolledtext import ScrolledText
     from tkinter import *
     from tkinter import ttk
+    from PIL import ImageTk, Image
 except:
     import Tkinter as tk
     from Tkinter.scrolledtext import ScrolledText
     from Tkinter import *
     from Tkinter import ttk
+    from PIL import ImageTk, Image
 
 # Hold and initialize starting information. 
 class Data(object):
@@ -335,10 +337,10 @@ class GridControl(tk.Frame):
         error = "Error has occured: Drawing tile at " + tile_location + " has failed"
         
         # Inner function reserved to actually create the image
-        def paint_tile(imgbranch):
+        def paint_image(imgbranch):
             # Finding the image
-            imgfile = imgbranch[dict_reader]
-            img = ImageTk.PhotoImage(Image.open(imgfile))
+            # imgfile = imgbranch[dict_reader]
+            img = ImageTk.PhotoImage(Image.open("img/testball.png"))
             # Setting up coordinates/positions
             current_x = Data.x_coordinates[posx][0] - 1
             current_y = Data.y_coordinates[posy][0] - 1
@@ -371,22 +373,22 @@ class GridControl(tk.Frame):
                 if unit.color.lower() == "red":
                     if tile.usable == True:
                         if tile.color.lower() == "blue":  
-                            paint_tile(bluefuncttile_redunit_img)
+                            paint_image(bluefuncttile_redunit_img)
                         elif tile.color.lower() == "red": 
-                            paint_tile(redfuncttile_redunit_img)
+                            paint_image(redfuncttile_redunit_img)
                         else:
                             raise Exception(error) # Tile cannot be usable if not captured by red/blue
 
                     elif tile.usable == False:
                         if tile.color.lower() == "blue":  
-                            paint_tile(inactive_bluefuncttile_redunit_img)
+                            paint_image(inactive_bluefuncttile_redunit_img)
                         elif tile.color.lower() == "red": 
-                            paint_tile(inactive_redfuncttile_redunit_img)
+                            paint_image(inactive_redfuncttile_redunit_img)
                         else:
                             raise Exception(error) # Tile cannot be usable if not captured by red/blue
                     
                     elif tile.usable == None: 
-                        paint_tile(redunit_img)
+                        paint_image(redunit_img)
                     
                     else: 
                         raise Exception(error)
@@ -394,22 +396,22 @@ class GridControl(tk.Frame):
                 elif unit.color.lower() == "blue":
                     if tile.usable == True:
                         if tile.color.lower() == "blue": 
-                            paint_tile(bluefuncttile_blueunit_img)
+                            paint_image(bluefuncttile_blueunit_img)
                         elif tile.color.lower() == "red":
-                            paint_tile(redfuncttile_blueunit_img)
+                            paint_image(redfuncttile_blueunit_img)
                         else:
                             raise Exception(error) # Tile cannot be usable if not captured by red/blue
 
                     elif tile.usable == False:
                         if tile.color.lower() == "blue":
-                            paint_tile(inactive_bluefuncttile_blueunit_img)
+                            paint_image(inactive_bluefuncttile_blueunit_img)
                         elif tile.color.lower() == "red": 
-                            paint_tile(inactive_redfuncttile_blueunit_img)
+                            paint_image(inactive_redfuncttile_blueunit_img)
                         else: 
                             raise Exception(error) # Tile cannot be usable if not captured
 
                     elif tile.usable == None: # 
-                        paint_tile(blueunit_img)
+                        paint_image(blueunit_img)
 
                     else:
                         raise Exception(error) # 'usable' is broken on unit.
@@ -424,22 +426,22 @@ class GridControl(tk.Frame):
 
                 if tile.usable == True:
                     if tile.color.lower() == "blue":
-                        paint_tile(bluefuncttile_img)
+                        paint_image(bluefuncttile_img)
                     elif tile.color.lower() == "red": 
-                        paint_tile(redfuncttile_img)
+                        paint_image(redfuncttile_img)
                     else:
                         raise Exception(error) # Tile cannot be usable if not captured by red/blue
 
                 elif tile.usable == False:
                     if tile.color.lower() == "blue": 
-                        paint_tile(inactive_bluefuncttile_img)
+                        paint_image(inactive_bluefuncttile_img)
                     elif tile.color.lower() == "red": 
-                        paint_tile(inactive_redfuncttile_img)
+                        paint_image(inactive_redfuncttile_img)
                     else:
                         raise Exception(error) # Tile cannot be usable if not captured by red/blue
                 
                 elif tile.usable == None: 
-                    paint_tile(justtile_img)
+                    paint_image(justtile_img)
                 
                 else: 
                     raise Exception(error)
