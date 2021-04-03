@@ -292,6 +292,27 @@ class VisualCreateFrame(tk.Frame):
         
         frame_visual.create_call(picked_unit)
 
+# A popup menu that Handles actions from mouse clicks and the other popups
+class GridActionMenu(tk.Frame):
+    def __init__(self):
+        pass
+
+    # Changes side menus to display information of the tile clicked on
+    def info_render(self):
+        pass
+
+    # Opens a create frame popup
+    def open_create_popup(self):
+        pass
+
+    # opens a attack frame popup
+    def open_attack_popup(self):
+        pass
+
+    # Commits an action
+    def action(self):
+        pass
+    
 # handles and spawns the grid. 
 class GridControl(tk.Frame):
     # Everything is placeholder as of right now
@@ -333,7 +354,7 @@ class GridControl(tk.Frame):
 
     def mouse_click(self, event):
         print("Mouse Position: {0}, {1}".format(event.x, event.y))
-    
+
     ''' I will need to develop a tile system to better control tiles and drawing. I may create images for every scenario (i.e infantry
     on road, infantry on factory, tank on grass, used tank on grass). Create a dictionary (plausibly 2: one for units, one for tile type)'''
     # Will be used to place and draw units on the board. draw_board (may be renamed later) will be used after every action most likely.
