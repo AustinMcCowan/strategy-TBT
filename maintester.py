@@ -405,6 +405,15 @@ class GridControl(tk.Frame):
                             pass
                     else: 
                         pass
+                
+                # Grab unit selected
+                chosen_unit = None
+                for unit in Data.current:
+                        if (unit.pos_x == tile_pos_x) and (unit.pos_y == tile_pos_y):
+                            chosen_unit = unit
+                
+                # Check if distance moved is capable by units move range (MAY REMOVE TILE MOVE COST DUE TO COMPLEXITY)
+                
 
                 # Check clicked location for anything
                 print("second step")
@@ -412,7 +421,6 @@ class GridControl(tk.Frame):
                 unit_presence = False
                 try:
                     if result[0] == True:
-                        chosen_unit = result[1]
                         unit_presence = True
                         print("checked tile")
                 except TypeError:
