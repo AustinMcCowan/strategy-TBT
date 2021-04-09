@@ -290,12 +290,12 @@ class VisualCreateFrame(tk.Frame):
         frame_visual.create_call(picked_unit)
 
 # A popup menu that Handles actions from mouse clicks and the other popups
-class GridActionMenu(tk.Frame, pos_x, pos_y):
-    def __init__(self, parent):
+class GridActionMenu(tk.Frame):
+    def __init__(self, parent, pos_x, pos_y):
         tk.Frame.__init__(self, master=parent, bg="#CCC", highlightthickness=1)
         self.attack_button = tk.Button(self, text="Attack")
         self.create_button = tk.Button(self, text="Create")
-        self.move_button = tk.Button(self, text="Move")
+        self.move_button = tk.Button(self, text="Move", command = self.action)
         self.attack_button.pack()
         self.create_button.pack()
         self.move_button.pack()
@@ -317,7 +317,7 @@ class GridActionMenu(tk.Frame, pos_x, pos_y):
     # Commits an action
     def action(self):
         self.moving = True
-        parent.pack_forget()
+        frame_visual.frm_board.popup.withdraw()
         
     
 # handles and spawns the grid. 
@@ -360,23 +360,25 @@ class GridControl(tk.Frame):
                 current_y = self.action_menu.pos_y
                 tile_pos_x, tile_pos_y, target_x, target_y = 0, 0, 0, 0
                 chosen_unit = None
-
+                print("first step")
                 #---- Grab position data ----
                 # Grabs x coordinates
                 for i in range(len(Data.x_coordinates)):
                     # Sets current location data
-                    if current_x > Data.x_coordinates[0]:
-                        if current_x < Data.x_coordinates[1]:
+                    if current_x > Data.x_coordinates[i][0]:
+                        if current_x < Data.x_coordinates[i][1]:
                             tile_pos_x = i
+                            print("grabbed current tile pos x")
                         else:
                             pass
                     else:
                         pass
                     
                     # Sets target locaiton data
-                    if event.x > Data.x_coordinates[0]:
-                        if event.x < Data.x_coordinates[1]:
+                    if event.x > Data.x_coordinates[i][0]:
+                        if event.x < Data.x_coordinates[i][1]:
                             target_x = i
+                            print("grabbed target tile pos x")
                         else:
                             pass
                     else:
@@ -385,30 +387,34 @@ class GridControl(tk.Frame):
                 # Sets y coordinates        
                 for i in range(len(Data.y_coordinates)):
                     # Sets current location data
-                    if current_y > Data.y_coordinates[0]:
-                        if current_y < Data.y_coordinates[1]:
+                    if current_y > Data.y_coordinates[i][0]:
+                        if current_y < Data.y_coordinates[i][1]:
                             tile_pos_y = i
+                            print("grabbed current tile pos y")
                         else: 
                             pass
                     else: 
                         pass
                     
                     # Sets target location data
-                    if event.y > Data.y_coordinates[0]:
-                        if event.y < Data.y_coordinates[1]:
+                    if event.y > Data.y_coordinates[i][0]:
+                        if event.y < Data.y_coordinates[i][1]:
                             target_y = i
+                            print("grabbed target tile pos y")
                         else: 
                             pass
                     else: 
                         pass
 
                 # Check clicked location for anything
+                print("second step")
                 tile_info = self.check_tile(event.x, event.y) # Checks tile information and returns it 
                 unit_presence = False
                 try:
                     if result[0] == True:
                         chosen_unit = result[1]
                         unit_presence = True
+                        print("checked tile")
                 except TypeError:
                     pass
 
@@ -416,11 +422,13 @@ class GridControl(tk.Frame):
                     print("Error has occured in grabbing tile information")
 
                 # Move unit at current action location to clicked location
+                print("third step")
                 if unit_presence != True:
                     for unit in Data.current:
                         if (unit.pos_x == tile_pos_x) and (unit.pos_y == tile_pos_y):
                             unit.pos_x = target_x
                             unit.pos_y = target_y
+                            print("unit moved")
                             break
                     frame_visual.update()
                 self.popup.destroy()
@@ -434,7 +442,7 @@ class GridControl(tk.Frame):
             pos_x = win_x + event.x
             pos_y = win_y + event.y
 
-            self.popup = tk.Toplevel()
+            self.popup = tk.Tk()
             self.popup.geometry(f'+{pos_x}+{pos_y}')
             self.popup.wm_title("Action Menu")
             self.action_menu = GridActionMenu(self.popup, event.x, event.y)
