@@ -283,17 +283,25 @@ class VisualCreateFrame(tk.Frame):
     
         self.grid_columnconfigure(0, weight=50)
         self.grid_columnconfigure(1, weight=50)
-        
+
     def send_create_order(self):
         picked_unit = self.tkvar_names.get()
         
         frame_visual.create_call(picked_unit)
 
 # A popup menu that Handles actions from mouse clicks and the other popups
-class GridActionMenu(tk.Frame):
-    def __init__(self):
-        pass
-
+class GridActionMenu(tk.Frame, pos_x, pos_y):
+    def __init__(self, parent):
+        tk.Frame.__init__(self, master=parent, bg="#CCC", highlightthickness=1)
+        self.attack_button = tk.Button(self, text="Attack")
+        self.create_button = tk.Button(self, text="Create")
+        self.move_button = tk.Button(self, text="Move")
+        self.attack_button.pack()
+        self.create_button.pack()
+        self.move_button.pack()
+        self.pos_x = pos_x
+        self.pos_y = pos_y
+        self.moving = False
     # Changes side menus to display information of the tile clicked on
     def info_render(self):
         pass
@@ -305,10 +313,12 @@ class GridActionMenu(tk.Frame):
     # opens a attack frame popup
     def open_attack_popup(self):
         pass
-
+        
     # Commits an action
     def action(self):
-        pass
+        self.moving = True
+        parent.pack_forget()
+        
     
 # handles and spawns the grid. 
 class GridControl(tk.Frame):
@@ -325,28 +335,8 @@ class GridControl(tk.Frame):
         self.set_coordinates()
         self.gridboard.bind('<Button-1>', self.mouse_click) # Might change this to right click later
         self.gridboard.bind('<Button>', self.info_click)
-        # Holds the file paths for the images to be used in draw_tile, only placeholder for now. 
-        # Variations include: (tile type, unit type, availability in unit), availability in interactive tile, color of unit, color of tile
-        # (EDIT) I may be able to abuse png's and as a result drastically reduce image count, as I can split tiles and units.
-        '''
-        self.blueunit_img = {"active-infantry-grass":"image", "active-infantry-road":"image"}
-        self.bluefuncttile_blueunit_img = {}
-        self.inactive_bluefuncttile_blueunit_img = {}
-        self.redfuncttile_blueunit_img = {}
-        self.inactive_redfuncttile_blueunit_img = {}
 
-        self.redunit_img = {"active-infantry-grass":"image", "active-infantry-road":"image"}
-        self.bluefuncttile_redunit_img = {}
-        self.inactive_bluefuncttile_redunit_img = {}
-        self.redfuncttile_redunit_img = {}
-        self.inactive_redfuncttile_redunit_img = {}
-        
-        self.justtile_img = {}
-        self.bluefuncttile_img = {}
-        self.inactive_bluefuncttile_img = {}
-        self.redfuncttile_img = {}
-        self.inactive_redfuncttile_img = {}
-        '''
+        # Holds the file paths for the images to be used in draw_tile, only placeholder for now. 
         # Reworked png image dictionaries
         self.blueunit_images = {}
         self.redunit_images = {}
@@ -362,9 +352,93 @@ class GridControl(tk.Frame):
 
         # Send information to the info frame
 
-    
     def mouse_click(self, event):
-        print("Mouse Position: {0}, {1}".format(event.x, event.y))
+        print("Mouse Position: {0}, {1}".format(event.x, event.y)) # Check for response
+        try:
+            if self.action_menu.moving == True:
+                current_x = self.action_menu.pos_x
+                current_y = self.action_menu.pos_y
+                tile_pos_x, tile_pos_y, target_x, target_y = 0, 0, 0, 0
+                chosen_unit = None
+
+                #---- Grab position data ----
+                # Grabs x coordinates
+                for i in range(len(Data.x_coordinates)):
+                    # Sets current location data
+                    if current_x > Data.x_coordinates[0]:
+                        if current_x < Data.x_coordinates[1]:
+                            tile_pos_x = i
+                        else:
+                            pass
+                    else:
+                        pass
+                    
+                    # Sets target locaiton data
+                    if event.x > Data.x_coordinates[0]:
+                        if event.x < Data.x_coordinates[1]:
+                            target_x = i
+                        else:
+                            pass
+                    else:
+                        pass
+
+                # Sets y coordinates        
+                for i in range(len(Data.y_coordinates)):
+                    # Sets current location data
+                    if current_y > Data.y_coordinates[0]:
+                        if current_y < Data.y_coordinates[1]:
+                            tile_pos_y = i
+                        else: 
+                            pass
+                    else: 
+                        pass
+                    
+                    # Sets target location data
+                    if event.y > Data.y_coordinates[0]:
+                        if event.y < Data.y_coordinates[1]:
+                            target_y = i
+                        else: 
+                            pass
+                    else: 
+                        pass
+
+                # Check clicked location for anything
+                tile_info = self.check_tile(event.x, event.y) # Checks tile information and returns it 
+                unit_presence = False
+                try:
+                    if result[0] == True:
+                        chosen_unit = result[1]
+                        unit_presence = True
+                except TypeError:
+                    pass
+
+                except:
+                    print("Error has occured in grabbing tile information")
+
+                # Move unit at current action location to clicked location
+                if unit_presence != True:
+                    for unit in Data.current:
+                        if (unit.pos_x == tile_pos_x) and (unit.pos_y == tile_pos_y):
+                            unit.pos_x = target_x
+                            unit.pos_y = target_y
+                            break
+                    frame_visual.update()
+                self.popup.destroy()
+                        
+            else:
+                self.popup.destroy()
+
+        except:
+            win_x = self.gridboard.winfo_rootx()
+            win_y = self.gridboard.winfo_rooty()
+            pos_x = win_x + event.x
+            pos_y = win_y + event.y
+
+            self.popup = tk.Toplevel()
+            self.popup.geometry(f'+{pos_x}+{pos_y}')
+            self.popup.wm_title("Action Menu")
+            self.action_menu = GridActionMenu(self.popup, event.x, event.y)
+            self.action_menu.pack()
 
     ''' I will need to develop a tile system to better control tiles and drawing. I may create images for every scenario (i.e infantry
     on road, infantry on factory, tank on grass, used tank on grass). Create a dictionary (plausibly 2: one for units, one for tile type)'''
@@ -375,10 +449,14 @@ class GridControl(tk.Frame):
         error = "Error has occured: Drawing tile at " + tile_location + " has failed"
         
         # Inner function reserved to actually create the image
-        def paint_image(imgbranch):
+        def paint_image(imgbranch, test):
             # Finding the image
             # img_path = imgbranch[reader]
-            img_path = 'img/testball.png'
+            if test == "unit":
+                img_path = 'img/jpgball.jpeg'
+            else:
+                img_path = 'img/testball.png'
+
             img = Image.open(img_path)
 
             # Setting up coordinates/positions
@@ -420,33 +498,35 @@ class GridControl(tk.Frame):
         # This will check what kind of tile it is through a chain of "if/elif/else"
         #try:
         reader = None
+        tile_type = tile.tile_id.split("#")[0]
+
+        # Paint the tile
+        try:
+            reader = str(tile_type)
+            paint_image(self.tile_images, 'b')
+        except:
+            raise Exception(error) # Failed to draw tile
+
         if unit != None:
+            # Set up reader 
             activity = ""
+            unit_type = unit.title.split("#")[0]
             if unit.available == True:
                 activity = "active"
             elif unit.available == False:
                 activity = "inactive"
             else:
                 raise Exception(error)
-            
-            unit_type = unit.title.split("#")[0]
-            tile_type = tile.tile_id.split("#")[0]
 
-            # Paint the tile
-            try:
-                reader = str(tile_type)
-                paint_image(self.tile_images)
-            except:
-                raise Exception(error) # Failed to draw tile
+            reader = str(activity) + "-" + str(unit_type)
 
             # Paint the unit    
             try:
-                reader = str(activity) + "-" + str(unit_type)
                 if unit.color.lower() == "red":
-                    paint_image(self.redunit_images)
+                    paint_image(self.redunit_images, 'unit')
 
                 elif unit.color.lower() == "blue":
-                    paint_image(self.blueunit_images)
+                    paint_image(self.blueunit_images, 'unit')
 
                 else:
                     raise Exception(error) # Unit is either assigned to no team or a false one.
@@ -501,16 +581,15 @@ class GridControl(tk.Frame):
                 unit_presence = False # Used to check if there is a unit present
 
                 # Grabs unit (if there is) from unit_presence and confirms this with 'does_unit_exist'
-                for result in tile_info:
-                    try:
-                        if result[0] == True:
-                            chosen_unit = result[1]
-                            unit_presence = True
-                    except TypeError:
-                        pass
+                try:
+                    if result[0] == True:
+                        chosen_unit = result[1]
+                        unit_presence = True
+                except TypeError:
+                    pass
 
-                    except:
-                        print("Error has occured in grabbing tile information")
+                except:
+                    print("Error has occured in grabbing tile information")
 
                 # ---- TILE SETTING ----
                 # tileCR8(tile_id, tile_list, posx, posy, color=None, occupied=False):
@@ -676,11 +755,11 @@ class Visual(tk.Frame):
     # So when anything significant happens or changes, call this function.
     def update(self):
         try:
+            Data.update_teams()
             self.frm_board.draw_board()
         except IndexError:
             print("IndexError: Data.tile_list not setup currently")
         finally:
-            Data.update_teams()
             txt = "Current Team: " + Data.team_announcer
             self.lbl_current_team.configure(text = txt)
             self.color_adjust()
