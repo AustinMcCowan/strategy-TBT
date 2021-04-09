@@ -156,9 +156,6 @@ class Data(object):
         # Initial team setting
         Data.temp_list_set()
 
-
-        
-
     # Since only one unit can be destroyed at a time due to update occuring after every action. This should not cause problems   
     def delete_unit(unit_team):
         for i in range(len(unit_team)):
@@ -326,11 +323,12 @@ class GridControl(tk.Frame):
         self.gridboard.grid(column=0, row=0, sticky='news')
         self.boardsize = boardsize # Which translates to both directions (width and length being = to boardsize)
         self.set_coordinates()
-        self.gridboard.bind('<Button>', self.mouse_click)
-
+        self.gridboard.bind('<Button-1>', self.mouse_click) # Might change this to right click later
+        self.gridboard.bind('<Button>', self.info_click)
         # Holds the file paths for the images to be used in draw_tile, only placeholder for now. 
         # Variations include: (tile type, unit type, availability in unit), availability in interactive tile, color of unit, color of tile
         # (EDIT) I may be able to abuse png's and as a result drastically reduce image count, as I can split tiles and units.
+        '''
         self.blueunit_img = {"active-infantry-grass":"image", "active-infantry-road":"image"}
         self.bluefuncttile_blueunit_img = {}
         self.inactive_bluefuncttile_blueunit_img = {}
@@ -348,10 +346,23 @@ class GridControl(tk.Frame):
         self.inactive_bluefuncttile_img = {}
         self.redfuncttile_img = {}
         self.inactive_redfuncttile_img = {}
+        '''
+        # Reworked png image dictionaries
+        self.blueunit_images = {}
+        self.redunit_images = {}
+        self.tile_images = {}
 
         # Keep reference to images
         self.images = []
 
+    # Update the info tab only
+    def info_click(self, event):
+        # Grab the unit and tile of the point clicked
+        pass
+
+        # Send information to the info frame
+
+    
     def mouse_click(self, event):
         print("Mouse Position: {0}, {1}".format(event.x, event.y))
 
@@ -366,9 +377,10 @@ class GridControl(tk.Frame):
         # Inner function reserved to actually create the image
         def paint_image(imgbranch):
             # Finding the image
-            # imgfile = imgbranch[dict_reader]
+            # img_path = imgbranch[reader]
             img_path = 'img/testball.png'
             img = Image.open(img_path)
+
             # Setting up coordinates/positions
             current_x = Data.x_coordinates[posx][0] - 1
             current_y = Data.y_coordinates[posy][0] - 1
@@ -378,6 +390,7 @@ class GridControl(tk.Frame):
             y_size = (edge_y - current_y)
             position_x = current_x + (x_size/2)
             position_y = current_y + (y_size/2)
+
             # Applying Coordinates/positions and setting image
             if int(x_size) <= 0:
                 x_size = 1
@@ -406,7 +419,7 @@ class GridControl(tk.Frame):
         
         # This will check what kind of tile it is through a chain of "if/elif/else"
         #try:
-        dict_reader = None
+        reader = None
         if unit != None:
             activity = ""
             if unit.available == True:
@@ -418,91 +431,28 @@ class GridControl(tk.Frame):
             
             unit_type = unit.title.split("#")[0]
             tile_type = tile.tile_id.split("#")[0]
-            dict_reader = str(activity) + "-" + str(unit_type) + "-" + str(tile_type)
 
-            if unit.color.lower() == "red":
-                if tile.usable == True:
-                    if tile.color.lower() == "blue":  
-                        paint_image(self.bluefuncttile_redunit_img)
-                    elif tile.color.lower() == "red": 
-                        paint_image(self.redfuncttile_redunit_img)
-                    else:
-                        raise Exception(error) # Tile cannot be usable if not captured by red/blue
+            # Paint the tile
+            try:
+                reader = str(tile_type)
+                paint_image(self.tile_images)
+            except:
+                raise Exception(error) # Failed to draw tile
 
-                elif tile.usable == False:
-                    if tile.color.lower() == "blue":  
-                        paint_image(self.inactive_bluefuncttile_redunit_img)
-                    elif tile.color.lower() == "red": 
-                        paint_image(self.inactive_redfuncttile_redunit_img)
-                    else:
-                        raise Exception(error) # Tile cannot be usable if not captured by red/blue
-                
-                elif tile.usable == None: 
-                    paint_image(self.redunit_img)
-                
-                else: 
-                    raise Exception(error)
-                
-            elif unit.color.lower() == "blue":
-                if tile.usable == True:
-                    if tile.color.lower() == "blue": 
-                        paint_image(self.bluefuncttile_blueunit_img)
-                    elif tile.color.lower() == "red":
-                        paint_image(self.redfuncttile_blueunit_img)
-                    else:
-                        raise Exception(error) # Tile cannot be usable if not captured by red/blue
+            # Paint the unit    
+            try:
+                reader = str(activity) + "-" + str(unit_type)
+                if unit.color.lower() == "red":
+                    paint_image(self.redunit_images)
 
-                elif tile.usable == False:
-                    if tile.color.lower() == "blue":
-                        paint_image(self.inactive_bluefuncttile_blueunit_img)
-                    elif tile.color.lower() == "red": 
-                        paint_image(self.inactive_redfuncttile_blueunit_img)
-                    else: 
-                        raise Exception(error) # Tile cannot be usable if not captured
-
-                elif tile.usable == None: # 
-                    paint_image(self.blueunit_img)
+                elif unit.color.lower() == "blue":
+                    paint_image(self.blueunit_images)
 
                 else:
-                    raise Exception(error) # 'usable' is broken on unit.
-
-            else:
-                raise Exception(error) # Unit is either assigned to no team or a false one.  
-
-        # For drawing tiles without units on them   
-        elif unit == None:
-            tile_type = tile.tile_id.split("#")[0]
-            dict_reader = str(tile_type)
-
-            if tile.usable == True:
-                if tile.color.lower() == "blue":
-                    paint_image(self.bluefuncttile_img)
-                elif tile.color.lower() == "red": 
-                    paint_image(self.redfuncttile_img)
-                else:
-                    raise Exception(error) # Tile cannot be usable if not captured by red/blue
-
-            elif tile.usable == False:
-                if tile.color.lower() == "blue": 
-                    paint_image(self.inactive_bluefuncttile_img)
-                elif tile.color.lower() == "red": 
-                    paint_image(self.inactive_redfuncttile_img)
-                else:
-                    raise Exception(error) # Tile cannot be usable if not captured by red/blue
-            
-            elif tile.usable == None: 
-                paint_image(self.justtile_img)
-            
-            else: 
-                raise Exception(error)
-            
-        else:
-            raise Exception(error)
-        #except:
-            # Just going to comment this out as it currently fills up console way too much
-            #print("draw_tile is not set up properly")
-            #print(error)
-            
+                    raise Exception(error) # Unit is either assigned to no team or a false one.
+            except:
+                raise Exception(error) # Failed to draw image
+           
 
     def set_coordinates(self): # This will spew out some wacky coordinates at first, but its irrelevant as they are reset nearly immediately.
         frameheight, framewidth = self.gridboard.winfo_height(), self.gridboard.winfo_width()
