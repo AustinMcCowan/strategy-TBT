@@ -291,7 +291,7 @@ class VisualCreateFrame(tk.Frame):
 
 # A popup menu that Handles actions from mouse clicks and the other popups
 class GridActionMenu(tk.Frame):
-    def __init__(self, parent, pos_x, pos_y):
+    def __init__(self, parent, pos_x, pos_y, unit=None, factory=None):
         tk.Frame.__init__(self, master=parent, bg="#CCC", highlightthickness=1)
         self.attack_button = tk.Button(self, text="Attack")
         self.create_button = tk.Button(self, text="Create")
@@ -302,6 +302,7 @@ class GridActionMenu(tk.Frame):
         self.pos_x = pos_x
         self.pos_y = pos_y
         self.moving = False
+        
     # Changes side menus to display information of the tile clicked on
     def info_render(self):
         pass
@@ -335,13 +336,12 @@ class GridControl(tk.Frame):
         self.set_coordinates()
         self.gridboard.bind('<Button-1>', self.mouse_click) # Might change this to right click later
         self.gridboard.bind('<Button>', self.info_click)
-
+        self.popup_exists = False
         # Holds the file paths for the images to be used in draw_tile, only placeholder for now. 
         # Reworked png image dictionaries
         self.blueunit_images = {}
         self.redunit_images = {}
         self.tile_images = {}
-
         # Keep reference to images
         self.images = []
 
@@ -354,71 +354,116 @@ class GridControl(tk.Frame):
 
     def mouse_click(self, event):
         print("Mouse Position: {0}, {1}".format(event.x, event.y)) # Check for response
-        try:
+
+        move = False
+        if self.popup_exists == True:
             if self.action_menu.moving == True:
-                current_x = self.action_menu.pos_x
-                current_y = self.action_menu.pos_y
-                tile_pos_x, tile_pos_y, target_x, target_y = 0, 0, 0, 0
-                chosen_unit = None
-                print("first step")
-                #---- Grab position data ----
-                # Grabs x coordinates
-                for i in range(len(Data.x_coordinates)):
+                move = True
+        else:
+            # Grab window information
+            win_x = self.gridboard.winfo_rootx()
+            win_y = self.gridboard.winfo_rooty()
+            pos_x = win_x + event.x
+            pos_y = win_y + event.y
+
+            # Grab current click location information (do this outside of moving click to also preset buttons)
+            current_x, current_y = 0, 0
+            for i in range(len(Data.x_coordinates)):
                     # Sets current location data
-                    if current_x > Data.x_coordinates[i][0]:
-                        if current_x < Data.x_coordinates[i][1]:
-                            tile_pos_x = i
+                    if event.x > Data.x_coordinates[i][0]:
+                        if event.x < Data.x_coordinates[i][1]:
+                            current_x = i
                             print("grabbed current tile pos x")
                         else:
                             pass
                     else:
                         pass
-                    
-                    # Sets target locaiton data
-                    if event.x > Data.x_coordinates[i][0]:
-                        if event.x < Data.x_coordinates[i][1]:
-                            target_x = i
-                            print("grabbed target tile pos x")
-                        else:
-                            pass
-                    else:
-                        pass
 
-                # Sets y coordinates        
-                for i in range(len(Data.y_coordinates)):
+            for i in range(len(Data.y_coordinates)):
                     # Sets current location data
-                    if current_y > Data.y_coordinates[i][0]:
-                        if current_y < Data.y_coordinates[i][1]:
-                            tile_pos_y = i
+                    if event.y > Data.y_coordinates[i][0]:
+                        if event.y < Data.y_coordinates[i][1]:
+                            current_y = i
                             print("grabbed current tile pos y")
                         else: 
                             pass
                     else: 
                         pass
-                    
-                    # Sets target location data
-                    if event.y > Data.y_coordinates[i][0]:
-                        if event.y < Data.y_coordinates[i][1]:
-                            target_y = i
-                            print("grabbed target tile pos y")
-                        else: 
+
+            # Grab unit data if any 
+            chosen_unit = None
+            for unit in Data.current:
+                    if (unit.pos_x == current_x) and (unit.pos_y == current_y):
+                        chosen_unit = unit   
+                        print("grabbed unit")
+            
+            # Grab factory data on click if there is no unit present
+            factory_check = False
+            if chosen_unit != None: 
+                for tile in Data.tile_list:
+                    if (tile.pos_x == current_x) and (tile.pos_y == current_y):
+                        print('testing tile')
+                        try:
+                            if tile.color.lower() == Data.team_announcer.lower():
+                                if tile.tile_id.split("#")[0] == "factory":
+                                    factory_check = True
+                        except:
                             pass
+                        finally:
+                            print('done testing tile')
+                            break
+
+            self.popup = tk.Tk()
+            self.popup.geometry(f'+{pos_x}+{pos_y}')
+            self.popup.wm_title("Action Menu")
+            self.action_menu = GridActionMenu(self.popup, current_x, current_y, chosen_unit, factory_check)
+            self.action_menu.pack()
+            self.popup_exists = True
+
+        if move == True:    
+            # Grid coordinates
+            current_x = self.action_menu.pos_x
+            current_y = self.action_menu.pos_y
+            # tile locations
+            target_x, target_y = 0, 0
+            chosen_unit = None
+            print("first step")
+            #---- Grab position data ----
+            # Grabs x coordinates
+            for i in range(len(Data.x_coordinates)):
+                # Sets target locaiton data
+                if event.x > Data.x_coordinates[i][0]:
+                    if event.x < Data.x_coordinates[i][1]:
+                        target_x = i
+                        print("grabbed target tile pos x")
+                    else:
+                        pass
+                else:
+                    pass
+
+            # Sets y coordinates        
+            for i in range(len(Data.y_coordinates)):                  
+                # Sets target location data
+                if event.y > Data.y_coordinates[i][0]:
+                    if event.y < Data.y_coordinates[i][1]:
+                        target_y = i
+                        print("grabbed target tile pos y")
                     else: 
                         pass
-                
-                # Grab unit selected
-                chosen_unit = None
-                for unit in Data.current:
-                        if (unit.pos_x == tile_pos_x) and (unit.pos_y == tile_pos_y):
-                            chosen_unit = unit
-                
-                # Check if distance moved is capable by units move range (MAY REMOVE TILE MOVE COST DUE TO COMPLEXITY)
-                
+                else: 
+                    pass
+            
+            # Grab unit selected
+            chosen_unit = self.action_menu.unit
 
-                # Check clicked location for anything
-                print("second step")
-                tile_info = self.check_tile(event.x, event.y) # Checks tile information and returns it 
-                unit_presence = False
+            # Check if distance moved is capable by units move range (MAY REMOVE TILE MOVE COST DUE TO COMPLEXITY)
+            
+
+            # Check clicked location for anything
+            print("second step")
+            tile_info = self.check_tile(target_x, target_y) # Checks tile information and returns it 
+            unit_presence = False
+            for result in tile_info:
                 try:
                     if result[0] == True:
                         unit_presence = True
@@ -429,32 +474,30 @@ class GridControl(tk.Frame):
                 except:
                     print("Error has occured in grabbing tile information")
 
-                # Move unit at current action location to clicked location
-                print("third step")
-                if unit_presence != True:
-                    for unit in Data.current:
-                        if (unit.pos_x == tile_pos_x) and (unit.pos_y == tile_pos_y):
-                            unit.pos_x = target_x
-                            unit.pos_y = target_y
-                            print("unit moved")
-                            break
-                    frame_visual.update()
-                self.popup.destroy()
-                        
+            # Move unit at current action location to clicked location
+            print("third step")
+            if unit_presence != True:
+                for unit in Data.current:
+                    if (unit.pos_x == current_x) and (unit.pos_y == current_y):
+                        unit.pos_x = target_x
+                        unit.pos_y = target_y
+                        print("unit moved")
+                        break
+                frame_visual.update()
             else:
-                self.popup.destroy()
+                print("tile occupied")
 
-        except:
-            win_x = self.gridboard.winfo_rootx()
-            win_y = self.gridboard.winfo_rooty()
-            pos_x = win_x + event.x
-            pos_y = win_y + event.y
-
-            self.popup = tk.Tk()
-            self.popup.geometry(f'+{pos_x}+{pos_y}')
-            self.popup.wm_title("Action Menu")
-            self.action_menu = GridActionMenu(self.popup, event.x, event.y)
-            self.action_menu.pack()
+            # Delete any chance for a misread 
+            self.action_menu.moving = False
+            self.action_menu.destroy()    
+            self.popup.destroy()
+            self.popup_exists = False
+                    
+        else:
+            # Delete any chance for a misread
+            self.action_menu.destroy()
+            self.popup.destroy()
+            self.popup_exists = False
 
     ''' I will need to develop a tile system to better control tiles and drawing. I may create images for every scenario (i.e infantry
     on road, infantry on factory, tank on grass, used tank on grass). Create a dictionary (plausibly 2: one for units, one for tile type)'''
@@ -596,19 +639,19 @@ class GridControl(tk.Frame):
                 tile_info = self.check_tile(posx, posy) # Checks tile information and returns it 
                 unit_presence = False # Used to check if there is a unit present
 
-                # Grabs unit (if there is) from unit_presence and confirms this with 'does_unit_exist'
-                try:
-                    if result[0] == True:
-                        chosen_unit = result[1]
-                        unit_presence = True
-                except TypeError:
-                    pass
+                # Sets conditions for tiles due to unit presence conditions
+                for result in tile_info:
+                    try:
+                        if result[0] == True:
+                            chosen_unit = result[1]
+                            unit_presence = True
+                    except TypeError:
+                        pass
 
-                except:
-                    print("Error has occured in grabbing tile information")
+                    except:
+                        print("Error has occured in grabbing tile information")
 
                 # ---- TILE SETTING ----
-                # tileCR8(tile_id, tile_list, posx, posy, color=None, occupied=False):
                 try:
                     layout_tile_reader = Data.layout[index][0].split("#")
                 except:
