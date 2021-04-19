@@ -293,12 +293,17 @@ class VisualCreateFrame(tk.Frame):
 class GridActionMenu(tk.Frame):
     def __init__(self, parent, pos_x, pos_y, unit=None, factory=None):
         tk.Frame.__init__(self, master=parent, bg="#CCC", highlightthickness=1)
-        self.attack_button = tk.Button(self, text="Attack")
-        self.create_button = tk.Button(self, text="Create")
-        self.move_button = tk.Button(self, text="Move", command = self.action)
-        self.attack_button.pack()
-        self.create_button.pack()
-        self.move_button.pack()
+        self.unit = unit
+        if self.unit != None:
+            self.attack_button = tk.Button(self, text="Attack")
+            self.attack_button.pack()
+            self.move_button = tk.Button(self, text="Move", command = self.action)
+            self.move_button.pack()
+        
+        if (factory != None) and (factory != False):
+            self.create_button = tk.Button(self, text="Create")
+            self.create_button.pack()
+        
         self.pos_x = pos_x
         self.pos_y = pos_y
         self.moving = False
@@ -359,7 +364,8 @@ class GridControl(tk.Frame):
         if self.popup_exists == True:
             if self.action_menu.moving == True:
                 move = True
-        else:
+
+        if (self.popup_exists == False) and (move == False):
             # Grab window information
             win_x = self.gridboard.winfo_rootx()
             win_y = self.gridboard.winfo_rooty()
@@ -395,14 +401,12 @@ class GridControl(tk.Frame):
             for unit in Data.current:
                     if (unit.pos_x == current_x) and (unit.pos_y == current_y):
                         chosen_unit = unit   
-                        print("grabbed unit")
             
             # Grab factory data on click if there is no unit present
             factory_check = False
             if chosen_unit != None: 
                 for tile in Data.tile_list:
                     if (tile.pos_x == current_x) and (tile.pos_y == current_y):
-                        print('testing tile')
                         try:
                             if tile.color.lower() == Data.team_announcer.lower():
                                 if tile.tile_id.split("#")[0] == "factory":
@@ -410,15 +414,20 @@ class GridControl(tk.Frame):
                         except:
                             pass
                         finally:
-                            print('done testing tile')
                             break
 
-            self.popup = tk.Tk()
-            self.popup.geometry(f'+{pos_x}+{pos_y}')
-            self.popup.wm_title("Action Menu")
-            self.action_menu = GridActionMenu(self.popup, current_x, current_y, chosen_unit, factory_check)
-            self.action_menu.pack()
-            self.popup_exists = True
+            if (chosen_unit != None) and (factory_check != False):
+                self.popup = tk.Tk()
+                self.popup.geometry(f'+{pos_x}+{pos_y}')
+                self.popup.wm_title("Action Menu")
+                self.action_menu = GridActionMenu(self.popup, current_x, current_y, chosen_unit, factory_check)
+                self.action_menu.pack()
+                self.popup_exists = True
+
+        else: 
+            self.popup_exists = False
+            self.action_menu.destroy()
+            self.popup.destroy()
 
         if move == True:    
             # Grid coordinates
@@ -488,17 +497,10 @@ class GridControl(tk.Frame):
                 print("tile occupied")
 
             # Delete any chance for a misread 
-            self.action_menu.moving = False
             self.action_menu.destroy()    
             self.popup.destroy()
             self.popup_exists = False
-                    
-        else:
-            # Delete any chance for a misread
-            self.action_menu.destroy()
-            self.popup.destroy()
-            self.popup_exists = False
-
+        
     ''' I will need to develop a tile system to better control tiles and drawing. I may create images for every scenario (i.e infantry
     on road, infantry on factory, tank on grass, used tank on grass). Create a dictionary (plausibly 2: one for units, one for tile type)'''
     # Will be used to place and draw units on the board. draw_board (may be renamed later) will be used after every action most likely.
