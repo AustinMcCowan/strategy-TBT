@@ -291,7 +291,7 @@ class VisualCreateFrame(tk.Frame):
 
 # A popup menu that Handles actions from mouse clicks and the other popups
 class GridActionMenu(tk.Frame):
-    def __init__(self, parent, pos_x, pos_y, unit=None, factory=None):
+    def __init__(self, parent, pos_x=0, pos_y=0, unit=None, factory=None):
         tk.Frame.__init__(self, master=parent, bg="#CCC", highlightthickness=1)
         self.unit = unit
         if self.unit != None:
@@ -307,7 +307,9 @@ class GridActionMenu(tk.Frame):
         self.pos_x = pos_x
         self.pos_y = pos_y
         self.moving = False
-        
+        self.unit = unit
+        self.factory = factory
+
     # Changes side menus to display information of the tile clicked on
     def info_render(self):
         pass
@@ -341,7 +343,14 @@ class GridControl(tk.Frame):
         self.set_coordinates()
         self.gridboard.bind('<Button-1>', self.mouse_click) # Might change this to right click later
         self.gridboard.bind('<Button>', self.info_click)
+
+        # Sets up action menu
         self.popup_exists = False
+        self.popup = tk.Tk()
+        self.popup.wm_title("Action Menu")
+        self.action_menu = GridActionMenu(self.popup)
+        self.action_menu.pack()
+
         # Holds the file paths for the images to be used in draw_tile, only placeholder for now. 
         # Reworked png image dictionaries
         self.blueunit_images = {}
@@ -359,13 +368,18 @@ class GridControl(tk.Frame):
 
     def mouse_click(self, event):
         print("Mouse Position: {0}, {1}".format(event.x, event.y)) # Check for response
+        
+        # Hide popup and its insides.
+        def reset(self):
+            self.popup_exists = False
+            self.action_menu.moving = False
+            self.action_menu.chosen_unit = None
+            self.action_menu.pos_x = None
+            self.action_menu.pos_y = None
 
-        move = False
-        if self.popup_exists == True:
-            if self.action_menu.moving == True:
-                move = True
-
-        if (self.popup_exists == False) and (move == False):
+            
+        # 1. If When canvas is clicked, no action is in progress, and no menu is open/active: OPEN MENU, SET CONTENT -----------------------------------
+        if (self.popup_exists == False) and (self.action_menu.moving == False):
             # Grab window information
             win_x = self.gridboard.winfo_rootx()
             win_y = self.gridboard.winfo_rooty()
@@ -418,19 +432,15 @@ class GridControl(tk.Frame):
                             
             # make sure there is a reason to open up action menu
             if (chosen_unit != None) and (factory_check != False):
-                self.popup = tk.Tk()
                 self.popup.geometry(f'+{pos_x}+{pos_y}')
-                self.popup.wm_title("Action Menu")
-                self.action_menu = GridActionMenu(self.popup, current_x, current_y, chosen_unit, factory_check)
-                self.action_menu.pack()
+                self.action_menu.pos_x = current_x
+                self.action_menu.pos_y = current_y
+                self.action_menu.unit = chosen_unit
+                self.action_menu.factory = factory_check
                 self.popup_exists = True
 
-        else: 
-            self.popup_exists = False
-            self.action_menu.destroy()
-            self.popup.destroy()
-
-        if move == True:    
+        # 2. When canvas is clicked, menu is active/hidden, and action is selected: COMMIT MOVE, DO NOT OPEN MENU, RESET MENU CONTENT ---------------------
+        elif (self.action_menu.moving == True) and (self.popup_exists == True):    
             # Grid coordinates
             current_x = self.action_menu.pos_x
             current_y = self.action_menu.pos_y
@@ -498,10 +508,13 @@ class GridControl(tk.Frame):
                 print("tile occupied")
 
             # Delete any chance for a misread 
-            self.action_menu.destroy()    
-            self.popup.destroy()
-            self.popup_exists = False
+            
         
+        # 3. when canvas is clicked, action menu is open: HIDE MENU / RESET CONTENT ---------------------------------------------------------------
+        elif self.popup_exists == True: 
+            self.reset()
+
+            
     ''' I will need to develop a tile system to better control tiles and drawing. I may create images for every scenario (i.e infantry
     on road, infantry on factory, tank on grass, used tank on grass). Create a dictionary (plausibly 2: one for units, one for tile type)'''
     # Will be used to place and draw units on the board. draw_board (may be renamed later) will be used after every action most likely.
