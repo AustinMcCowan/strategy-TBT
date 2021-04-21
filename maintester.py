@@ -376,7 +376,7 @@ class GridControl(tk.Frame):
             self.action_menu.chosen_unit = None
             self.action_menu.pos_x = None
             self.action_menu.pos_y = None
-
+            
             
         # 1. If When canvas is clicked, no action is in progress, and no menu is open/active: OPEN MENU, SET CONTENT -----------------------------------
         if (self.popup_exists == False) and (self.action_menu.moving == False):
@@ -514,7 +514,7 @@ class GridControl(tk.Frame):
         elif self.popup_exists == True: 
             self.reset()
 
-            
+
     ''' I will need to develop a tile system to better control tiles and drawing. I may create images for every scenario (i.e infantry
     on road, infantry on factory, tank on grass, used tank on grass). Create a dictionary (plausibly 2: one for units, one for tile type)'''
     # Will be used to place and draw units on the board. draw_board (may be renamed later) will be used after every action most likely.
