@@ -415,7 +415,8 @@ class GridControl(tk.Frame):
                             pass
                         finally:
                             break
-
+                            
+            # make sure there is a reason to open up action menu
             if (chosen_unit != None) and (factory_check != False):
                 self.popup = tk.Tk()
                 self.popup.geometry(f'+{pos_x}+{pos_y}')
