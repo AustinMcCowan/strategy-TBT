@@ -294,21 +294,25 @@ class GridActionMenu(tk.Frame):
     def __init__(self, parent, pos_x=0, pos_y=0, unit=None, factory=None):
         tk.Frame.__init__(self, master=parent, bg="#CCC", highlightthickness=1)
         self.unit = unit
-        if self.unit != None:
-            self.attack_button = tk.Button(self, text="Attack")
-            self.attack_button.pack()
-            self.move_button = tk.Button(self, text="Move", command = self.action)
-            self.move_button.pack()
-        
-        if (factory != None) and (factory != False):
-            self.create_button = tk.Button(self, text="Create")
-            self.create_button.pack()
+        self.attack_button = tk.Button(self, text="Attack")
+        self.create_button = tk.Button(self, text="Create")
+        self.move_button = tk.Button(self, text="Move", command = self.action)
         
         self.pos_x = pos_x
         self.pos_y = pos_y
         self.moving = False
         self.unit = unit
         self.factory = factory
+
+        self.button_render()
+
+    def button_render(self):
+        if self.unit != None:
+            self.attack_button.pack()
+            self.move_button.pack()
+        
+        if (factory != None) and (factory != False):
+            self.create_button.pack()
 
     # Changes side menus to display information of the tile clicked on
     def info_render(self):
@@ -350,12 +354,14 @@ class GridControl(tk.Frame):
         self.popup.wm_title("Action Menu")
         self.action_menu = GridActionMenu(self.popup)
         self.action_menu.pack()
+        self.popup.withdraw()
 
         # Holds the file paths for the images to be used in draw_tile, only placeholder for now. 
         # Reworked png image dictionaries
         self.blueunit_images = {}
         self.redunit_images = {}
         self.tile_images = {}
+
         # Keep reference to images
         self.images = []
 
@@ -374,6 +380,9 @@ class GridControl(tk.Frame):
             self.popup_exists = False
             self.action_menu.moving = False
             self.action_menu.chosen_unit = None
+            self.action_menu.attack_button.pack_forget()
+            self.action_menu.create_button.pack_forget()
+            self.action_menu.move_button.pack_forget()
             self.action_menu.pos_x = None
             self.action_menu.pos_y = None
             
@@ -431,13 +440,14 @@ class GridControl(tk.Frame):
                             break
                             
             # make sure there is a reason to open up action menu
-            if (chosen_unit != None) and (factory_check != False):
+            if (chosen_unit != None) or (factory_check != False):
                 self.popup.geometry(f'+{pos_x}+{pos_y}')
                 self.action_menu.pos_x = current_x
                 self.action_menu.pos_y = current_y
                 self.action_menu.unit = chosen_unit
                 self.action_menu.factory = factory_check
                 self.popup_exists = True
+                self.action_menu.button_render()
 
         # 2. When canvas is clicked, menu is active/hidden, and action is selected: COMMIT MOVE, DO NOT OPEN MENU, RESET MENU CONTENT ---------------------
         elif (self.action_menu.moving == True) and (self.popup_exists == True):    
@@ -512,7 +522,7 @@ class GridControl(tk.Frame):
         
         # 3. when canvas is clicked, action menu is open: HIDE MENU / RESET CONTENT ---------------------------------------------------------------
         elif self.popup_exists == True: 
-            self.reset()
+            reset()
 
 
     ''' I will need to develop a tile system to better control tiles and drawing. I may create images for every scenario (i.e infantry
