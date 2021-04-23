@@ -221,9 +221,10 @@ class Data(object):
         
 # Subframe for attacking/commands        
 class VisualAttackFrame(tk.Frame):
-    def __init__(self, parent, attack_list, defend_list):
-        self.attack_list = attack_list
-        self.defend_list = defend_list
+    #def __init__(self, parent, attack_list, defend_list):
+    def __init__(self, parent, defending_list, unit):
+        self.defend_list = defending_list
+        self.unit = unit
         color = Data.team_announcer.lower()
         
         tk.Frame.__init__(self, master=parent, bg="#CCC", highlightbackground = color, highlightthickness=1)
@@ -231,10 +232,8 @@ class VisualAttackFrame(tk.Frame):
         self.lbl_attack = tk.Label(self, text="Unit Attacking:", bg="#CCC")
         self.lbl_attack.grid(row=0, column=0, columnspan=2, sticky='news')
         
-        self.tkvar_attack = tk.StringVar(self)
-        self.tkvar_attack.set(self.attack_list[0])
-        self.drp_attack = tk.OptionMenu(self, self.tkvar_attack, *self.attack_list)
-        self.drp_attack.grid(row=1, column=0, columnspan=2, sticky='news')
+        self.lbl_chosen_unit = tk.Label(self, text=self.unit)
+        self.lbl_chosen_unit.grid(row=1, column=0, columnspan=2, sticky='news')
         
         self.lbl_defend = tk.Label(self, text="Unit Defending:", bg="#CCC")
         self.lbl_defend.grid(row=2, column=0, columnspan=2, sticky='news')
@@ -252,7 +251,7 @@ class VisualAttackFrame(tk.Frame):
         
     def send_attack_order(self):
         # Grab data from frame and use it on attack_call
-        first = self.tkvar_attack.get()
+        first = self.unit
         second = self.tkvar_defend.get()
         
         frame_visual.attack_call(first, second)
@@ -294,7 +293,7 @@ class GridActionMenu(tk.Frame):
     def __init__(self, parent, pos_x=None, pos_y=None, unit=None, factory=None):
         tk.Frame.__init__(self, master=parent, bg="#CCC", highlightthickness=1)
         self.unit = unit
-        self.attack_button = tk.Button(self, text="Attack")
+        self.attack_button = tk.Button(self, text="Attack", command= self.open_attack_popup)
         self.create_button = tk.Button(self, text="Create")
         self.move_button = tk.Button(self, text="Move", command = self.action)
         
@@ -315,9 +314,19 @@ class GridActionMenu(tk.Frame):
             self.create_button.pack()
 
     def unrender_buttons(self):
+        try:
+            self.frm_create.destroy()
+        except:
+            pass
+        try:
+            self.frm_attack.destroy()
+        except:
+            pass
+
         self.attack_button.pack_forget()
         self.move_button.pack_forget()
         self.create_button.pack_forget()
+
 
     # Changes side menus to display information of the tile clicked on
     def info_render(self):
@@ -329,9 +338,16 @@ class GridActionMenu(tk.Frame):
 
     # opens a attack frame popup
     def open_attack_popup(self):
+        self.unrender_buttons()
         attack_list = []
-        
-        
+        chosen_unit = self.unit.title
+
+        for unit in Data.other:
+            attack_list.append(unit.title)
+
+        self.frm_attack = VisualAttackFrame(self, attack_list, chosen_unit)
+        self.frm_attack.grid(row=3, column=2, rowspan=2, columnspan=2, sticky='news')
+        self.frm_attack.tkraise()
         
     # Commits an action
     def action(self):
@@ -341,7 +357,6 @@ class GridActionMenu(tk.Frame):
     
 # handles and spawns the grid. 
 class GridControl(tk.Frame):
-    # Everything is placeholder as of right now
     def __init__(self, parent, boardsize = 10):
         color = Data.team_announcer.lower()
         self.parent = parent
@@ -379,6 +394,7 @@ class GridControl(tk.Frame):
 
         # Send information to the info frame
 
+    # Used for opening action menu / popup and handling move actions
     def mouse_click(self, event):
         print("Mouse Position: {0}, {1}".format(event.x, event.y)) # Check for response
         
@@ -475,8 +491,9 @@ class GridControl(tk.Frame):
                     self.popup.tkraise()
                     print("rendered")
 
-        # 2. When canvas is clicked, menu is active/hidden, and action is selected: COMMIT MOVE, DO NOT OPEN MENU, RESET MENU CONTENT ---------------------
-        elif (self.popup_exists == True) and (self.action_menu.moving == True):    
+        # 2. When canvas is clicked, menu is active/hidden, and action is selected: COMMIT MOVE, DO NOT OPEN MENU, RESET MENU CONTENT---------------------
+        # - Missing move distance consideration, tile move cost consideration, and pathing consideration (WILL USE MULTIPLE CLICKS TILL REQ IS FULFILLED)
+        elif (self.popup_exists == True) and (self.action_menu.moving == True):  # >>> elif ((popup==true)&(moving=true)) or (pathing==True):  
             # Grid coordinates
             current_x = self.action_menu.pos_x
             current_y = self.action_menu.pos_y
@@ -905,7 +922,7 @@ class Visual(tk.Frame):
         self.frm_attack.grid(row=3, column=2, rowspan=2, columnspan=2, sticky='news')
         self.frm_attack.tkraise()
         
-        
+    # move this out of Visual class, as its needed here.   
     def attack_call(self, first, second):
         # attacking (Current turn team vs other)
 
