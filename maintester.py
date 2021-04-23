@@ -291,7 +291,7 @@ class VisualCreateFrame(tk.Frame):
 
 # A popup menu that Handles actions from mouse clicks and the other popups
 class GridActionMenu(tk.Frame):
-    def __init__(self, parent, pos_x=0, pos_y=0, unit=None, factory=None):
+    def __init__(self, parent, pos_x=None, pos_y=None, unit=None, factory=None):
         tk.Frame.__init__(self, master=parent, bg="#CCC", highlightthickness=1)
         self.unit = unit
         self.attack_button = tk.Button(self, text="Attack")
@@ -311,8 +311,13 @@ class GridActionMenu(tk.Frame):
             self.attack_button.pack()
             self.move_button.pack()
         
-        if (factory != None) and (factory != False):
+        if (self.factory != None) and (self.factory != False):
             self.create_button.pack()
+
+    def unrender_buttons(self):
+        self.attack_button.pack_forget()
+        self.move_button.pack_forget()
+        self.create_button.pack_forget()
 
     # Changes side menus to display information of the tile clicked on
     def info_render(self):
@@ -324,7 +329,9 @@ class GridActionMenu(tk.Frame):
 
     # opens a attack frame popup
     def open_attack_popup(self):
-        pass
+        attack_list = []
+        
+        
         
     # Commits an action
     def action(self):
@@ -376,16 +383,24 @@ class GridControl(tk.Frame):
         print("Mouse Position: {0}, {1}".format(event.x, event.y)) # Check for response
         
         # Hide popup and its insides.
-        def reset(self):
-            self.popup_exists = False
-            self.action_menu.moving = False
-            self.action_menu.chosen_unit = None
-            self.action_menu.attack_button.pack_forget()
-            self.action_menu.create_button.pack_forget()
-            self.action_menu.move_button.pack_forget()
-            self.action_menu.pos_x = None
-            self.action_menu.pos_y = None
+        def reset():
+            try:
+                self.popup.withdraw()
+                self.popup_exists = False
+                self.action_menu.moving = False
+                self.action_menu.chosen_unit = None
+                self.action_menu.unrender_buttons()
+                self.action_menu.pos_x = None
+                self.action_menu.pos_y = None
+            except:
+                self.popup_exists = False
+                self.popup = tk.Tk()
+                self.popup.wm_title("Action Menu")
+                self.action_menu = GridActionMenu(self.popup)
+                self.action_menu.pack()
+                self.popup.withdraw()
             
+        print(f"{self.popup_exists}, {self.action_menu.moving}")
             
         # 1. If When canvas is clicked, no action is in progress, and no menu is open/active: OPEN MENU, SET CONTENT -----------------------------------
         if (self.popup_exists == False) and (self.action_menu.moving == False):
@@ -441,16 +456,27 @@ class GridControl(tk.Frame):
                             
             # make sure there is a reason to open up action menu
             if (chosen_unit != None) or (factory_check != False):
-                self.popup.geometry(f'+{pos_x}+{pos_y}')
-                self.action_menu.pos_x = current_x
-                self.action_menu.pos_y = current_y
-                self.action_menu.unit = chosen_unit
-                self.action_menu.factory = factory_check
-                self.popup_exists = True
-                self.action_menu.button_render()
+                try:
+                    self.popup.iconify()
+                    self.popup.geometry(f'+{pos_x}+{pos_y}')
+                except:
+                    self.popup = tk.Tk()
+                    self.popup.wm_title("Action Menu")
+                    self.action_menu = GridActionMenu(self.popup)
+                    self.action_menu.pack()
+                    self.popup.geometry(f'+{pos_x}+{pos_y}')
+                finally:
+                    self.action_menu.pos_x = current_x
+                    self.action_menu.pos_y = current_y
+                    self.action_menu.unit = chosen_unit
+                    self.action_menu.factory = factory_check
+                    self.popup_exists = True
+                    self.action_menu.button_render()
+                    self.popup.tkraise()
+                    print("rendered")
 
         # 2. When canvas is clicked, menu is active/hidden, and action is selected: COMMIT MOVE, DO NOT OPEN MENU, RESET MENU CONTENT ---------------------
-        elif (self.action_menu.moving == True) and (self.popup_exists == True):    
+        elif (self.popup_exists == True) and (self.action_menu.moving == True):    
             # Grid coordinates
             current_x = self.action_menu.pos_x
             current_y = self.action_menu.pos_y
@@ -518,7 +544,7 @@ class GridControl(tk.Frame):
                 print("tile occupied")
 
             # Delete any chance for a misread 
-            
+            reset()
         
         # 3. when canvas is clicked, action menu is open: HIDE MENU / RESET CONTENT ---------------------------------------------------------------
         elif self.popup_exists == True: 
