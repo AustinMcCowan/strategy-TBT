@@ -20,6 +20,12 @@ except:
     from Tkinter import ttk
     from PIL import ImageTk, Image
 
+
+# Failsafe that destroys all windows if frame_visual is every deleted
+def wm_removal():
+    root.destroy()
+    frame_visual.frm_board.popup.destroy()
+
 # Hold and initialize starting information. 
 class Data(object):
     red_list = []
@@ -254,7 +260,7 @@ class VisualAttackFrame(tk.Frame):
         first = self.unit
         second = self.tkvar_defend.get()
         
-        frame_visual.attack_call(first, second)
+        frame_visual.frm_board.action_menu.attack_call(first, second)
         
         
 # Subframe for creating units
@@ -348,7 +354,34 @@ class GridActionMenu(tk.Frame):
         self.frm_attack = VisualAttackFrame(self, attack_list, chosen_unit)
         self.frm_attack.grid(row=3, column=2, rowspan=2, columnspan=2, sticky='news')
         self.frm_attack.tkraise()
+
+    # handle carrying out an attack action.
+    def attack_call(self, first, second):
+        # attacking (Current turn team vs other)
+
+        first_unit = None
+        second_unit = None
         
+        # sets indexes/what units attack/defend
+        for i in range(len(Data.current)):
+            if Data.current[i].title == first:
+                first_unit = i
+        for i in range(len(Data.other)):
+            if Data.other[i].title == second:
+                second_unit = i
+                
+        if first_unit == None or second_unit == None:
+            print("Invalid Unit or Target")
+        else:
+            # This if statement still runs the attack code, but will force the turn to stay unchanged if an invalid attack was made
+            result = ak.attack(Data.current[first_unit], Data.other[second_unit])
+            frame_visual.scr_text_insert(result[1])
+            if result[0] == None:
+                pass 
+            frame_visual.update()
+        self.frm_attack.destroy()
+        frame_visual.frm_board.popup.withdraw()
+      
     # Commits an action
     def action(self):
         self.moving = True
@@ -834,10 +867,10 @@ class Visual(tk.Frame):
         starter_team_announce = "Current Team: " + Data.team_announcer
         self.lbl_current_team = tk.Label(self, text = starter_team_announce)
         self.lbl_current_team.grid(row=0, column=2, columnspan=2)
-        
+        '''
         self.btn_attack = tk.Button(self, text="Attack", command = self.open_attack_frame)
         self.btn_attack.grid(row=1, column=2, sticky='news')
-        
+        '''
         self.btn_create = tk.Button(self, text="Create", command = self.open_create_frame)
         self.btn_create.grid(row=2, column=2, sticky='news')
         
@@ -891,7 +924,7 @@ class Visual(tk.Frame):
             txt = "Current Team: " + Data.team_announcer
             self.lbl_current_team.configure(text = txt)
             self.color_adjust()
-        
+    '''    
     def open_attack_frame(self):
         # Stops the spam creation of frames
         try:
@@ -921,32 +954,11 @@ class Visual(tk.Frame):
         self.frm_attack = VisualAttackFrame(self, temp_attack_list, temp_defend_list)
         self.frm_attack.grid(row=3, column=2, rowspan=2, columnspan=2, sticky='news')
         self.frm_attack.tkraise()
-        
-    # move this out of Visual class, as its needed here.   
-    def attack_call(self, first, second):
-        # attacking (Current turn team vs other)
+    '''
 
-        first_unit = None
-        second_unit = None
-        
-        # sets indexes/what units attack/defend
-        for i in range(len(Data.current)):
-            if Data.current[i].title == first:
-                first_unit = i
-        for i in range(len(Data.other)):
-            if Data.other[i].title == second:
-                second_unit = i
-                
-        if first_unit == None or second_unit == None:
-            print("Invalid Unit or Target")
-        else:
-            # This if statement still runs the attack code, but will force the turn to stay unchanged if an invalid attack was made
-            result = ak.attack(Data.current[first_unit], Data.other[second_unit])
-            self.scr_text.insert("insert", result[1])
-            if result[0] == None:
-                pass 
-            self.update()
-        self.frm_attack.destroy()
+    # move this out of Visual class, as its needed here.   
+    def scr_text_insert(self, text):
+        self.scr_text.insert("insert", text)
         
     def open_create_frame(self):
         # Stops the spam creation of frames
@@ -1001,6 +1013,7 @@ class Visual(tk.Frame):
         self.endturn = True 
         self.update()
 
+
 # Initialize stuff
 root = tk.Tk()
 root.title("maintester.py")
@@ -1022,4 +1035,6 @@ frame_visual.frm_board.bind("<Configure>", frame_visual.resize)
 
 root.grid_columnconfigure(0, weight = 1)
 root.grid_rowconfigure(0, weight = 1)
+
+root.protocol("WM_DELETE_WINDOW", wm_removal)
 root.mainloop()
