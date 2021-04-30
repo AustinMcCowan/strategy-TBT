@@ -346,13 +346,27 @@ class GridActionMenu(tk.Frame):
     # opens a attack frame popup
     def open_attack_popup(self):
         self.unrender_buttons()
-        attack_list = []
-        chosen_unit = self.unit.title
+        attackable_list = []
+        chosen_unit = self.unit
 
         for unit in Data.other:
-            attack_list.append(unit.title)
+            # Left side
+            if (unit.pos_x == (chosen_unit.pos_x - 1)) and (unit.pos_y == chosen_unit.pos_y):
+                attackable_list.append(unit.title)
 
-        self.frm_attack = VisualAttackFrame(self, attack_list, chosen_unit)
+            # Top side
+            elif (unit.pos_x == chosen_unit.pos_x) and (unit.pos_y == (chosen_unit.pos_y + 1)):
+                attackable_list.append(unit.title)
+
+            # Right side 
+            elif (unit.pos_x == (chosen_unit.pos_x + 1)) and (unit.pos_y == chosen_unit.pos_y):
+                attackable_list.append(unit.title)
+            
+            # Bottom side
+            elif (unit.pos_x == chosen_unit.pos_x) and (unit.pos_y == (chosen_unit.pos_y - 1)):
+                attackable_list.append(unit.title)
+
+        self.frm_attack = VisualAttackFrame(self, attackable_list, chosen_unit.title)
         self.frm_attack.grid(row=3, column=2, rowspan=2, columnspan=2, sticky='news')
         self.frm_attack.tkraise()
 
