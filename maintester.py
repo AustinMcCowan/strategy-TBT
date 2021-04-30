@@ -12,13 +12,14 @@ try:
     from tkinter.scrolledtext import ScrolledText
     from tkinter import *
     from tkinter import ttk
-    from PIL import ImageTk, Image
 except:
     import Tkinter as tk
     from Tkinter.scrolledtext import ScrolledText
     from Tkinter import *
     from Tkinter import ttk
+finally:
     from PIL import ImageTk, Image
+    
 
 
 # Failsafe that destroys all windows if frame_visual is every deleted
@@ -1035,6 +1036,5 @@ frame_visual.frm_board.bind("<Configure>", frame_visual.resize)
 
 root.grid_columnconfigure(0, weight = 1)
 root.grid_rowconfigure(0, weight = 1)
-
 root.protocol("WM_DELETE_WINDOW", wm_removal)
 root.mainloop()
