@@ -10,8 +10,9 @@ unitnames = ["tank", "infantry", "recon", "antiair", "fighter", "attackheli"]
 unit_move_limits = [5, 3, 7, 5, 10, 8]
 # object to represent unit
 class UnitObject(object):
-    
-    def __init__(self, title, health=10, pos_x = 0, pos_y = 0, color="", available = False, move_limit = 0):
+    # available refers to a unit being able to attack, and movable refers to a unit being able to move.
+    # When a unit moves, movable is set to false. When a unit attacks, available and movable is set to false
+    def __init__(self, title, health=10, pos_x = 0, pos_y = 0, color="", available = False, move_limit = 0, movable = True):
         # Initializes base information
         self.damage = 0
         self.health = health       
@@ -22,6 +23,7 @@ class UnitObject(object):
         self.color = color
         self.available = available
         self.move_limit = move_limit
+        self.movable = movable
         # Initializes efficiencies 
         self.fighterEF = 0
         self.attackheliEF = 0 
@@ -82,7 +84,7 @@ class UnitObject(object):
             self.antiairEF = 3
             
 # Unit creation and insertion into the given unit list. WILL ONLY WORK WITH A LIST
-def unitCR8(title, unit_list, team="", usable=False, posx=0, posy=0):   
+def unitCR8(title, unit_list, team="", usable=False, posx=0, posy=0, movable = False):   
     if title not in unitnames:
         raise Exception('invalid unit type attempted to be created')
     elif len(unit_list) >= 50: # Unit cap is 50. 
@@ -106,6 +108,6 @@ def unitCR8(title, unit_list, team="", usable=False, posx=0, posy=0):
                         number += 1
         number = str(number)
         name = name + "#" + number
-        unit_list.append(UnitObject(name, color=team, available=usable, move_limit=distance, pos_x=posx, pos_y=posy))
+        unit_list.append(UnitObject(name, color=team, available=usable, move_limit=distance, pos_x=posx, pos_y=posy, movable=movable))
     
      

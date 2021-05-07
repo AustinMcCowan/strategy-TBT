@@ -418,6 +418,7 @@ class GridControl(tk.Frame):
         self.gridboard.bind('<Button-1>', self.mouse_click) # Might change this to right click later
         self.gridboard.bind('<Button>', self.info_click)
 
+
         # Sets up action menu
         self.popup_exists = False
         self.popup = tk.Tk()
@@ -466,7 +467,7 @@ class GridControl(tk.Frame):
             
         print(f"{self.popup_exists}, {self.action_menu.moving}")
             
-        # 1. If When canvas is clicked, no action is in progress, and no menu is open/active: OPEN MENU, SET CONTENT -----------------------------------
+        # 1. OPENING MENU: If When canvas is clicked, no action is in progress, and no menu is open/active: OPEN MENU, SET CONTENT -----------------------------------
         if (self.popup_exists == False) and (self.action_menu.moving == False):
             # Grab window information
             win_x = self.gridboard.winfo_rootx()
@@ -539,9 +540,13 @@ class GridControl(tk.Frame):
                     self.popup.tkraise()
                     print("rendered")
 
-        # 2. When canvas is clicked, menu is active/hidden, and action is selected: COMMIT MOVE, DO NOT OPEN MENU, RESET MENU CONTENT---------------------
+        # 2. MOVING: When canvas is clicked, menu is active/hidden, and action is selected: COMMIT MOVE, DO NOT OPEN MENU, RESET MENU CONTENT---------------------
         # - Missing move distance consideration, tile move cost consideration, and pathing consideration (WILL USE MULTIPLE CLICKS TILL REQ IS FULFILLED)
-        elif (self.popup_exists == True) and (self.action_menu.moving == True):  # >>> elif ((popup==true)&(moving=true)) or (pathing==True):  
+        elif (self.popup_exists == True) and (self.action_menu.moving == True):  # >>> elif ((popup==true)&(moving=true)) or (pathing==True):
+            # variables designed to check if a movement is allowed:
+            move_allowed = True
+            move_complete = False
+
             # Grid coordinates
             current_x = self.action_menu.pos_x
             current_y = self.action_menu.pos_y
@@ -574,11 +579,22 @@ class GridControl(tk.Frame):
                 else: 
                     pass
             
+            # prepares a move cancel based on direction of movement
+            y_move, x_move = False, False
+
+            if (target_x != current_x) and (target_y != current_y): # Diagonal movements are disliked
+                move_allowed = False
+            elif (target_x == current_x):
+                y_move = True
+            elif (target_y == current_y):
+                x_move = True
+            elif (target_y == current_y) and (target_x == current_x): # Movement is stopped
+                move_complete = True 
+            else:
+                raise Exception("Problem moving unit occured")
+ 
             # Grab unit selected
             chosen_unit = self.action_menu.unit
-
-            # Check if distance moved is capable by units move range (MAY REMOVE TILE MOVE COST DUE TO COMPLEXITY)
-            
 
             # Check clicked location for anything
             print("second step")
@@ -594,6 +610,16 @@ class GridControl(tk.Frame):
 
                 except:
                     print("Error has occured in grabbing tile information")
+            
+            # Check if distance moved is capable by units move range (MAY REMOVE TILE MOVE COST DUE TO COMPLEXITY)
+            if (move_allowed != False) and (unit_presence != False):
+                # Check all tiles between current and targetted position 
+                if y_move == True:
+                    start, end = 0, 0
+                    if current_y > target_y:
+                        start, end = target_y
+                    for 
+
 
             # Move unit at current action location to clicked location
             print("third step")
@@ -611,7 +637,7 @@ class GridControl(tk.Frame):
             # Delete any chance for a misread 
             reset()
         
-        # 3. when canvas is clicked, action menu is open: HIDE MENU / RESET CONTENT ---------------------------------------------------------------
+        # 3. CLOSE MENU: when canvas is clicked, action menu is open: HIDE MENU / RESET CONTENT ---------------------------------------------------------------
         elif self.popup_exists == True: 
             reset()
 

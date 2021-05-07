@@ -1,2 +1,2 @@
-if __name__ == "__main__":
-    test = input()
+for i in range(3, 6):
+    print(i)
