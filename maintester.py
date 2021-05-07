@@ -297,7 +297,7 @@ class VisualCreateFrame(tk.Frame):
 
 # A popup menu that Handles actions from mouse clicks and the other popups
 class GridActionMenu(tk.Frame):
-    def __init__(self, parent, pos_x=None, pos_y=None, unit=None, factory=None, pathing = None):
+    def __init__(self, parent, pos_x=None, pos_y=None, unit=None, factory=None, pathing=None, origin_x=None, origin_y=None):
         tk.Frame.__init__(self, master=parent, bg="#CCC", highlightthickness=1)
         self.unit = unit
         self.attack_button = tk.Button(self, text="Attack", command= self.open_attack_popup)
@@ -310,7 +310,8 @@ class GridActionMenu(tk.Frame):
         self.unit = unit
         self.factory = factory
         self.pathing = pathing
-
+        self.origin_x = origin_x 
+        self.origin_y = origin_y
         self.button_render()
 
     def button_render(self):
@@ -459,6 +460,8 @@ class GridControl(tk.Frame):
                 self.action_menu.pos_x = None
                 self.action_menu.pos_y = None
                 self.action_menu.pathing = 0
+                self.action_menu.origin_x = None
+                self.action_menu.origin_y = None
             except:
                 self.popup_exists = False
                 self.popup = tk.Tk()
@@ -535,6 +538,8 @@ class GridControl(tk.Frame):
                 finally:
                     self.action_menu.pos_x = current_x
                     self.action_menu.pos_y = current_y
+                    self.action_menu.origin_x = current_x
+                    self.action_menu.origin_y = current_y
                     self.action_menu.unit = chosen_unit
                     self.action_menu.pathing = 0
                     self.action_menu.factory = factory_check
@@ -628,7 +633,7 @@ class GridControl(tk.Frame):
                     else:
                         start, end = (current_y + 1), (target_y + 1) # I dont need the current tile accounted for, and i need the target tile accounted for
                     print(f'start:{start}, end:{end}')
-                    for tile in tile_list:
+                    for tile in Data.tile_list:
                         if tile.pos_x == (current_x or target_x): # Grab tile in same column
                             if tile.pos_y in range(start, end):
                                 # Check tile crossed
@@ -652,7 +657,7 @@ class GridControl(tk.Frame):
                                 if (distance_moved > chosen_unit.move_limit) or (unit_presence == True):
                                     move_allowed = False
                                     break
-                                    
+
                 # Horizontal move 
                 elif x_move == True:
                     start, end = 0, 0
@@ -661,7 +666,7 @@ class GridControl(tk.Frame):
                     else:
                         start, end = (current_x + 1), (target_x + 1) # I dont need the current tile accounted for, and i need the target tile accounted for
                     print(f'start:{start}, end:{end}')
-                    for tile in tile_list:
+                    for tile in Data.tile_list:
                         if tile.pos_y == (current_y or target_y): # Grab tile in same column
                             if tile.pos_x in range(start, end):
                                 # Check tile crossed
@@ -695,7 +700,7 @@ class GridControl(tk.Frame):
             print("third step")
             if move_complete == True:
                 for unit in Data.current:
-                    if (unit.pos_x == current_x) and (unit.pos_y == current_y):
+                    if (unit.pos_x == self.action_menu.origin_x) and (unit.pos_y == self.action_menu.origin_y):
                         unit.pos_x = target_x
                         unit.pos_y = target_y
                         reset()
