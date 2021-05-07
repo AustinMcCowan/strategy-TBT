@@ -458,6 +458,7 @@ class GridControl(tk.Frame):
                 self.action_menu.unrender_buttons()
                 self.action_menu.pos_x = None
                 self.action_menu.pos_y = None
+                self.action_menu.pathing = 0
             except:
                 self.popup_exists = False
                 self.popup = tk.Tk()
@@ -658,20 +659,27 @@ class GridControl(tk.Frame):
 
             # Move unit at current action location to clicked location
             print("third step")
-            if unit_presence != True:
+            if move_complete == True:
                 for unit in Data.current:
                     if (unit.pos_x == current_x) and (unit.pos_y == current_y):
                         unit.pos_x = target_x
                         unit.pos_y = target_y
+                        reset()
                         print("unit moved")
                         break
                 frame_visual.update()
-            else:
+            elif unit_presence == True:
                 print("tile occupied")
 
-            # Delete any chance for a misread 
-            reset()
-        
+            elif move_allowed == False:
+                print("Move not allowed")
+
+            # pathing still occuring
+            else:
+                self.action_menu.pos_x = target_x
+                self.action_menu.pos_y = target_y
+                self.action_menu.pathing = distance_moved
+                
         # 3. CLOSE MENU: when canvas is clicked, action menu is open: HIDE MENU / RESET CONTENT ---------------------------------------------------------------
         elif self.popup_exists == True: 
             reset()
