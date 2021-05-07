@@ -12,7 +12,7 @@ unit_move_limits = [5, 3, 7, 5, 10, 8]
 class UnitObject(object):
     # available refers to a unit being able to attack, and movable refers to a unit being able to move.
     # When a unit moves, movable is set to false. When a unit attacks, available and movable is set to false
-    def __init__(self, title, health=10, pos_x = 0, pos_y = 0, color="", available = False, move_limit = 0, movable = True):
+    def __init__(self, title, health=10, pos_x = 0, pos_y = 0, color="", available = False, move_limit = 0, movable = True, move_type = None):
         # Initializes base information
         self.damage = 0
         self.health = health       
@@ -24,6 +24,7 @@ class UnitObject(object):
         self.available = available
         self.move_limit = move_limit
         self.movable = movable
+        self.move_type = None
         # Initializes efficiencies 
         self.fighterEF = 0
         self.attackheliEF = 0 
@@ -47,42 +48,55 @@ class UnitObject(object):
             self.infantryEF = 5
             self.reconEF = 6
             self.antiairEF = 5
-        if reader[0] == "infantry":
+        elif reader[0] == "infantry":
             self.fighterEF = 0
             self.attackheliEF = 1
             self.tankEF = 1
             self.infantryEF = 3
             self.reconEF = 2
             self.antiairEF = 1
-        if reader[0] == "recon":
+        elif reader[0] == "recon":
             self.fighterEF = 0
             self.attackheliEF = 2
             self.tankEF = 1
             self.infantryEF = 5
             self.reconEF = 4
             self.antiairEF = 1
-        if reader[0] == "antiair":
+        elif reader[0] == "antiair":
             self.fighterEF = 7
             self.attackheliEF = 9
             self.tankEF = 2
             self.infantryEF = 10
             self.reconEF = 7
             self.antiairEF = 5
-        if reader[0] == "fighter":
+        elif reader[0] == "fighter":
             self.fighterEF = 6
             self.attackheliEF = 10
             self.tankEF = 0
             self.infantryEF = 0
             self.reconEF = 0
             self.antiairEF = 0
-        if reader[0] == "attackheli":
+        elif reader[0] == "attackheli":
             self.fighterEF = 1
             self.attackheliEF = 4
             self.tankEF = 6
             self.infantryEF = 5
             self.reconEF = 8
             self.antiairEF = 3
-            
+
+        # Initialize Move type:
+        if reader[0] in ("infantry"):
+            self.move_type = "foot"
+
+        elif reader[0] in ("recon"):
+            self.move_type = "tires"
+
+        elif reader[0] in ("tank", "antiair"):
+            self.move_type = "tread"
+        
+        elif reader[0] in ("fighter", "attackheli"):
+            self.move_type = "air"
+
 # Unit creation and insertion into the given unit list. WILL ONLY WORK WITH A LIST
 def unitCR8(title, unit_list, team="", usable=False, posx=0, posy=0, movable = False):   
     if title not in unitnames:

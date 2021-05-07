@@ -297,7 +297,7 @@ class VisualCreateFrame(tk.Frame):
 
 # A popup menu that Handles actions from mouse clicks and the other popups
 class GridActionMenu(tk.Frame):
-    def __init__(self, parent, pos_x=None, pos_y=None, unit=None, factory=None):
+    def __init__(self, parent, pos_x=None, pos_y=None, unit=None, factory=None, pathing = None):
         tk.Frame.__init__(self, master=parent, bg="#CCC", highlightthickness=1)
         self.unit = unit
         self.attack_button = tk.Button(self, text="Attack", command= self.open_attack_popup)
@@ -309,6 +309,7 @@ class GridActionMenu(tk.Frame):
         self.moving = False
         self.unit = unit
         self.factory = factory
+        self.pathing = pathing
 
         self.button_render()
 
@@ -534,6 +535,7 @@ class GridControl(tk.Frame):
                     self.action_menu.pos_x = current_x
                     self.action_menu.pos_y = current_y
                     self.action_menu.unit = chosen_unit
+                    self.action_menu.pathing = 0
                     self.action_menu.factory = factory_check
                     self.popup_exists = True
                     self.action_menu.button_render()
@@ -542,10 +544,11 @@ class GridControl(tk.Frame):
 
         # 2. MOVING: When canvas is clicked, menu is active/hidden, and action is selected: COMMIT MOVE, DO NOT OPEN MENU, RESET MENU CONTENT---------------------
         # - Missing move distance consideration, tile move cost consideration, and pathing consideration (WILL USE MULTIPLE CLICKS TILL REQ IS FULFILLED)
-        elif (self.popup_exists == True) and (self.action_menu.moving == True):  # >>> elif ((popup==true)&(moving=true)) or (pathing==True):
-            # variables designed to check if a movement is allowed:
+        elif (self.popup_exists == True) and (self.action_menu.moving == True):
+            # variables designed for condition checks
             move_allowed = True
             move_complete = False
+            distance_moved = self.action_menu.pathing
 
             # Grid coordinates
             current_x = self.action_menu.pos_x
@@ -588,7 +591,7 @@ class GridControl(tk.Frame):
                 y_move = True
             elif (target_y == current_y):
                 x_move = True
-            elif (target_y == current_y) and (target_x == current_x): # Movement is stopped
+            elif (target_y == current_y) and (target_x == current_x): # Movement is stopped by clicking on same tile twice, or current residing tile.
                 move_complete = True 
             else:
                 raise Exception("Problem moving unit occured")
@@ -597,7 +600,7 @@ class GridControl(tk.Frame):
             chosen_unit = self.action_menu.unit
 
             # Check clicked location for anything
-            print("second step")
+            '''
             tile_info = self.check_tile(target_x, target_y) # Checks tile information and returns it 
             unit_presence = False
             for result in tile_info:
@@ -610,16 +613,48 @@ class GridControl(tk.Frame):
 
                 except:
                     print("Error has occured in grabbing tile information")
-            
-            # Check if distance moved is capable by units move range (MAY REMOVE TILE MOVE COST DUE TO COMPLEXITY)
-            if (move_allowed != False) and (unit_presence != False):
+            '''
+
+            # Check if distance moved is capable by units move range (MAY REMOVE TILE MOVE COST DUE TO COMPLEXITY
+            if (move_allowed != False) and (unit_presence != False) and (move_complete != True):
                 # Check all tiles between current and targetted position 
                 if y_move == True:
                     start, end = 0, 0
                     if current_y > target_y:
-                        start, end = target_y
-                    for 
+                        start, end = target_y, current_y # This does not need changed due to the nature of the range function
+                    else:
+                        start, end = (current_y + 1), (target_y + 1) # I dont need the current tile accounted for, and i need the target tile accounted for
 
+                    unit_presence = False
+                    for tile in tile_list:
+                        if tile.pos_x == (current_x or target_x): # Grab tile in same column
+                            if tile.pos_y in range(start, end):
+                                # Check tile crossed
+                                tile_info = self.check_tile(target_x, tile.pos_y) # Checks tile information and returns it 
+                                for result in tile_info:
+                                    try:
+                                        if result[0] == True:
+                                            unit_presence = True
+                                            print("checked tile")
+                                    except TypeError:
+                                        pass
+
+                                    except:
+                                        print("Error has occured in grabbing tile information")
+                                
+                                # Starts adding up move distance
+                                if unit_presence != True:
+                                    distance_moved += tile.move_cost[chosen_unit.move_type]
+
+                                # Checks if move limit was surpassed or unit is present
+                                if (distance_moved > chosen_unit.move_limit) or (unit_presence == True):
+                                    move_allowed = False
+                                    break
+
+                    # Auto completes movement if max distance has been reached
+                    if (distance_moved == chosen_unit.move_limit):
+                        move_complete = True
+                        
 
             # Move unit at current action location to clicked location
             print("third step")
