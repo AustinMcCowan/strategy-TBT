@@ -616,17 +616,18 @@ class GridControl(tk.Frame):
                     print("Error has occured in grabbing tile information")
             '''
 
-            # Check if distance moved is capable by units move range (MAY REMOVE TILE MOVE COST DUE TO COMPLEXITY
-            if (move_allowed != False) and (unit_presence != False) and (move_complete != True):
-                # Check all tiles between current and targetted position 
+            # Check pathing and tiles 
+            unit_presence = False 
+            if (move_allowed != False) and (move_complete != True):
+                print("second step")
+                # Vertical Move
                 if y_move == True:
                     start, end = 0, 0
                     if current_y > target_y:
                         start, end = target_y, current_y # This does not need changed due to the nature of the range function
                     else:
                         start, end = (current_y + 1), (target_y + 1) # I dont need the current tile accounted for, and i need the target tile accounted for
-
-                    unit_presence = False
+                    print(f'start:{start}, end:{end}')
                     for tile in tile_list:
                         if tile.pos_x == (current_x or target_x): # Grab tile in same column
                             if tile.pos_y in range(start, end):
@@ -651,10 +652,43 @@ class GridControl(tk.Frame):
                                 if (distance_moved > chosen_unit.move_limit) or (unit_presence == True):
                                     move_allowed = False
                                     break
+                                    
+                # Horizontal move 
+                elif x_move == True:
+                    start, end = 0, 0
+                    if current_x > target_x:
+                        start, end = target_x, current_x # This does not need changed due to the nature of the range function
+                    else:
+                        start, end = (current_x + 1), (target_x + 1) # I dont need the current tile accounted for, and i need the target tile accounted for
+                    print(f'start:{start}, end:{end}')
+                    for tile in tile_list:
+                        if tile.pos_y == (current_y or target_y): # Grab tile in same column
+                            if tile.pos_x in range(start, end):
+                                # Check tile crossed
+                                tile_info = self.check_tile(tile.pos_x, target_y) # Checks tile information and returns it 
+                                for result in tile_info:
+                                    try:
+                                        if result[0] == True:
+                                            unit_presence = True
+                                            print("checked tile")
+                                    except TypeError:
+                                        pass
 
-                    # Auto completes movement if max distance has been reached
-                    if (distance_moved == chosen_unit.move_limit):
-                        move_complete = True
+                                    except:
+                                        print("Error has occured in grabbing tile information")
+                                
+                                # Starts adding up move distance
+                                if unit_presence != True:
+                                    distance_moved += tile.move_cost[chosen_unit.move_type]
+
+                                # Checks if move limit was surpassed or unit is present
+                                if (distance_moved > chosen_unit.move_limit) or (unit_presence == True):
+                                    move_allowed = False
+                                    break
+
+                # Auto completes movement if max distance has been reached
+                if (distance_moved == chosen_unit.move_limit):
+                    move_complete = True
                         
 
             # Move unit at current action location to clicked location
@@ -679,7 +713,7 @@ class GridControl(tk.Frame):
                 self.action_menu.pos_x = target_x
                 self.action_menu.pos_y = target_y
                 self.action_menu.pathing = distance_moved
-                
+
         # 3. CLOSE MENU: when canvas is clicked, action menu is open: HIDE MENU / RESET CONTENT ---------------------------------------------------------------
         elif self.popup_exists == True: 
             reset()
