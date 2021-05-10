@@ -24,8 +24,13 @@ finally:
 
 # Failsafe that destroys all windows if frame_visual is every deleted
 def wm_removal():
-    root.destroy()
-    frame_visual.frm_board.popup.destroy()
+    try:
+        root.destroy()
+        frame_visual.frm_board.popup.destroy()
+        
+    # windows are already deleted
+    except: 
+        pass
 
 # Hold and initialize starting information. 
 class Data(object):
