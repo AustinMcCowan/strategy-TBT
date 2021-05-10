@@ -219,6 +219,7 @@ class Data(object):
             Data.turn_decider = Data.turn_decider*(-1)
             for unit in Data.other:
                 unit.available = True
+                unit.movable = True
             
         # Deletes dead units, updates temp lists
         Data.delete_unit(Data.red_list)
@@ -300,7 +301,7 @@ class GridActionMenu(tk.Frame):
     def __init__(self, parent, pos_x=None, pos_y=None, unit=None, factory=None, pathing=None, origin_x=None, origin_y=None, tile=None):
         tk.Frame.__init__(self, master=parent, bg="#CCC", highlightthickness=1)
         self.unit = unit
-        self.attack_button = tk.Button(self, text="Attack", command= self.open_attack_popup)
+        self.attack_button = tk.Button(self, text="Attack", command = self.open_attack_popup)
         self.create_button = tk.Button(self, text="Create")
         self.move_button = tk.Button(self, text="Move", command = self.action)
         
@@ -318,16 +319,18 @@ class GridActionMenu(tk.Frame):
     def button_render(self):
         # Check units
         if self.unit != None:
+
             # Check if unit can do any action
             if self.unit.available == True:
                 self.attack_button.pack()
 
+                print(self.unit.movable)
                 # Check if unit can move before placing move button
                 if self.unit.movable == True:
                     self.move_button.pack()
 
-        # Check tiles
-        if (self.factory_check != None) and (self.factory_check != False):
+        # Check tiles (after checking above that there is no unit present)
+        elif (self.factory_check != None) and (self.factory_check != False):
             self.create_button.pack()
 
     def unrender_buttons(self):
@@ -359,6 +362,7 @@ class GridActionMenu(tk.Frame):
         attackable_list = []
         chosen_unit = self.unit
 
+        # Grabs opponents on adjacent tiles, if any
         for unit in Data.other:
             # Left side
             if (unit.pos_x == (chosen_unit.pos_x - 1)) and (unit.pos_y == chosen_unit.pos_y):
@@ -383,7 +387,6 @@ class GridActionMenu(tk.Frame):
     # handle carrying out an attack action.
     def attack_call(self, first, second):
         # attacking (Current turn team vs other)
-
         first_unit = None
         second_unit = None
         
@@ -407,7 +410,7 @@ class GridActionMenu(tk.Frame):
         self.frm_attack.destroy()
         frame_visual.frm_board.popup.withdraw()
       
-    # Commits an action
+    # Commits a move action
     def action(self):
         self.moving = True
         frame_visual.frm_board.popup.withdraw()
@@ -419,6 +422,7 @@ class GridControl(tk.Frame):
         color = Data.team_announcer.lower()
         self.parent = parent
         tk.Frame.__init__(self, master=parent, highlightbackground = color, highlightthickness=1)
+
         # Creates the canvas (the main piece for this class) and places it
         self.gridboard = tk.Canvas(self, bg="#0F0")
         self.presence = "alive"
@@ -443,7 +447,7 @@ class GridControl(tk.Frame):
         self.redunit_images = {}
         self.tile_images = {}
 
-        # Keep reference to images
+        # Keep reference to images (if this doesn't exist, images will not render)
         self.images = []
 
     # Update the info tab only
@@ -908,8 +912,10 @@ class GridControl(tk.Frame):
                 else:
                     self.draw_tile(None, Data.tile_list[index], posx, posy) 
                 index += 1 # Just add this afterwards so as to not cause problems with indexing on information list
-                
+
+        # Properly set up units to begin play.  
         Data.temp_list_set()
+        Data.update_teams
 
     # Will run drawtile for every tile.
     def draw_board(self):
