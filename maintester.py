@@ -27,7 +27,7 @@ def wm_removal():
     try:
         root.destroy()
         frame_visual.frm_board.popup.destroy()
-        
+
     # windows are already deleted
     except: 
         pass
@@ -920,7 +920,7 @@ class GridControl(tk.Frame):
 
         # Properly set up units to begin play.  
         Data.temp_list_set()
-        Data.update_teams
+        Data.update_teams()
 
     # Will run drawtile for every tile.
     def draw_board(self):
