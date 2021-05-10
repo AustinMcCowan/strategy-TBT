@@ -716,6 +716,7 @@ class GridControl(tk.Frame):
                         reset()
                         print("unit moved")
                         break
+
                 frame_visual.update()
             elif unit_presence == True:
                 print("tile occupied")
@@ -866,9 +867,9 @@ class GridControl(tk.Frame):
                 if Data.layout[index][1] != None:
                     layout_unit_reader = Data.layout[index][1].split("#")
                     if layout_unit_reader[0].lower() == "red":
-                        u.unitCR8(layout_unit_reader[1], Data.red_list, "Red", True, posx, posy)
+                        u.unitCR8(layout_unit_reader[1], Data.red_list, "Red", True, posx, posy, movable=True)
                     elif layout_unit_reader[0].lower() == "blue":
-                        u.unitCR8(layout_unit_reader[1], Data.blue_list, "Blue", True, posx, posy)
+                        u.unitCR8(layout_unit_reader[1], Data.blue_list, "Blue", True, posx, posy, movable=True)
 
                 # ---- TILE CHECKING ----
                 tile_info = self.check_tile(posx, posy) # Checks tile information and returns it 
@@ -920,7 +921,6 @@ class GridControl(tk.Frame):
 
         # Properly set up units to begin play.  
         Data.temp_list_set()
-        Data.update_teams()
 
     # Will run drawtile for every tile.
     def draw_board(self):
@@ -1023,7 +1023,7 @@ class Visual(tk.Frame):
         self.frm_board.grid(row=0, column=1, rowspan=4, sticky='news')
         print(self.frm_board.presence) # Makes sure the board is actually created/exists.
         self.frm_board.initialize_board() # Set up initial units and set the tiles
-        
+
         '''Since this zone/area of the program will be empty unless a command is taking place, a placeholder with dark grey 
         background is placed here to indicate it is empty/no action occuring'''
         self.frm_empty = tk.Frame(self, bg = "#AAA")
