@@ -297,7 +297,7 @@ class VisualCreateFrame(tk.Frame):
 
 # A popup menu that Handles actions from mouse clicks and the other popups
 class GridActionMenu(tk.Frame):
-    def __init__(self, parent, pos_x=None, pos_y=None, unit=None, factory=None, pathing=None, origin_x=None, origin_y=None):
+    def __init__(self, parent, pos_x=None, pos_y=None, unit=None, factory=None, pathing=None, origin_x=None, origin_y=None, tile=None):
         tk.Frame.__init__(self, master=parent, bg="#CCC", highlightthickness=1)
         self.unit = unit
         self.attack_button = tk.Button(self, text="Attack", command= self.open_attack_popup)
@@ -308,18 +308,26 @@ class GridActionMenu(tk.Frame):
         self.pos_y = pos_y
         self.moving = False
         self.unit = unit
-        self.factory = factory
+        self.factory_check = factory
         self.pathing = pathing
         self.origin_x = origin_x 
         self.origin_y = origin_y
         self.button_render()
+        self.tile = tile
 
     def button_render(self):
+        # Check units
         if self.unit != None:
-            self.attack_button.pack()
-            self.move_button.pack()
-        
-        if (self.factory != None) and (self.factory != False):
+            # Check if unit can do any action
+            if self.unit.available == True:
+                self.attack_button.pack()
+
+                # Check if unit can move before placing move button
+                if self.unit.movable == True:
+                    self.move_button.pack()
+
+        # Check tiles
+        if (self.factory_check != None) and (self.factory_check != False):
             self.create_button.pack()
 
     def unrender_buttons(self):
@@ -507,15 +515,17 @@ class GridControl(tk.Frame):
             # Grab unit data if any 
             chosen_unit = None
             for unit in Data.current:
-                    if (unit.pos_x == current_x) and (unit.pos_y == current_y):
+                    if (unit.pos_x == current_x) and (unit.pos_y == current_y): 
                         chosen_unit = unit   
             
             # Grab factory data on click if there is no unit present
             factory_check = False
-            if chosen_unit != None: 
+            chosen_tile = None
+            if chosen_unit == None: 
                 for tile in Data.tile_list:
                     if (tile.pos_x == current_x) and (tile.pos_y == current_y):
                         try:
+                            chosen_tile = tile
                             if tile.color.lower() == Data.team_announcer.lower():
                                 if tile.tile_id.split("#")[0] == "factory":
                                     factory_check = True
@@ -524,11 +534,12 @@ class GridControl(tk.Frame):
                         finally:
                             break
                             
-            # make sure there is a reason to open up action menu
+            # make sure there is a reason to open up action menu, and then render everything required
             if (chosen_unit != None) or (factory_check != False):
                 try:
-                    self.popup.iconify()
-                    self.popup.geometry(f'+{pos_x}+{pos_y}')
+                    if (chosen_unit.available != None) or (factory_check != False):
+                        self.popup.iconify()
+                        self.popup.geometry(f'+{pos_x}+{pos_y}')
                 except:
                     self.popup = tk.Tk()
                     self.popup.wm_title("Action Menu")
@@ -543,6 +554,7 @@ class GridControl(tk.Frame):
                     self.action_menu.unit = chosen_unit
                     self.action_menu.pathing = 0
                     self.action_menu.factory = factory_check
+                    self.action_menu.tile = chosen_tile
                     self.popup_exists = True
                     self.action_menu.button_render()
                     self.popup.tkraise()
@@ -559,10 +571,12 @@ class GridControl(tk.Frame):
             # Grid coordinates
             current_x = self.action_menu.pos_x
             current_y = self.action_menu.pos_y
+
             # tile locations
             target_x, target_y = 0, 0
             chosen_unit = None
             print("first step")
+
             #---- Grab position data ----
             # Grabs x coordinates
             for i in range(len(Data.x_coordinates)):
@@ -593,33 +607,17 @@ class GridControl(tk.Frame):
 
             if (target_x != current_x) and (target_y != current_y): # Diagonal movements are disliked
                 move_allowed = False
-            elif (target_x == current_x):
-                y_move = True
-            elif (target_y == current_y):
-                x_move = True
             elif (target_y == current_y) and (target_x == current_x): # Movement is stopped by clicking on same tile twice, or current residing tile.
                 move_complete = True 
+            elif (target_x == current_x): # Vertical move detected
+                y_move = True
+            elif (target_y == current_y): # Horizontal move detected
+                x_move = True
             else:
                 raise Exception("Problem moving unit occured")
  
             # Grab unit selected
             chosen_unit = self.action_menu.unit
-
-            # Check clicked location for anything
-            '''
-            tile_info = self.check_tile(target_x, target_y) # Checks tile information and returns it 
-            unit_presence = False
-            for result in tile_info:
-                try:
-                    if result[0] == True:
-                        unit_presence = True
-                        print("checked tile")
-                except TypeError:
-                    pass
-
-                except:
-                    print("Error has occured in grabbing tile information")
-            '''
 
             # Check pathing and tiles 
             unit_presence = False 
@@ -630,9 +628,10 @@ class GridControl(tk.Frame):
                     start, end = 0, 0
                     if current_y > target_y:
                         start, end = target_y, current_y # This does not need changed due to the nature of the range function
-                    else:
+                    elif target_y > current_y:
                         start, end = (current_y + 1), (target_y + 1) # I dont need the current tile accounted for, and i need the target tile accounted for
                     print(f'start:{start}, end:{end}')
+
                     for tile in Data.tile_list:
                         if tile.pos_x == (current_x or target_x): # Grab tile in same column
                             if tile.pos_y in range(start, end):
@@ -663,9 +662,10 @@ class GridControl(tk.Frame):
                     start, end = 0, 0
                     if current_x > target_x:
                         start, end = target_x, current_x # This does not need changed due to the nature of the range function
-                    else:
+                    elif target_x > current_x:
                         start, end = (current_x + 1), (target_x + 1) # I dont need the current tile accounted for, and i need the target tile accounted for
                     print(f'start:{start}, end:{end}')
+
                     for tile in Data.tile_list:
                         if tile.pos_y == (current_y or target_y): # Grab tile in same column
                             if tile.pos_x in range(start, end):
@@ -695,7 +695,7 @@ class GridControl(tk.Frame):
                 if (distance_moved == chosen_unit.move_limit):
                     move_complete = True
                         
-
+            print(f'Move allowed: {move_allowed}, Move complete: {move_complete}, Distance remaining:{chosen_unit.move_limit}')
             # Move unit at current action location to clicked location
             print("third step")
             if move_complete == True:
@@ -703,6 +703,7 @@ class GridControl(tk.Frame):
                     if (unit.pos_x == self.action_menu.origin_x) and (unit.pos_y == self.action_menu.origin_y):
                         unit.pos_x = target_x
                         unit.pos_y = target_y
+                        unit.movable = False
                         reset()
                         print("unit moved")
                         break
@@ -1047,37 +1048,6 @@ class Visual(tk.Frame):
             txt = "Current Team: " + Data.team_announcer
             self.lbl_current_team.configure(text = txt)
             self.color_adjust()
-    '''    
-    def open_attack_frame(self):
-        # Stops the spam creation of frames
-        try:
-            self.frm_create.destroy()
-        except:
-            pass
-        
-        try:
-            self.frm_attack.destroy()
-        except:
-            pass
-        
-        # Actual code
-        temp_attack_list = []
-        temp_defend_list = []
-        
-        # Takes the current turn units (that are available) and puts them in a temp list
-        for unit in Data.current:
-            if unit.available == True:
-                temp_attack_list.append(unit.title)
-                
-        # Puts all opposite team units in a temp list (as their availability changes nothing)     
-        for unit in Data.other:
-            temp_defend_list.append(unit.title)
-        
-        # Creates the attack frame and then raises it
-        self.frm_attack = VisualAttackFrame(self, temp_attack_list, temp_defend_list)
-        self.frm_attack.grid(row=3, column=2, rowspan=2, columnspan=2, sticky='news')
-        self.frm_attack.tkraise()
-    '''
 
     # move this out of Visual class, as its needed here.   
     def scr_text_insert(self, text):
