@@ -555,6 +555,7 @@ class GridControl(tk.Frame):
                     if ((chosen_unit.available == True) and (len(self.action_menu.attackable_list) != 0)) or (factory_check != False) or (chosen_unit.movable != False):
                         self.popup.iconify()
                         self.popup.geometry(f'+{pos_x}+{pos_y}')
+                        self.popup_exists = True
                 except:
                     self.popup = tk.Tk()
                     self.popup.wm_title("Action Menu")
@@ -570,7 +571,6 @@ class GridControl(tk.Frame):
                     self.action_menu.pathing = 0
                     self.action_menu.factory = factory_check
                     self.action_menu.tile = chosen_tile
-                    self.popup_exists = True
                     self.action_menu.button_render()
                     self.popup.tkraise()
                     print("rendered")
