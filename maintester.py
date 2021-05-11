@@ -310,6 +310,7 @@ class GridActionMenu(tk.Frame):
         self.create_button = tk.Button(self, text="Create")
         self.move_button = tk.Button(self, text="Move", command = self.action)
         
+        self.attackable_list = []
         self.pos_x = pos_x
         self.pos_y = pos_y
         self.moving = False
@@ -324,12 +325,12 @@ class GridActionMenu(tk.Frame):
     def button_render(self):
         # Check units
         if self.unit != None:
-
+            self.load_attackable_list()
             # Check if unit can do any action
-            if self.unit.available == True:
-                self.attack_button.pack()
+            if (self.unit.available == True):
+                if len(self.load_attackable_list) != 0):
+                    self.attack_button.pack()
 
-                print(self.unit.movable)
                 # Check if unit can move before placing move button
                 if self.unit.movable == True:
                     self.move_button.pack()
@@ -339,10 +340,12 @@ class GridActionMenu(tk.Frame):
             self.create_button.pack()
 
     def unrender_buttons(self):
+        # Delete subframes
         try:
             self.frm_create.destroy()
         except:
             pass
+
         try:
             self.frm_attack.destroy()
         except:
@@ -361,14 +364,9 @@ class GridActionMenu(tk.Frame):
     def open_create_popup(self):
         pass
 
-    # opens a attack frame popup
-    def open_attack_popup(self):
-        self.unrender_buttons()
-        attackable_list = []
-        chosen_unit = self.unit
-
-        # Grabs opponents on adjacent tiles, if any
-        for unit in Data.other:
+    def load_attackable_list(self):
+        self.attackable_list = []
+        or unit in Data.other:
             # Left side
             if (unit.pos_x == (chosen_unit.pos_x - 1)) and (unit.pos_y == chosen_unit.pos_y):
                 attackable_list.append(unit.title)
@@ -384,8 +382,14 @@ class GridActionMenu(tk.Frame):
             # Bottom side
             elif (unit.pos_x == chosen_unit.pos_x) and (unit.pos_y == (chosen_unit.pos_y - 1)):
                 attackable_list.append(unit.title)
+                
+    # opens a attack frame popup
+    def open_attack_popup(self):
+        self.unrender_buttons()
+        chosen_unit = self.unit
+        self.load_attackable_list()
 
-        self.frm_attack = VisualAttackFrame(self, attackable_list, chosen_unit.title)
+        self.frm_attack = VisualAttackFrame(self, self.attackable_list, chosen_unit.title)
         self.frm_attack.grid(row=3, column=2, rowspan=2, columnspan=2, sticky='news')
         self.frm_attack.tkraise()
 
@@ -704,7 +708,7 @@ class GridControl(tk.Frame):
                 if (distance_moved == chosen_unit.move_limit):
                     move_complete = True
                         
-            print(f'Move allowed: {move_allowed}, Move complete: {move_complete}, Distance remaining:{chosen_unit.move_limit}')
+            print(f'Move allowed: {move_allowed}, Move complete: {move_complete}, Max Distance:{chosen_unit.move_limit}, distance moved:{distance_moved}')
             # Move unit at current action location to clicked location
             print("third step")
             if move_complete == True:
