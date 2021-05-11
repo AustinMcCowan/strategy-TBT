@@ -328,7 +328,7 @@ class GridActionMenu(tk.Frame):
             self.load_attackable_list()
             # Check if unit can do any action
             if (self.unit.available == True):
-                if len(self.load_attackable_list) != 0):
+                if len(self.attackable_list) != 0:
                     self.attack_button.pack()
 
                 # Check if unit can move before placing move button
@@ -366,22 +366,23 @@ class GridActionMenu(tk.Frame):
 
     def load_attackable_list(self):
         self.attackable_list = []
-        or unit in Data.other:
+        chosen_unit = self.unit
+        for unit in Data.other:
             # Left side
             if (unit.pos_x == (chosen_unit.pos_x - 1)) and (unit.pos_y == chosen_unit.pos_y):
-                attackable_list.append(unit.title)
+                self.attackable_list.append(unit.title)
 
             # Top side
             elif (unit.pos_x == chosen_unit.pos_x) and (unit.pos_y == (chosen_unit.pos_y + 1)):
-                attackable_list.append(unit.title)
+                self.attackable_list.append(unit.title)
 
             # Right side 
             elif (unit.pos_x == (chosen_unit.pos_x + 1)) and (unit.pos_y == chosen_unit.pos_y):
-                attackable_list.append(unit.title)
+                self.attackable_list.append(unit.title)
             
             # Bottom side
             elif (unit.pos_x == chosen_unit.pos_x) and (unit.pos_y == (chosen_unit.pos_y - 1)):
-                attackable_list.append(unit.title)
+                self.attackable_list.append(unit.title)
                 
     # opens a attack frame popup
     def open_attack_popup(self):
@@ -550,7 +551,8 @@ class GridControl(tk.Frame):
             # make sure there is a reason to open up action menu, and then render everything required
             if (chosen_unit != None) or (factory_check != False):
                 try:
-                    if (chosen_unit.available != None) or (factory_check != False):
+                    # If there is a unit present that can attack/move, or a factory present, display the menu
+                    if ((chosen_unit.available == True) and (len(self.action_menu.attackable_list) != 0)) or (factory_check != False) or (chosen_unit.movable != False):
                         self.popup.iconify()
                         self.popup.geometry(f'+{pos_x}+{pos_y}')
                 except:
