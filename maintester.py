@@ -467,30 +467,30 @@ class GridControl(tk.Frame):
 
         # Send information to the info frame
 
+    # Hide popup and its insides.
+    def reset(self):
+        try:
+            self.popup.withdraw()
+            self.popup_exists = False
+            self.action_menu.moving = False
+            self.action_menu.chosen_unit = None
+            self.action_menu.unrender_buttons()
+            self.action_menu.pos_x = None
+            self.action_menu.pos_y = None
+            self.action_menu.pathing = 0
+            self.action_menu.origin_x = None
+            self.action_menu.origin_y = None
+        except:
+            self.popup_exists = False
+            self.popup = tk.Tk()
+            self.popup.wm_title("Action Menu")
+            self.action_menu = GridActionMenu(self.popup)
+            self.action_menu.pack()
+            self.popup.withdraw()
+
     # Used for opening action menu / popup and handling move actions
     def mouse_click(self, event):
         print("Mouse Position: {0}, {1}".format(event.x, event.y)) # Check for response
-        
-        # Hide popup and its insides.
-        def reset():
-            try:
-                self.popup.withdraw()
-                self.popup_exists = False
-                self.action_menu.moving = False
-                self.action_menu.chosen_unit = None
-                self.action_menu.unrender_buttons()
-                self.action_menu.pos_x = None
-                self.action_menu.pos_y = None
-                self.action_menu.pathing = 0
-                self.action_menu.origin_x = None
-                self.action_menu.origin_y = None
-            except:
-                self.popup_exists = False
-                self.popup = tk.Tk()
-                self.popup.wm_title("Action Menu")
-                self.action_menu = GridActionMenu(self.popup)
-                self.action_menu.pack()
-                self.popup.withdraw()
             
         print(f"{self.popup_exists}, {self.action_menu.moving}")
             
@@ -719,7 +719,7 @@ class GridControl(tk.Frame):
                         unit.pos_x = target_x
                         unit.pos_y = target_y
                         unit.movable = False
-                        reset()
+                        self.reset()
                         print("unit moved")
                         break
 
@@ -738,7 +738,7 @@ class GridControl(tk.Frame):
 
         # 3. CLOSE MENU: when canvas is clicked, action menu is open: HIDE MENU / RESET CONTENT ---------------------------------------------------------------
         elif self.popup_exists == True: 
-            reset()
+            self.reset()
 
 
     ''' I will need to develop a tile system to better control tiles and drawing. I may create images for every scenario (i.e infantry
@@ -754,7 +754,12 @@ class GridControl(tk.Frame):
             # Finding the image
             # img_path = imgbranch[reader]
             if test == "unit":
-                img_path = 'img/jpgball.jpeg'
+                if unit.color.lower() == "red":
+                    img_path = 'img/red-infantry.png'
+                elif unit.color.lower() == "blue":
+                    img_path = 'img/blue-infantry.png'
+                else:
+                    print(unit.title)
             else:
                 img_path = 'img/testball.png'
 
