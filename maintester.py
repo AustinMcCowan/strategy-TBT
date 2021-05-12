@@ -860,9 +860,7 @@ class GridControl(tk.Frame):
     # Will run through the board size, creating and drawing a tile for each slot. This function will only ever need to be ran once.
     # I need to set an initialize for the tiles, since having them be created inside draw_board will mean tiles will be created every action.
     def initialize_board(self):
-        posx = 0
-        posy = 0
-        index = 0
+        posx, posy, index = 0, 0, 0
         # For each column
         for i in range(self.boardsize):
             posy = i
@@ -935,9 +933,7 @@ class GridControl(tk.Frame):
 
     # Will run drawtile for every tile.
     def draw_board(self):
-        posx = 0
-        posy = 0
-        index = 0
+        posx, posy, index = 0, 0, 0
         self.gridboard.delete("all") # Remove all items on the canvas to prevent memory problems.
         # For each column
         for i in range(self.boardsize):
