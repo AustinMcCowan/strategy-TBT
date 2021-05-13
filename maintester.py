@@ -913,7 +913,7 @@ class GridControl(tk.Frame):
                         tile_id = Data.layout[index][0] + "#" + str(index)
                         t.tileCR8(tile_id, Data.tile_list, posx, posy, occupied=unit_presence)
                 except:
-                    print("Tile type missing; Solving issue...")
+                    print("Tile type missing; Solving issue with a default tile...")
                     Data.layout[index][0] = "grass"
                     tile_id = Data.layout[index][0] + "#" + str(index)
                     t.tileCR8(tile_id, Data.tile_list, posx, posy, occupied=unit_presence)
