@@ -60,7 +60,7 @@ class Data(object):
         # Initialize map layout / units (formatted as such = index:["tilecolor#tiletype", "team#unittype"/None])
         # For tiles, color is optional, and is only usable on factories or cities
         Data.layout = {
-            0:["grass", "red#tank"],
+            0:["red#factory", "red#tank"],
             1:["grass", None],
             2:["grass", None],
             3:["grass", None],
@@ -69,7 +69,7 @@ class Data(object):
             6:["grass", None],
             7:["grass", None],
             8:["grass", None],
-            9:["grass", "blue#tank"],
+            9:["blue#factory", "blue#tank"],
             10:["grass", "red#infantry"],
             11:["grass", None],
             12:["grass", None],
@@ -311,7 +311,7 @@ class GridActionMenu(tk.Frame):
         tk.Frame.__init__(self, master=parent, bg="#CCC", highlightthickness=1)
         self.unit = unit
         self.attack_button = tk.Button(self, text="Attack", command = self.open_attack_popup)
-        self.create_button = tk.Button(self, text="Create")
+        self.create_button = tk.Button(self, text="Create", command = self.open_create_popup)
         self.move_button = tk.Button(self, text="Move", command = self.action)
         
         self.attackable_list = []
@@ -327,8 +327,9 @@ class GridActionMenu(tk.Frame):
         self.tile = tile
 
     def button_render(self):
+        print(f"factory:{self.factory_check}, Unit:{self.unit}")
         # Check units
-        if self.unit != None:
+        if (self.unit != None) and (self.unit != False):
             self.load_attackable_list()
             # Check if unit can do any action
             if (self.unit.available == True):
@@ -366,8 +367,21 @@ class GridActionMenu(tk.Frame):
 
     # Opens a create frame popup
     def open_create_popup(self):
-        pass
+        self.unrender_buttons()
+        self.frm_create = VisualCreateFrame(self)
+        self.frm_create.grid(row=3, column=2, rowspan=2, columnspan=2, sticky='news')
+        self.frm_create.tkraise()
 
+    def create_call(self, produce):
+        try:
+            u.unitCR8(produce, Data.current, Data.team_announcer, posx=self.pos_x, posy=self.pos_y)
+            frame_visual.update()
+            
+        except:
+            print("failed to create unit")
+            
+        self.frm_create.destroy()
+    
     def load_attackable_list(self):
         self.attackable_list = []
         chosen_unit = self.unit
@@ -423,7 +437,7 @@ class GridActionMenu(tk.Frame):
             frame_visual.update()
         self.frm_attack.destroy()
         frame_visual.frm_board.popup.withdraw()
-      
+
     # Commits a move action
     def action(self):
         self.moving = True
@@ -560,7 +574,13 @@ class GridControl(tk.Frame):
                         self.popup.iconify()
                         self.popup.geometry(f'+{pos_x}+{pos_y}')
                         self.popup_exists = True
+                except AttributeError:
+                    if factory_check != False:
+                        self.popup.iconify()
+                        self.popup.geometry(f'+{pos_x}+{pos_y}')
+                        self.popup_exists = True
                 except:
+                    print("butter")
                     self.popup = tk.Tk()
                     self.popup.wm_title("Action Menu")
                     self.action_menu = GridActionMenu(self.popup)
@@ -573,7 +593,7 @@ class GridControl(tk.Frame):
                     self.action_menu.origin_y = current_y
                     self.action_menu.unit = chosen_unit
                     self.action_menu.pathing = 0
-                    self.action_menu.factory = factory_check
+                    self.action_menu.factory_check = factory_check
                     self.action_menu.tile = chosen_tile
                     self.action_menu.button_render()
                     self.popup.tkraise()
@@ -1016,10 +1036,10 @@ class Visual(tk.Frame):
         '''
         self.btn_attack = tk.Button(self, text="Attack", command = self.open_attack_frame)
         self.btn_attack.grid(row=1, column=2, sticky='news')
-        '''
+    
         self.btn_create = tk.Button(self, text="Create", command = self.open_create_frame)
         self.btn_create.grid(row=2, column=2, sticky='news')
-        
+        '''
         self.btn_list = tk.Button(self, text="List", command = self.list_call)
         self.btn_list.grid(row=1, column=3, sticky='news')        
         
@@ -1074,7 +1094,8 @@ class Visual(tk.Frame):
     # move this out of Visual class, as its needed here.   
     def scr_text_insert(self, text):
         self.scr_text.insert("insert", text)
-        
+
+    '''   
     def open_create_frame(self):
         # Stops the spam creation of frames
         try:
@@ -1100,7 +1121,8 @@ class Visual(tk.Frame):
             print("failed to create unit")
             
         self.frm_create.destroy() 
-        
+    '''
+
     def list_call(self):
         msg = ''
         msg += "\n=======================================\n"
