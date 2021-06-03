@@ -41,6 +41,10 @@ class Data(object):
     turn_decider = (5)
     team_announcer = ''
     tile_list = [] 
+    # Team unique variables
+    red_currency, blue_currency = 2000, 2000
+    red_tilecount, blue_tilecount = 0, 0 # Will be used to take note of current tiles each team has to grant income.
+
     def __init__(self):
         
         # Initial units to start with (TO BE REMOVED/REWORKED)
@@ -298,8 +302,8 @@ class VisualCreateFrame(tk.Frame):
 
     def send_create_order(self):
         picked_unit = self.tkvar_names.get()
-        
-        frame_visual.create_call(picked_unit)
+
+        frame_visual.frm_board.action_menu.create_call(picked_unit)
 
 # A popup menu that Handles actions from mouse clicks and the other popups
 class GridActionMenu(tk.Frame):
