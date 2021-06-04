@@ -456,7 +456,8 @@ class GridControl(tk.Frame):
         self.set_coordinates()
         self.gridboard.bind('<Button-1>', self.mouse_click)
         self.gridboard.bind('<Button>', self.info_click)
-        self.gridboard.bind('q', self.reset)
+        self.gridboard.bind_all('<Escape>', self.reset_event)
+        self.gridboard.focus_set()
 
         # Sets up action menu
         self.popup_exists = False
@@ -507,6 +508,9 @@ class GridControl(tk.Frame):
             self.action_menu = GridActionMenu(self.popup)
             self.action_menu.pack()
             self.popup.withdraw()
+
+    def reset_event(self, event):
+        self.reset()
 
     # Used for opening action menu / popup and handling move actions
     def mouse_click(self, event):
@@ -602,21 +606,21 @@ class GridControl(tk.Frame):
                     print("rendered")
 
         # 2. MOVING: When canvas is clicked, menu is active/hidden, and action is selected: COMMIT MOVE, DO NOT OPEN MENU, RESET MENU CONTENT---------------------
-        # - Missing move distance consideration, tile move cost consideration, and pathing consideration (WILL USE MULTIPLE CLICKS TILL REQ IS FULFILLED)
         elif (self.popup_exists == True) and (self.action_menu.moving == True):
             # variables designed for condition checks
             move_allowed = True
             move_complete = False
             distance_moved = self.action_menu.pathing
+            chosen_unit = None
 
             # Grid coordinates
             current_x = self.action_menu.pos_x
             current_y = self.action_menu.pos_y
 
-            # tile locations
+            # target tile details
             target_x, target_y = 0, 0
-            chosen_unit = None
-            print("first step")
+
+            print("first step") 
 
             #---- Grab position data ----
             # Grabs x coordinates
@@ -1048,7 +1052,7 @@ class Visual(tk.Frame):
         self.btn_endturn = tk.Button(self, text="End Turn", command = self.endturn_call)
         self.btn_endturn.grid(row=2, column=3, sticky='news')
         
-        self.scr_text = ScrolledText(self, height = 10, width = 60)
+        self.scr_text = ScrolledText(self, height = 10, width = 40)
         self.scr_text.grid(row=3, column=0, sticky='news')
         
         
@@ -1159,6 +1163,9 @@ root.title("maintester.py")
 data_storage = Data()
 
 # Setting up layout and gui
+root.attributes("-fullscreen", False)
+w, h = root.winfo_screenwidth(), root.winfo_screenheight()
+root.geometry("%dx%d" % (w, h))
 frame_visual = Visual()
 frame_visual.grid(row = 0, column = 0, sticky = "news")
 frame_visual.grid_columnconfigure(0, weight = 0)
