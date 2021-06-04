@@ -309,7 +309,6 @@ class VisualCreateFrame(tk.Frame):
 class GridActionMenu(tk.Frame):
     def __init__(self, parent, pos_x=None, pos_y=None, unit=None, factory=None, pathing=None, origin_x=None, origin_y=None, tile=None):
         tk.Frame.__init__(self, master=parent, bg="#CCC", highlightthickness=1)
-        self.unit = unit
         self.attack_button = tk.Button(self, text="Attack", command = self.open_attack_popup)
         self.create_button = tk.Button(self, text="Create", command = self.open_create_popup)
         self.move_button = tk.Button(self, text="Move", command = self.action)
@@ -333,6 +332,7 @@ class GridActionMenu(tk.Frame):
             self.load_attackable_list()
             # Check if unit can do any action
             if (self.unit.available == True):
+                # Check if any opposition is present/adjacent
                 if len(self.attackable_list) != 0:
                     self.attack_button.pack()
 
@@ -344,6 +344,7 @@ class GridActionMenu(tk.Frame):
         elif (self.factory_check != None) and (self.factory_check != False):
             self.create_button.pack()
 
+    # Self explanatory, basically resets the frame.
     def unrender_buttons(self):
         # Delete subframes
         try:
@@ -359,11 +360,6 @@ class GridActionMenu(tk.Frame):
         self.attack_button.pack_forget()
         self.move_button.pack_forget()
         self.create_button.pack_forget()
-
-
-    # Changes side menus to display information of the tile clicked on
-    def info_render(self):
-        pass
 
     # Opens a create frame popup
     def open_create_popup(self):
@@ -381,6 +377,7 @@ class GridActionMenu(tk.Frame):
             print("failed to create unit")
             
         self.frm_create.destroy()
+        frame_visual.frm_board.popup.withdraw()
     
     def load_attackable_list(self):
         self.attackable_list = []
@@ -457,9 +454,9 @@ class GridControl(tk.Frame):
         self.gridboard.grid(column=0, row=0, sticky='news')
         self.boardsize = boardsize # Which translates to both directions (width and length being = to boardsize)
         self.set_coordinates()
-        self.gridboard.bind('<Button-1>', self.mouse_click) # Might change this to right click later
+        self.gridboard.bind('<Button-1>', self.mouse_click)
         self.gridboard.bind('<Button>', self.info_click)
-
+        self.gridboard.bind('q', self.reset)
 
         # Sets up action menu
         self.popup_exists = False
@@ -490,6 +487,7 @@ class GridControl(tk.Frame):
         try:
             self.popup.withdraw()
             self.popup_exists = False
+            self.action_menu.unit =  None
             self.action_menu.moving = False
             self.action_menu.chosen_unit = None
             self.action_menu.unrender_buttons()
@@ -498,6 +496,10 @@ class GridControl(tk.Frame):
             self.action_menu.pathing = 0
             self.action_menu.origin_x = None
             self.action_menu.origin_y = None
+            self.action_menu.factory_check = False
+            self.action_menu.tile = None
+            self.action_menu.attackable_list = []
+            print("reset")
         except:
             self.popup_exists = False
             self.popup = tk.Tk()
