@@ -1031,33 +1031,33 @@ class Visual(tk.Frame):
         
         self.endturn = False
         
-        # I'll probably turn this into some kinda cool commander showcase spot, ya know, like in the advanced war game series this is based off of?
         self.lbl_information = tk.Label(self, text = '''Placeholder text inbound''', bg="#BBB")
         self.lbl_information.grid(row=0, column=0, rowspan=3, sticky='news')
         
         self.color_adjust()
         starter_team_announce = "Current Team: " + Data.team_announcer
         self.lbl_current_team = tk.Label(self, text = starter_team_announce)
-        self.lbl_current_team.grid(row=3, column=2, columnspan=2)
+        self.lbl_current_team.grid(row=0, column=2, columnspan=2)
         
         self.btn_list = tk.Button(self, text="List", command = self.list_call)
-        self.btn_list.grid(row=4, column=2, sticky='news')        
+        self.btn_list.grid(row=1, column=3, sticky='news')        
         
         self.btn_endturn = tk.Button(self, text="End Turn", command = self.endturn_call)
-        self.btn_endturn.grid(row=4, column=3, sticky='news')
+        self.btn_endturn.grid(row=1, column=2, sticky='news')
         
         self.scr_text = ScrolledText(self, height = 10, width = 40)
-        self.scr_text.grid(row=3, column=0, rowspan=2, sticky='news')
+        self.scr_text.grid(row=3, column=0, sticky='news')
+        
         
         self.frm_board = GridControl(self)
-        self.frm_board.grid(row=0, column=1, rowspan=5, sticky='news')
+        self.frm_board.grid(row=0, column=1, rowspan=4, sticky='news')
         print(self.frm_board.presence) # Makes sure the board is actually created/exists.
         self.frm_board.initialize_board() # Set up initial units and set the tiles
 
         '''Since this zone/area of the program will be empty unless a command is taking place, a placeholder with dark grey 
         background is placed here to indicate it is empty/no action occuring'''
         self.frm_empty = tk.Frame(self, bg = "#AAA")
-        self.frm_empty.grid(row=0, column=2, rowspan=3, columnspan=2, sticky='news')
+        self.frm_empty.grid(row=2, column=2, columnspan=2, rowspan=2, sticky='news')
 
     # This method will be responsible for handling changes in the window size and will update coordinates in Data, as well as redraw the board.
     def resize(self, event):
